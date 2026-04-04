@@ -1,0 +1,53 @@
+from __future__ import annotations
+
+from typing import Optional
+
+from aideator.models import Post, PostType
+
+
+def context(post: Post) -> list[Post]:
+    """Returns the ancestor chain: [post, parent, grandparent, ..., root]."""
+    chain: list[Post] = []
+    current: Optional[Post] = post
+    while current is not None:
+        chain.append(current)
+        current = current.purpose
+    return chain
+
+
+def find_first(ptypes: list[PostType] | PostType, post: Post) -> Optional[Post]:
+    """Find the first post in the context chain with one of the given types."""
+    if isinstance(ptypes, PostType):
+        ptypes = [ptypes]
+    for p in context(post):
+        if p.ptype in ptypes:
+            return p
+    return None
+
+
+def build_post(purpose: Post, ptype: PostType, name: str, description: str) -> Post:
+    """Create a new post and attach it to the purpose's achievers list."""
+    new_post = Post(
+        ptype=ptype,
+        name=name,
+        description=description,
+        purpose=purpose,
+    )
+    if new_post not in purpose.achievers:
+        purpose.achievers.append(new_post)
+    return new_post
+
+
+def describe_context(post: Post) -> str:
+    """Return a human-readable description of the ancestor chain from root to post."""
+    chain = list(reversed(context(post)))
+    parts: list[str] = []
+    previous: Optional[Post] = None
+    for item in chain:
+        if item.ptype == PostType.MISSION:
+            parts.append(f"\n\nThe mission is: {item.name}. {item.description}")
+        else:
+            prev_type = previous.ptype.value if previous else ""
+            parts.append(f"\n\nOne {item.ptype.value} for this {prev_type} is: {item.name}. {item.description}")
+        previous = item
+    return "".join(parts)
