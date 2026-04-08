@@ -1,0 +1,118 @@
+{
+  "id": "9c40c90f-701e-4742-b514-fa8df4876390",
+  "type": "mission",
+  "name": "Stopping Interns from pushing API Keys to public repositories.",
+  "description": "Every year our company takes in hundreds of interns that keep leaking API keys to the public because of their inexperience in handling production level code. We want to come up with a solution that will solve this issue in the most elegant way possible.",
+  "achievers": [
+    {
+      "id": "bd961f44-4ff7-4fc5-a715-6b201d05ea1e",
+      "type": "stakeholder",
+      "name": "Intern Program & Onboarding Team",
+      "description": "This team designs and manages the entire internship program, including the critical first-week onboarding, initial training modules, and ongoing intern support. They are responsible for shaping the foundational knowledge and habits of hundreds of new developers each year. Their primary goal is to ensure a positive and educational experience that sets interns up for success.",
+      "achievers": [
+        {
+          "id": "02f66118-0422-41f6-8315-29047d193dbe",
+          "type": "goal",
+          "name": "Interns Achieve Foundational Security Proficiency",
+          "description": "What is the goal? The goal is to achieve a state where every intern inherently possesses foundational security proficiency upon completing their initial training. This means they can confidently and correctly handle sensitive information, like API keys, as a natural part of their development workflow from day one.\n\nWhy is this goal important? This is important because establishing a strong security baseline during onboarding directly prevents the accidental leaks that stem from inexperience. It transforms the onboarding program from just a welcome wagon into the company's first line of defense, building a culture of security from the ground up and protecting the company's assets.",
+          "achievers": []
+        }
+      ]
+    },
+    {
+      "id": "c0c92513-46b7-4aa6-bf3b-71e338916e9b",
+      "type": "stakeholder",
+      "name": "DevOps / Platform Engineering Team",
+      "description": "This team builds and maintains the core developer infrastructure, including CI/CD pipelines, version control systems, and deployment tools. They are uniquely positioned to implement automated, technical guardrails\u2014such as pre-commit hooks and pipeline scanners\u2014that can programmatically detect and block secrets before they are ever published. Their involvement is key to creating a systemic solution that doesn't rely solely on human vigilance.",
+      "achievers": [
+        {
+          "id": "92af720f-462f-4609-ac91-11e69f409942",
+          "type": "goal",
+          "name": "Automated Secret Leak Prevention Pipeline",
+          "description": "Establish a developer environment where automated scanners are integrated into the core pipeline and version control system. This system will programmatically detect and block any attempted commit containing secrets, effectively creating a technical guardrail that prevents accidental key exposure by any developer.",
+          "achievers": [
+            {
+              "id": "f82101b2-5648-425d-8363-6fb39e1c3586",
+              "type": "abstraction",
+              "name": "Proactive Contaminant Filtering Conduit",
+              "description": "This is a system that establishes an automated inspection point within a conduit used by many contributors. It proactively filters all items passing through this checkpoint, identifying and rejecting any that contain a specific type of contaminant. This ensures the shared destination environment remains pure and is protected from accidental pollution.",
+              "achievers": [
+                {
+                  "id": "4402c71d-5c3b-49d2-9381-882ae45262fb",
+                  "type": "analogy",
+                  "name": "Municipal Water Purification System",
+                  "description": "A municipal water purification system draws raw water from a source like a reservoir. As the water flows through the treatment plant, a series of automated filters and chemical processes proactively remove harmful bacteria, pollutants, and sediment. This ensures that only clean, safe drinking water is delivered to consumers, preventing contamination before it can cause harm.",
+                  "achievers": [
+                    {
+                      "id": "e8f69cf0-612a-4126-90ff-d38c9f7e139f",
+                      "type": "inspiration",
+                      "name": "Public Information Verification and Clarification",
+                      "description": "This system processes the overwhelming and chaotic stream of public digital information, which is often filled with misinformation and bias. Using AI and human review, it filters, verifies, and contextualizes the data, delivering a clear, factual, and trustworthy feed of knowledge to its users. The goal is to make the digital information landscape safe and healthy for public consumption.",
+                      "achievers": [
+                        {
+                          "id": "8d6c1c08-64b3-4037-8435-1711da365632",
+                          "type": "solution",
+                          "name": "Code Integrity Clarification Engine",
+                          "description": "We will implement a 'Code Integrity Clarification Engine,' a multi-stage verification system integrated directly into the developer workflow. This engine uses intelligent, context-aware scanners during both pre-commit and CI stages to analyze code contributions for secret patterns, much like a fact-checker scans for misinformation. When a potential secret is detected, the system not only blocks the commit but also provides the developer with immediate, actionable feedback, clarifying the nature of the issue and guiding them toward secure practices like using a secrets manager.\n\nThis solution excels because it focuses on verification and clarification rather than just blunt filtering, directly addressing the inexperience of interns. By providing educational context at the moment of error, it turns a security risk into a teachable moment, improving long-term developer behavior and reducing the support burden on senior staff. This proactive, informative approach creates a healthier and more secure development ecosystem, ensuring the public 'information stream' (the codebase) remains trustworthy and unpolluted.",
+                          "achievers": [
+                            {
+                              "id": "ae76337a-982d-465b-b25d-8d7ec91c9d71",
+                              "type": "barrier",
+                              "name": "Erosion of Trust via False Positives",
+                              "description": "The engine's overly cautious scanners generate a high volume of false positives, incorrectly flagging benign code like test IDs or example keys as secrets. This constant stream of incorrect alerts causes developers to experience 'alert fatigue,' leading them to distrust and eventually ignore or bypass the system, defeating its educational purpose.",
+                              "achievers": [
+                                {
+                                  "id": "8f99b032-71bd-4670-8762-d85765f8c3a0",
+                                  "type": "cause",
+                                  "name": "Prioritizing Maximum Coverage Over Precision",
+                                  "description": "What is this cause?\n\nThis cause is rooted in a strategic decision to configure the 'Code Integrity Clarification Engine' with the most aggressive and comprehensive set of detection rules available. Driven by a zero-tolerance mandate for key leaks, the DevOps team enables every generic pattern detector and lowers the confidence threshold for alerts to its minimum. The primary goal becomes ensuring no potential secret can possibly slip through, effectively prioritizing maximum detection coverage over the precision of the findings.\n\nHow does it lead to the barrier?\n\nThis 'catch-all' configuration inherently lacks nuance and cannot differentiate between a genuine AWS key and a similarly structured, but benign, piece of data like a test UUID, a placeholder in documentation, or a hash value. As a result, developers, especially interns working with sample data, are constantly bombarded with alerts for code that is perfectly safe. This high signal-to-noise ratio forces them to treat every alert as a potential false alarm, which directly leads to 'alert fatigue' and erodes their trust in the system's reliability.\n\nWhy can it have a large impact?\n\nThe impact is severe because it fundamentally undermines the solution's educational goal, particularly for its target audience of inexperienced interns. When a tool meant to be a helpful guide consistently provides incorrect feedback, it is perceived as a buggy obstacle rather than a safety net. This not only encourages interns to find workarounds, defeating the immediate security goal, but it also fosters a lasting skepticism toward automated security tooling, poisoning their long-term security mindset and habits.",
+                                  "achievers": [
+                                    {
+                                      "id": "3fe8e8b1-fba9-4072-a9a7-3a2eeda305d0",
+                                      "type": "abstraction",
+                                      "name": "Sacrificing Specificity for Guaranteed Scope",
+                                      "description": "A governing principle that elevates the goal of total inclusion above all else, achieved by intentionally loosening the criteria for identification. This trade-off guarantees no targeted items are missed but inevitably leads to the frequent misclassification of benign items, ultimately diminishing the system's credibility.",
+                                      "achievers": [
+                                        {
+                                          "id": "20fd3957-75dd-48a1-ab2a-c44e3b20abbe",
+                                          "type": "analogy",
+                                          "name": "The Universal Travel Power Adapter",
+                                          "description": "A universal travel adapter is designed to fit power outlets in many different countries, guaranteeing a traveler can always charge their devices. However, this broad compatibility comes at the cost of a perfect fit, as the adapter is often bulky and less stable in the socket compared to a dedicated, single-country plug.",
+                                          "achievers": [
+                                            {
+                                              "id": "0c1f7ff6-c7bd-4a0f-bafc-8fee6ba49db6",
+                                              "type": "inspiration",
+                                              "name": "The Global Skills Competency Passport",
+                                              "description": "A secure, decentralized digital protocol that validates and translates professional credentials, academic degrees, and work experience across different countries and industries. It acts as a universal Rosetta Stone for skills, allowing a person's qualifications to be instantly understood and trusted by any employer or institution globally. This removes the 'incompatibility' friction of different educational and professional standards.",
+                                              "achievers": [
+                                                {
+                                                  "id": "894f88a4-4823-4697-8e99-39b8b2e9622f",
+                                                  "type": "solution",
+                                                  "name": "Contextual Credential Verification Framework",
+                                                  "description": "We will implement a 'Contextual Credential Verification Framework' that operates like a dynamic passport for each codebase. This framework replaces generic, one-size-fits-all scanners with a project-specific manifest file that defines the valid 'credentials' and scanning rules for that particular repository. This manifest allows teams to declare expected secret formats, whitelist benign patterns like test IDs, and select relevant rule sets, ensuring the scanning is tailored to the project's specific context.\n\nThis solution directly remedies the cause of 'Prioritizing Maximum Coverage Over Precision' by shifting the focus to high-fidelity, context-aware detection, which drastically reduces false positives and rebuilds developer trust. By making the verification process specific and transparent, it transforms the security tool from a blunt, untrusted gatekeeper into a precise, collaborative system. This precision ensures that when an alert is raised, it is taken seriously, making the educational feedback for interns both credible and highly effective.",
+                                                  "achievers": []
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
