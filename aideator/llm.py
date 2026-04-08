@@ -11,7 +11,7 @@ from google import genai
 class LLMClient:
     """Wraps the Gemini API for sending prompts and parsing responses."""
 
-    def __init__(self, model_name: str = "gemini-2.0-flash"):
+    def __init__(self, model_name: str = "gemini-2.5-pro"):
         load_dotenv()
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
