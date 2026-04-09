@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from aideator.models import Post, PostType
-from aideator.tree import context, find_first, describe_context
+from aideator.tree import find_first, describe_context
 
 
 def _json_template(ptype: str, name_hint: str, desc_hint: str) -> str:
