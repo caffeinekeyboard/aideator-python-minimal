@@ -52,13 +52,16 @@ _CAPACITY_KEYWORDS: list[str] = [
 
 
 def experiment_gemini_model() -> str:
-    """Model for bulk experiments: GEMINI_MODEL_EXPERIMENT, else GEMINI_MODEL, else Flash."""
+    """Model for bulk experiments: GEMINI_MODEL_EXPERIMENT, else GEMINI_MODEL, else a current Flash.
+
+    ``gemini-2.0-flash`` is deprecated for new API keys (404). Default is ``gemini-2.5-flash``.
+    """
     load_dotenv()
     for key in ("GEMINI_MODEL_EXPERIMENT", "GEMINI_MODEL"):
         v = os.getenv(key)
         if v and v.strip():
             return v.strip()
-    return "gemini-2.0-flash"
+    return "gemini-2.5-flash"
 
 
 def experiment_retry_settings(

@@ -16,3 +16,4 @@ aideator/*/__pycache__/*
 aideator/__pycache__
 aideator/*/*/__pycache__/*
 ./run.sh
+streamlit.log

@@ -394,6 +394,23 @@ def _launch_experiment(
     return exp_id
 
 
+def _rerun_experiment(source_exp_id: str) -> str:
+    """Start a new experiment using mission + pipeline from an existing run."""
+    config_f = EXPERIMENTS_DIR / source_exp_id / "config.json"
+    if not config_f.exists():
+        raise FileNotFoundError(f"No config for experiment {source_exp_id!r}")
+    config = json.loads(config_f.read_text())
+    raw_pipeline = config.get("pipeline")
+    if not raw_pipeline:
+        raise ValueError("Saved experiment has no pipeline; cannot rerun.")
+    pipeline = [(PostType(pt), int(b)) for pt, b in raw_pipeline]
+    return _launch_experiment(
+        str(config["mission_name"]).strip(),
+        str(config["mission_desc"]).strip(),
+        pipeline,
+    )
+
+
 # ── Live experiment progress (periodic fragment rerun, no parent window reload) ─
 
 def _render_experiment_live_progress(exp_id: str) -> None:
@@ -526,6 +543,85 @@ def _render_experiment_details(exp_id: str) -> None:
         st.info(f"Status: {state}")
 
 
+# ── Experiment History (list + inline detail panel) ────────────────────────────
+
+def _render_experiment_history_cards(key_prefix: str) -> None:
+    """Experiment list with Open / Rerun (no page header)."""
+    experiments = _list_experiments()
+    if not experiments:
+        st.caption("No experiments yet. Go to **Experiment Runner** and launch one.")
+        return
+
+    for exp in experiments:
+        icon = STATE_ICON.get(exp["state"], "⚪")
+        started = exp.get("started_at", "")[:19].replace("T", " ")
+        state = exp["state"]
+        suffix = ""
+        if state == "complete":
+            suffix = f" · {exp['total_solutions']} solutions"
+        elif state == "running":
+            suffix = f" · layer {exp['layer']}/{exp['total_layers']}"
+
+        is_viewing = exp["id"] == st.session_state.get("viewed_exp_id")
+        with st.container(border=True):
+            c1, c2, c3 = st.columns([5, 1, 1], gap="small")
+            with c1:
+                st.markdown(f"**{icon} {exp['mission_name']}**{suffix}  ")
+                cap = f"{started} · `{exp['id']}`"
+                if is_viewing:
+                    cap = f"👁 **Shown in panel →** · {cap}"
+                st.caption(cap)
+            with c2:
+                if st.button(
+                    "Open",
+                    key=f"{key_prefix}open_{exp['id']}",
+                    use_container_width=True,
+                ):
+                    st.session_state.viewed_exp_id = exp["id"]
+                    st.rerun()
+            with c3:
+                if st.button(
+                    "Rerun",
+                    key=f"{key_prefix}rerun_{exp['id']}",
+                    use_container_width=True,
+                ):
+                    try:
+                        new_id = _rerun_experiment(exp["id"])
+                        st.session_state.viewed_exp_id = new_id
+                        st.toast(f"Rerun started: {new_id}", icon="🚀")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not rerun: {e}")
+
+
+def _render_experiment_history_page() -> None:
+    """List on the left; **Open** shows the same experiment details on the right."""
+    st.caption("Runs live under `experiments/`. **Open** loads progress, results, and downloads in the panel beside the list.")
+    # Use Streamlit primitives (no fixed hex colors) so text stays visible in dark theme.
+    st.subheader("Experiment History")
+    st.markdown(
+        "Latest runs first. **Open** shows that run on this page (right). "
+        "**Rerun** starts a *new* run with the same mission, description, "
+        "and branching pipeline and selects it in the panel."
+    )
+
+    col_list, col_detail = st.columns([2, 3], gap="large")
+
+    with col_list:
+        st.markdown("##### All runs")
+        _render_experiment_history_cards(key_prefix="histpg_")
+
+    with col_detail:
+        st.markdown("##### Experiment")
+        viewed_id = st.session_state.get("viewed_exp_id")
+        if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
+            _render_experiment_details(viewed_id)
+        else:
+            st.info(
+                "Click **Open** on a run to show live progress, results, and downloads here."
+            )
+
+
 # ── Runner tab ────────────────────────────────────────────────────────────────
 
 def _render_runner() -> None:
@@ -579,40 +675,14 @@ def _render_runner() -> None:
                         st.session_state.viewed_exp_id = exp_id
                         st.rerun()
 
-        # ── Past experiments list ──────────────────────────────────────────────
-        experiments = _list_experiments()
-        if experiments:
-            st.markdown("#### Experiment History")
-            for exp in experiments:
-                icon     = STATE_ICON.get(exp["state"], "⚪")
-                is_sel   = exp["id"] == st.session_state.get("viewed_exp_id")
-                btn_type = "primary" if is_sel else "secondary"
-                name_trunc = exp["mission_name"][:28]
-                suffix = ""
-                if exp["state"] == "complete":
-                    suffix = f"  · {exp['total_solutions']} sol."
-                elif exp["state"] == "running":
-                    suffix = f"  · layer {exp['layer']}/{exp['total_layers']}"
-
-                if st.button(
-                    f"{icon} {name_trunc}{suffix}",
-                    key=f"exp_btn_{exp['id']}",
-                    use_container_width=True,
-                    type=btn_type,
-                ):
-                    st.session_state.viewed_exp_id = exp["id"]
-                    st.rerun()
-        else:
-            st.caption("No experiments yet. Launch one above.")
-
     with col_right:
         viewed_id = st.session_state.get("viewed_exp_id")
         if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
             _render_experiment_details(viewed_id)
         else:
             st.info(
-                "Launch a new experiment or select one from the history "
-                "to view its live progress or results."
+                "Launch a new experiment or open a run from the **Experiment History** "
+                "tab to view live progress or results."
             )
 
 
@@ -629,15 +699,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Use radio (not st.tabs) so we only run the Experiment Runner branch when that
-# view is selected — avoids live-refresh / heavy UI for the Builder unnecessarily.
-# st.tabs still executes *all* tab bodies each rerun, which caused full-page JS
-# reloads to hit the Builder tab too (blank / flicker).
+# Use radio (not st.tabs) so only the selected view runs — avoids running Builder +
+# Runner + History on every rerun (fragments, LLM init side effects, etc.).
 _tab = st.radio(
     "Main view",
-    options=("builder", "runner"),
+    options=("builder", "runner", "history"),
     format_func=lambda x: (
-        "🌳  Interactive Builder" if x == "builder" else "🚀  Experiment Runner"
+        "🌳  Interactive Builder"
+        if x == "builder"
+        else "🚀  Experiment Runner"
+        if x == "runner"
+        else "📜  Experiment History"
     ),
     horizontal=True,
     label_visibility="collapsed",
@@ -646,5 +718,7 @@ _tab = st.radio(
 
 if _tab == "builder":
     _render_builder()
-else:
+elif _tab == "runner":
     _render_runner()
+else:
+    _render_experiment_history_page()

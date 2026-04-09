@@ -304,7 +304,7 @@ Bulk runs (`experiment_runner.py` and the Streamlit **Experiment Runner** worker
 | Variable | Role |
 |----------|------|
 | `GEMINI_MODEL` | Used by **CLI / web** `LLMClient()` when no explicit model is passed (default `gemini-2.5-pro` if unset). |
-| `GEMINI_MODEL_EXPERIMENT` | Optional override **only** for experiments. If unset, experiments use `GEMINI_MODEL` if set, otherwise **`gemini-2.0-flash`**. |
+| `GEMINI_MODEL_EXPERIMENT` | Optional override **only** for experiments. If unset, experiments use `GEMINI_MODEL` if set, otherwise **`gemini-2.5-flash`** (2.0 Flash is retired for new keys). |
 | `EXPERIMENT_LLM_MAX_RETRIES` | Max retries on capacity errors (default **10**). |
 | `EXPERIMENT_LLM_BACKOFF_BASE` | Initial backoff in seconds before exponential growth (default **3.0**). |
 | `EXPERIMENT_REQUEST_DELAY_SECONDS` | Pause after each generation attempt in seconds (default **0.75**; set **0** to disable). |
