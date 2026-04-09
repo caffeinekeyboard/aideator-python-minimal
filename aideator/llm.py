@@ -11,7 +11,7 @@ from google import genai
 class LLMClient:
     """Wraps the Gemini API for sending prompts and parsing responses."""
 
-    def __init__(self, model_name: str | None = None):
+    def __init__(self, model_name: str = "gemini-2.5-pro"):
         load_dotenv()
         api_key = os.getenv("GEMINI_API_KEY")
         if not api_key:
@@ -20,7 +20,7 @@ class LLMClient:
                 "Set it in your .env file or as an environment variable."
             )
         self.client = genai.Client(api_key=api_key)
-        self.model_name = model_name or os.getenv("GEMINI_MODEL") or "gemini-2.5-pro"
+        self.model_name = model_name
 
     def ask(self, prompt: str) -> str:
         """Send a prompt to Gemini and return the raw text response."""
