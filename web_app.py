@@ -1,7 +1,9 @@
 """web_app.py — Streamlit web UI for Aideator.
 
 Run with:
-    streamlit run web_app.py
+    .venv/bin/python -m streamlit run web_app.py
+
+Default port is 7500 (`.streamlit/config.toml`). Override: --server.port PORT
 
 Two tabs:
   - Interactive Builder  : build an idea tree node-by-node, guided by the LLM
@@ -17,11 +19,10 @@ import re
 import subprocess
 import sys
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 from aideator.engine import IdeaEngine
 from aideator.models import Post, PostType
@@ -393,6 +394,57 @@ def _launch_experiment(
     return exp_id
 
 
+# ── Live experiment progress (periodic fragment rerun, no parent window reload) ─
+
+def _render_experiment_live_progress(exp_id: str) -> None:
+    """Poll status/log while worker runs; uses st.fragment instead of JS page reload."""
+
+    @st.fragment(run_every=timedelta(seconds=4))
+    def _live_poll() -> None:
+        status = _read_status(exp_id)
+        state = status.get("state", "unknown")
+        if state not in ("starting", "running"):
+            st.rerun()
+            return
+
+        layer = status.get("layer", 0)
+        total_lay = status.get("total_layers", 1)
+        nodes = status.get("nodes_generated", 0)
+        cur_type = status.get("current_type") or "—"
+        progress = layer / total_lay if total_lay else 0
+
+        st.progress(progress, text=f"Layer {layer} / {total_lay}  ·  {cur_type.upper()}")
+        st.caption(f"Nodes generated so far: **{nodes}**")
+
+        log_entries = _read_log(exp_id)
+        node_entries = [e for e in log_entries if e.get("event") == "node"]
+
+        if node_entries:
+            st.markdown("**Recently generated nodes**")
+            rows = []
+            for e in node_entries[-30:]:
+                ptype_str = e.get("type", "")
+                try:
+                    icon = PTYPE_ICON.get(PostType(ptype_str), "•")
+                    color = PTYPE_COLOR.get(PostType(ptype_str), "#333")
+                except ValueError:
+                    icon, color = "•", "#333"
+                rows.append(
+                    f'<div style="padding:3px 8px;font-size:13px;">'
+                    f'{icon} <span style="font-size:10px;color:{color};font-weight:700;'
+                    f'background:{color}18;padding:1px 5px;border-radius:3px;">'
+                    f'{ptype_str}</span> {e.get("name", "")}</div>'
+                )
+            st.markdown(
+                '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
+                'max-height:280px;overflow-y:auto;padding:6px;">'
+                + "".join(rows) + "</div>",
+                unsafe_allow_html=True,
+            )
+
+    _live_poll()
+
+
 # ── Experiment detail view ────────────────────────────────────────────────────
 
 def _render_experiment_details(exp_id: str) -> None:
@@ -419,44 +471,9 @@ def _render_experiment_details(exp_id: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # ── Running: live progress ─────────────────────────────────────────────────
+    # ── Running: live progress (fragment refresh — avoids full-page reload loops) ─
     if state in ("starting", "running"):
-        layer       = status.get("layer", 0)
-        total_lay   = status.get("total_layers", 1)
-        nodes       = status.get("nodes_generated", 0)
-        cur_type    = status.get("current_type") or "—"
-        progress    = layer / total_lay if total_lay else 0
-
-        st.progress(progress, text=f"Layer {layer} / {total_lay}  ·  {cur_type.upper()}")
-        st.caption(f"Nodes generated so far: **{nodes}**")
-
-        log_entries  = _read_log(exp_id)
-        node_entries = [e for e in log_entries if e.get("event") == "node"]
-
-        if node_entries:
-            st.markdown("**Recently generated nodes**")
-            rows = []
-            for e in node_entries[-30:]:
-                ptype_str = e.get("type", "")
-                try:
-                    icon = PTYPE_ICON.get(PostType(ptype_str), "•")
-                    color = PTYPE_COLOR.get(PostType(ptype_str), "#333")
-                except ValueError:
-                    icon, color = "•", "#333"
-                rows.append(
-                    f'<div style="padding:3px 8px;font-size:13px;">'
-                    f'{icon} <span style="font-size:10px;color:{color};font-weight:700;'
-                    f'background:{color}18;padding:1px 5px;border-radius:3px;">'
-                    f'{ptype_str}</span> {e.get("name", "")}</div>'
-                )
-            st.markdown(
-                '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
-                'max-height:280px;overflow-y:auto;padding:6px;">'
-                + "".join(rows) + "</div>",
-                unsafe_allow_html=True,
-            )
-
-        # (auto-refresh is injected at page level — see entry point)
+        _render_experiment_live_progress(exp_id)
 
     # ── Complete: results view ─────────────────────────────────────────────────
     elif state == "complete":
@@ -612,21 +629,22 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-tab_builder, tab_runner = st.tabs(["🌳  Interactive Builder", "🚀  Experiment Runner"])
+# Use radio (not st.tabs) so we only run the Experiment Runner branch when that
+# view is selected — avoids live-refresh / heavy UI for the Builder unnecessarily.
+# st.tabs still executes *all* tab bodies each rerun, which caused full-page JS
+# reloads to hit the Builder tab too (blank / flicker).
+_tab = st.radio(
+    "Main view",
+    options=("builder", "runner"),
+    format_func=lambda x: (
+        "🌳  Interactive Builder" if x == "builder" else "🚀  Experiment Runner"
+    ),
+    horizontal=True,
+    label_visibility="collapsed",
+    key="main_view_tab",
+)
 
-with tab_builder:
+if _tab == "builder":
     _render_builder()
-
-with tab_runner:
+else:
     _render_runner()
-
-# ── Auto-refresh: only when a running experiment is actively being viewed ──────
-# Injected outside all tabs so it does NOT fire when tabs are hidden.
-_viewed = st.session_state.get("viewed_exp_id")
-if _viewed and (EXPERIMENTS_DIR / _viewed).exists():
-    _live_status = _read_status(_viewed)
-    if _live_status.get("state") in ("starting", "running"):
-        components.html(
-            "<script>setTimeout(function(){window.parent.location.reload()},4000);</script>",
-            height=0,
-        )

@@ -16,14 +16,20 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 import traceback
 from datetime import datetime
 from pathlib import Path
 
 from aideator.engine import IdeaEngine
+from aideator.llm import LLMClient
 from aideator.models import PostType
 from aideator.serialization import tree_to_dict
-from experiment_runner import robust_propose_achiever
+from experiment_runner import (
+    experiment_gemini_model,
+    experiment_request_delay_seconds,
+    robust_propose_achiever,
+)
 
 
 # ── File helpers (atomic writes to avoid partial-read corruption) ─────────────
@@ -60,7 +66,9 @@ def run(exp_dir_str: str) -> None:
     })
     _append_log(exp_dir, {"event": "start", "mission": mission_name})
 
-    engine = IdeaEngine()
+    model = experiment_gemini_model()
+    engine = IdeaEngine(LLMClient(model_name=model))
+    _append_log(exp_dir, {"event": "config", "llm_model": model})
     root = engine.create_mission(mission_name, mission_desc)
     current_nodes = [root]
     nodes_generated = 1
@@ -98,6 +106,9 @@ def run(exp_dir_str: str) -> None:
                         "type": post.ptype.value,
                         "name": post.name,
                     })
+                delay = experiment_request_delay_seconds()
+                if delay > 0:
+                    time.sleep(delay)
 
         if not next_layer:
             _write_status(exp_dir, {
