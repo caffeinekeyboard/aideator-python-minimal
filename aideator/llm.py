@@ -56,14 +56,15 @@ class LLMClient:
         return json_str
 
     @staticmethod
-    def parse_response(response: str) -> tuple[str, str]:
-        """Parse LLM JSON response to extract (name, description).
+    def parse_response(response: str) -> tuple[str, str, str | None]:
+        """Parse LLM JSON response to extract (name, description, type).
 
         Tries fenced JSON blocks first, then scans for all top-level {...}
         objects and picks the first one that contains 'name' and 'description'.
 
         Returns:
-            Tuple of (name, description).
+            Tuple of (name, description, type_value) where type_value may be
+            None if the model omitted the 'type' field.
 
         Raises:
             ValueError: If no valid JSON with required fields is found.
@@ -88,7 +89,7 @@ class LLMClient:
             name = data.get("name")
             description = data.get("description")
             if name and description:
-                return str(name).strip(), str(description).strip()
+                return str(name).strip(), str(description).strip(), data.get("type")
 
         raise ValueError(
             f"No JSON object with 'name' and 'description' found in LLM response:\n{response}"

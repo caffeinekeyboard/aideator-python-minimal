@@ -40,5 +40,9 @@ class IdeaEngine:
 
         prompt = build_prompt(ptype, purpose)
         response = self.llm.ask(prompt)
-        name, description = LLMClient.parse_response(response)
+        name, description, returned_type = LLMClient.parse_response(response)
+        if returned_type is not None and returned_type != ptype.value:
+            raise ValueError(
+                f"LLM returned type '{returned_type}' but '{ptype.value}' was requested."
+            )
         return build_post(purpose, ptype, name, description)
