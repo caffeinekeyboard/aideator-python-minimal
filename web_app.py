@@ -456,11 +456,7 @@ def _render_experiment_details(exp_id: str) -> None:
                 unsafe_allow_html=True,
             )
 
-        # Auto-refresh every 4 seconds while running
-        components.html(
-            "<script>setTimeout(function(){window.parent.location.reload()},4000);</script>",
-            height=0,
-        )
+        # (auto-refresh is injected at page level — see entry point)
 
     # ── Complete: results view ─────────────────────────────────────────────────
     elif state == "complete":
@@ -623,3 +619,14 @@ with tab_builder:
 
 with tab_runner:
     _render_runner()
+
+# ── Auto-refresh: only when a running experiment is actively being viewed ──────
+# Injected outside all tabs so it does NOT fire when tabs are hidden.
+_viewed = st.session_state.get("viewed_exp_id")
+if _viewed and (EXPERIMENTS_DIR / _viewed).exists():
+    _live_status = _read_status(_viewed)
+    if _live_status.get("state") in ("starting", "running"):
+        components.html(
+            "<script>setTimeout(function(){window.parent.location.reload()},4000);</script>",
+            height=0,
+        )
