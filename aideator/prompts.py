@@ -59,7 +59,7 @@ def _prompt_stakeholder(purpose: Post, existing: list[Post]) -> str:
     if existing:
         s += "\n\nHere are the stakeholders that have been proposed so far:"
         s += _list_existing(existing, "stakeholder")
-    s += "\n\nPick a stakeholder from the following list that has NOT been already proposed:"
+    s += "\n\nPropose a stakeholder that has NOT been already proposed above."
     s += _json_template(
         "stakeholder",
         "a 2 to 5 word name for the stakeholder",
