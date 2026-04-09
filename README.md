@@ -16,9 +16,18 @@ GEMINI_API_KEY="your-api-key-here"
 
 ## Quick Start
 
+**CLI:**
 ```bash
 python main.py
 ```
+
+**Web UI:**
+```bash
+streamlit run web_app.py
+```
+Opens at `http://localhost:8501` with two tabs:
+- **Interactive Builder** — build an idea tree node-by-node, guided by the LLM
+- **Experiment Runner** — automated breadth-first pipeline with live progress and configurable branching
 
 You'll be prompted to create a new mission or load an existing tree from a JSON file. Choose `n` for new, then provide a name and description for your deliberation.
 
@@ -127,6 +136,7 @@ aideator/
   serialization.py   JSON import/export and tree display
   cli.py             Interactive command-line interface
 main.py              Entry point
+web_app.py           Streamlit web UI (Interactive Builder + Experiment Runner)
 experiment_runner.py Automated large-scale ideation experiment
 tests/
   test_tree.py           Tree operations (context, find_first, build_post, describe_context)
