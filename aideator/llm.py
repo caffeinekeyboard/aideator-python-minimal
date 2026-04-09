@@ -3,9 +3,22 @@ from __future__ import annotations
 import json
 import os
 import re
+from typing import Protocol, runtime_checkable
 
 from dotenv import load_dotenv
 from google import genai
+
+
+@runtime_checkable
+class LLMClientProtocol(Protocol):
+    """Minimal interface required by IdeaEngine.
+
+    Any object that implements ask(prompt) -> str is a valid LLM client.
+    Use this protocol to create test stubs without needing a real API key.
+    """
+
+    def ask(self, prompt: str) -> str:
+        ...
 
 
 class LLMClient:
