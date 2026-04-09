@@ -57,9 +57,15 @@ def robust_propose_achiever(
 ) -> Optional[Post]:
     """Wrap ``engine.propose_achiever`` with exponential back-off and jitter.
 
-    Retryable errors (rate limits, capacity) are retried up to *max_retries*
-    times.  Non-capacity errors (e.g. prompt-validation failures) are logged
-    and the branch is skipped by returning ``None``.
+    Three error categories are handled differently:
+
+    - **Logic bugs** (ValueError, TypeError, AttributeError): these indicate a
+      programming error in the pipeline configuration or prompt logic. They are
+      re-raised immediately so they surface rather than being silently swallowed.
+    - **Capacity / rate-limit errors**: retried up to *max_retries* times with
+      exponential back-off and jitter.
+    - **Other transient API errors**: logged and the branch is skipped (None
+      returned) so one bad response doesn't abort the whole experiment.
     """
     base_wait: float = 2.0
 
@@ -67,12 +73,21 @@ def robust_propose_achiever(
         try:
             return engine.propose_achiever(child_type, parent_post)
 
+        except (ValueError, TypeError, AttributeError) as exc:
+            # Logic bugs must surface — do not silently skip
+            logger.error(
+                "Logic error proposing %s for '%s': %s — re-raising.",
+                child_type.value,
+                parent_post.name,
+                exc,
+            )
+            raise
+
         except Exception as exc:
             error_msg = str(exc).lower()
             is_capacity_error = any(kw in error_msg for kw in _CAPACITY_KEYWORDS)
 
             if is_capacity_error and attempt < max_retries:
-                # Exponential back-off: 2, 4, 8, 16 ... + random jitter
                 wait = base_wait * (2 ** (attempt - 1)) + random.uniform(0, 1)
                 logger.warning(
                     "API capacity/rate error. Retrying in %.2fs "
@@ -84,7 +99,6 @@ def robust_propose_achiever(
                 )
                 time.sleep(wait)
             elif is_capacity_error:
-                # Exhausted retries on a capacity error
                 logger.error(
                     "Failed to propose %s after %d retries: %s",
                     child_type.value,
@@ -93,16 +107,15 @@ def robust_propose_achiever(
                 )
                 return None
             else:
-                # Non-capacity error -> skip this branch, don't crash
+                # Unexpected transient error — log and skip this branch
                 logger.error(
-                    "Non-retryable error proposing %s for '%s': %s",
+                    "Unexpected error proposing %s for '%s': %s",
                     child_type.value,
                     parent_post.name,
                     exc,
                 )
                 return None
 
-    # Should not be reached, but guard against it
     return None
 
 
