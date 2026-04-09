@@ -128,7 +128,51 @@ aideator/
   cli.py             Interactive command-line interface
 main.py              Entry point
 experiment_runner.py Automated large-scale ideation experiment
+tests/
+  test_tree.py           Tree operations (context, find_first, build_post, describe_context)
+  test_transitions.py    Transition graph lock-in tests
+  test_llm_parsing.py    JSON parsing (parse_response, extract candidates, clean)
+  test_engine.py         IdeaEngine with fake LLM stub
+  test_serialization.py  Import/export and round-trip integrity
+  test_prompts.py        Prompt structure and content invariants
+  test_print_tree.py     CLI tree display and preorder index mapping
 ```
+
+---
+
+## Tests
+
+The test suite contains **109 tests** across 7 files. All tests are network-free — no `GEMINI_API_KEY` required.
+
+### Run all tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+### Run a specific file
+
+```bash
+python -m pytest tests/test_tree.py -v
+python -m pytest tests/test_engine.py -v
+python -m pytest tests/test_llm_parsing.py -v
+python -m pytest tests/test_serialization.py -v
+python -m pytest tests/test_prompts.py -v
+python -m pytest tests/test_transitions.py -v
+python -m pytest tests/test_print_tree.py -v
+```
+
+### Test coverage summary
+
+| File | Tests | What it covers |
+|------|-------|----------------|
+| `test_tree.py` | 26 | `context()`, `find_first()`, `build_post()` dedup, `describe_context()` |
+| `test_llm_parsing.py` | 20 | Fenced/raw JSON extraction, trailing commas, type field, error cases |
+| `test_engine.py` | 11 | Mission creation, child proposal, invalid transitions, type mismatch, dedup |
+| `test_serialization.py` | 18 | `tree_to_dict`, `dict_to_tree`, round-trip integrity, friendly errors, file I/O |
+| `test_prompts.py` | 25 | Preamble, context inclusion rules, JSON template, per-type prompt checks |
+| `test_transitions.py` | 9 | Exact edge set, ACTION_NAMES coverage, validate/reject transitions |
+| `test_print_tree.py` | 6 | Preorder numbering, index mapping, output labels |
 
 ---
 
