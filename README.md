@@ -87,7 +87,7 @@ When you add a child post, Aideator sends the full ancestor context to the LLM, 
 
 (n)ew mission or (l)oad from file? n
 Mission name: Urban Transportation Reform
-Mission description: How can our city reduce traffic congestion while improving public transit access for all residents?
+Mission description:  can our city reduce traffic congestion while improving public transit access for all residents?How
 
 Mission created: "Urban Transportation Reform"
 
