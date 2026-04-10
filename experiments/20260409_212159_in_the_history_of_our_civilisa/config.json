@@ -1,0 +1,32 @@
+{
+  "mission_name": "In the history of our civilisation, only a few events have managed to cause as much global disruption as COVID-19.",
+  "mission_desc": "Despite the rapid spread of this virus, some countries have been able to manage better than others during the pandemic, based on the availability of affordable health care and sanitation. However, low-income countries without these facilities are struggling to respond and to safeguard themselves against the destructive impacts of coronavirus. \n\nFor communities already living in poverty, preventing the spread of COVID-19 has been challenging, due to a shortage of masks, personal protective equipment (PPE), water, soap and hand sanitiser, which impacts on hygiene and sanitation practices.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      2
+    ],
+    [
+      "analogy",
+      3
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:21:59.187381",
+  "experiment_id": "20260409_212159_in_the_history_of_our_civilisa"
+}

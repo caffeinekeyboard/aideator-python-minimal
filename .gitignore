@@ -17,3 +17,10 @@ aideator/__pycache__
 aideator/*/*/__pycache__/*
 ./run.sh
 streamlit.log
+docker-compose.yml
+.dockerignore
+Dockerfile
+*.json
+*.jsonl
+!experiments/
+!experiments/**

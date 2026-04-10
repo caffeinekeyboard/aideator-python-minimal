@@ -1,0 +1,32 @@
+{
+  "mission_name": "Countering Terrorism",
+  "mission_desc": "Each year, thousands of innocent lives are shattered by terrorist violence driven by violent extremism. Whether based on religious, ethnic or political grounds, extremist ideologies glorify the supremacy of a particular group, and oppose a more tolerant and inclusive society. Their message of religious, cultural, and social intolerance has wreaked havoc in many regions worldwide.\n\nTerrorism, in all its forms and tactics, targets the very foundations of our societies and directly challenges our shared values of peace, justice, and human dignity. It aims to dismantle human rights, fundamental freedoms, and democracy. It threatens the territorial integrity and security of nations and seeks to destabilize legitimate governments.\n\nTo counter this threat, the international community must strengthen cooperation in preventing and combating terrorism. While countering terrorism requires interventions to protect the security of people and assets, prevention of violent extremism needs to look beyond strict security concerns to development-related causes and solutions. There is a crucial role to be played by international organizations, civil society, academics, religious leaders, and media outlets, in combating both terrorism and the violent extremism that can fuel it.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      3
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:02:55.015275",
+  "experiment_id": "20260409_210255_countering_terrorism"
+}

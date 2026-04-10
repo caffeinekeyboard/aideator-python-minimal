@@ -16,6 +16,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -411,6 +412,57 @@ def _rerun_experiment(source_exp_id: str) -> str:
     )
 
 
+def _resume_experiment_worker(exp_id: str) -> None:
+    """Start (or restart) the background worker for an existing experiment directory.
+
+    Use when status is starting/running but the process died, or after a failure.
+    Re-runs the full pipeline in that folder (same as a fresh worker launch).
+    """
+    exp_dir = EXPERIMENTS_DIR / exp_id
+    if not (exp_dir / "config.json").exists():
+        raise FileNotFoundError(f"No config for experiment {exp_id!r}")
+    worker = Path(__file__).parent / "experiment_worker.py"
+    subprocess.Popen(
+        [sys.executable, str(worker), str(exp_dir.resolve())],
+        cwd=str(Path(__file__).parent.resolve()),
+    )
+
+
+def _delete_experiment_dir(exp_id: str) -> None:
+    """Remove an experiment directory and clear selection if it was open."""
+    p = EXPERIMENTS_DIR / exp_id
+    if p.exists() and p.is_dir():
+        shutil.rmtree(p)
+    if st.session_state.get("viewed_exp_id") == exp_id:
+        st.session_state.viewed_exp_id = None
+
+
+@st.dialog("Delete experiment?")
+def _delete_experiment_dialog(exp_id: str) -> None:
+    st.markdown(f"Remove **`{exp_id}`** and all files under it? This cannot be undone.")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Delete permanently", type="primary", use_container_width=True):
+            _delete_experiment_dir(exp_id)
+            st.session_state.pop("pending_delete_exp", None)
+            st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True):
+            st.session_state.pop("pending_delete_exp", None)
+            st.rerun()
+
+
+def _experiment_can_resume(state: str) -> bool:
+    return state in ("starting", "running", "failed")
+
+
+def _maybe_show_delete_dialog() -> None:
+    """Open delete confirmation when `pending_delete_exp` was set by a Delete button."""
+    exp_id = st.session_state.get("pending_delete_exp")
+    if exp_id:
+        _delete_experiment_dialog(exp_id)
+
+
 # ── Live experiment progress (periodic fragment rerun, no parent window reload) ─
 
 def _render_experiment_live_progress(exp_id: str) -> None:
@@ -488,6 +540,30 @@ def _render_experiment_details(exp_id: str) -> None:
         unsafe_allow_html=True,
     )
 
+    d_resume, d_del = st.columns(2)
+    with d_resume:
+        if _experiment_can_resume(state):
+            if st.button(
+                "▶ Resume worker",
+                key=f"detail_resume_{exp_id}",
+                use_container_width=True,
+                help="Start the pipeline worker again in this folder (e.g. stuck or failed run).",
+            ):
+                try:
+                    _resume_experiment_worker(exp_id)
+                    st.toast("Worker started for this run.", icon="▶️")
+                    st.rerun()
+                except Exception as ex:
+                    st.error(str(ex))
+    with d_del:
+        if st.button(
+            "🗑️ Delete run",
+            key=f"detail_del_{exp_id}",
+            use_container_width=True,
+        ):
+            st.session_state.pending_delete_exp = exp_id
+            st.rerun()
+
     # ── Running: live progress (fragment refresh — avoids full-page reload loops) ─
     if state in ("starting", "running"):
         _render_experiment_live_progress(exp_id)
@@ -546,7 +622,7 @@ def _render_experiment_details(exp_id: str) -> None:
 # ── Experiment History (list + inline detail panel) ────────────────────────────
 
 def _render_experiment_history_cards(key_prefix: str) -> None:
-    """Experiment list with Open / Rerun (no page header)."""
+    """Experiment list with Open / Rerun / Resume / Delete."""
     experiments = _list_experiments()
     if not experiments:
         st.caption("No experiments yet. Go to **Experiment Runner** and launch one.")
@@ -559,39 +635,61 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
         suffix = ""
         if state == "complete":
             suffix = f" · {exp['total_solutions']} solutions"
-        elif state == "running":
+        elif state == "running" or state == "starting":
             suffix = f" · layer {exp['layer']}/{exp['total_layers']}"
 
         is_viewing = exp["id"] == st.session_state.get("viewed_exp_id")
+        eid = exp["id"]
         with st.container(border=True):
-            c1, c2, c3 = st.columns([5, 1, 1], gap="small")
-            with c1:
-                st.markdown(f"**{icon} {exp['mission_name']}**{suffix}  ")
-                cap = f"{started} · `{exp['id']}`"
-                if is_viewing:
-                    cap = f"👁 **Shown in panel →** · {cap}"
-                st.caption(cap)
-            with c2:
-                if st.button(
-                    "Open",
-                    key=f"{key_prefix}open_{exp['id']}",
-                    use_container_width=True,
-                ):
-                    st.session_state.viewed_exp_id = exp["id"]
+            st.markdown(f"**{icon} {exp['mission_name']}**{suffix}  ")
+            cap = f"{started} · `{eid}`"
+            if is_viewing:
+                cap = f"👁 **Shown in panel →** · {cap}"
+            st.caption(cap)
+
+            r = st.columns(4)
+            with r[0]:
+                if st.button("Open", key=f"{key_prefix}open_{eid}", use_container_width=True):
+                    st.session_state.viewed_exp_id = eid
                     st.rerun()
-            with c3:
-                if st.button(
-                    "Rerun",
-                    key=f"{key_prefix}rerun_{exp['id']}",
-                    use_container_width=True,
-                ):
+            with r[1]:
+                if st.button("Rerun", key=f"{key_prefix}rerun_{eid}", use_container_width=True):
                     try:
-                        new_id = _rerun_experiment(exp["id"])
+                        new_id = _rerun_experiment(eid)
                         st.session_state.viewed_exp_id = new_id
                         st.toast(f"Rerun started: {new_id}", icon="🚀")
                         st.rerun()
                     except Exception as e:
                         st.error(f"Could not rerun: {e}")
+            with r[2]:
+                if _experiment_can_resume(state):
+                    help_txt = (
+                        "Start the worker again for this folder (stuck running, failed, or never started). "
+                        "Re-runs the full pipeline in place."
+                    )
+                    if st.button(
+                        "▶ Resume",
+                        key=f"{key_prefix}resume_{eid}",
+                        use_container_width=True,
+                        help=help_txt,
+                    ):
+                        try:
+                            _resume_experiment_worker(eid)
+                            st.toast("Worker started for this run.", icon="▶️")
+                            st.rerun()
+                        except Exception as ex:
+                            st.error(str(ex))
+                else:
+                    st.caption("")
+            with r[3]:
+                if st.button(
+                    "🗑️",
+                    key=f"{key_prefix}del_{eid}",
+                    use_container_width=True,
+                    help="Delete this run from disk",
+                ):
+                    st.session_state.pending_delete_exp = eid
+                    st.rerun()
 
 
 def _render_experiment_history_page() -> None:
@@ -601,15 +699,25 @@ def _render_experiment_history_page() -> None:
     st.subheader("Experiment History")
     st.markdown(
         "Latest runs first. **Open** shows that run on this page (right). "
-        "**Rerun** starts a *new* run with the same mission, description, "
-        "and branching pipeline and selects it in the panel."
+        "**Rerun** clones config into a *new* run. **▶ Resume** starts the worker again "
+        "in the same folder if a run is stuck, failed, or never finished. **🗑️** removes "
+        "that run from disk."
     )
 
     col_list, col_detail = st.columns([2, 3], gap="large")
 
     with col_list:
         st.markdown("##### All runs")
-        _render_experiment_history_cards(key_prefix="histpg_")
+        # Fixed pixel height enables Streamlit’s built-in vertical scroll (see st.container docs).
+        # Keys become classes like st-key-streamlit-<hash>-hist_all_runs, so plain CSS selectors
+        # for st-key-hist_all_runs never matched.
+        with st.container(
+            key="hist_all_runs",
+            border=True,
+            height=560,
+            autoscroll=False,
+        ):
+            _render_experiment_history_cards(key_prefix="histpg_")
 
     with col_detail:
         st.markdown("##### Experiment")
@@ -722,3 +830,5 @@ elif _tab == "runner":
     _render_runner()
 else:
     _render_experiment_history_page()
+
+_maybe_show_delete_dialog()

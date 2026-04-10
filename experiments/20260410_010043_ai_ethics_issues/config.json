@@ -1,0 +1,32 @@
+{
+  "mission_name": "AI Ethics issues",
+  "mission_desc": "AI ethics issues center on the risks of bias, lack of transparency, and privacy violations arising from the development and deployment of automated systems. Major concerns include discrimination against marginalized groups, algorithmic accountability, job displacement, and the concentration of power, requiring, as outlined in the UNESCO recommendation on AI ethics, robust governance to ensure systems serve the public good.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      2
+    ],
+    [
+      "abstraction",
+      2
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      2
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-10T01:00:43.907486",
+  "experiment_id": "20260410_010043_ai_ethics_issues"
+}

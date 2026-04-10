@@ -1,0 +1,32 @@
+{
+  "mission_name": "Health",
+  "mission_desc": "The UN's unwavering commitment to health\nSince the foundation of WHO in 1948, the world has experienced countless public health challenges threatening our health and well-being. However, numerous obstacles have been overcome and remarkable advancements made in medical science, health care and overall population health.\n\nSince the turn of the century, there have been significant improvements in global population health. Child mortality rates have fallen by half, maternal mortality rates have decreased by a third, and the incidence of many infectious diseases such as HIV, tuberculosis (TB), and malaria have dropped.\n\nAdditionally, risks associated with premature deaths from non-communicable diseases (NCDs) and injuries have declined. As a result of these achievements, global life expectancy at birth has increased from 67 years in 2000 to 73.3 years in 2024. These positive outcomes are attributed to several factors such as enhanced access to essential health services and reduced exposure to health risks such as tobacco use, alcohol consumption, and child undernutrition.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      3
+    ],
+    [
+      "analogy",
+      5
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:14:29.506508",
+  "experiment_id": "20260409_211429_health"
+}

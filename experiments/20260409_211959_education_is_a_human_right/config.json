@@ -1,0 +1,32 @@
+{
+  "mission_name": "Education is a Human Right",
+  "mission_desc": "Access to education is more than just a pathway to personal development; it is a basic human right. \n\nWithout education, children's employment and livelihoods remain limited, with significant socio-economic and health impacts.\n\nOne of the UN\u2019s Sustainable Development Goals is to ensure that every child completes primary and secondary school by 2030. Over the past decade, significant gains have been made in improving child and adult literacy rates. Yet, over 244 million children and youth remain out of school globally, with many facing barriers linked to poverty, conflict, and discrimination.\n\nSisilia Writing On Blackboard",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      3
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:19:59.265178",
+  "experiment_id": "20260409_211959_education_is_a_human_right"
+}
