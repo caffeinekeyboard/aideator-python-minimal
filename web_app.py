@@ -13,6 +13,7 @@ Two tabs:
 
 from __future__ import annotations
 
+import ast
 import html as _html
 import json
 import os
@@ -31,7 +32,7 @@ from aideator.engine import IdeaEngine
 from aideator.models import Post, PostType
 from aideator.serialization import dict_to_tree, import_json, tree_to_dict
 from aideator.transitions import get_allowed_children
-from aideator.tree import context as _node_context
+from aideator.tree import build_post, context as _node_context
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -88,6 +89,33 @@ STATE_COLOR = {
     "failed":   "#dc2626",
     "unknown":  "#94a3b8",
 }
+
+# ── Description renderer ──────────────────────────────────────────────────────
+def _render_description(description: str) -> None:
+    """Render a node description.
+
+    The LLM sometimes returns a Python-dict-formatted string like
+    ``{'What is the solution?': '...', 'Why is it a good solution?': '...'}``.
+    When detected, each key is rendered as a bold label followed by its value.
+    Otherwise the description is rendered as plain text.
+    """
+    text = description.strip()
+    parsed: dict | None = None
+    if text.startswith("{"):
+        try:
+            parsed = ast.literal_eval(text)
+            if not isinstance(parsed, dict):
+                parsed = None
+        except (ValueError, SyntaxError):
+            parsed = None
+
+    if parsed:
+        for key, value in parsed.items():
+            st.markdown(f"**{_html.escape(str(key))}**")
+            st.markdown(str(value))
+    else:
+        st.markdown(text)
+
 
 # ── Session state ──────────────────────────────────────────────────────────────
 def _init_state() -> None:
@@ -266,19 +294,57 @@ def _render_builder() -> None:
         st.markdown("##### Idea Tree")
         tree_html, index = _tree_html(root, st.session_state.selected_id, scrollable=True)
         st.markdown(tree_html, unsafe_allow_html=True)
-        st.markdown("<div style='margin-top:8px;'></div>", unsafe_allow_html=True)
-        c_input, c_btn = st.columns([3, 1])
-        with c_input:
-            node_num = st.number_input(
-                "Node number", min_value=1, max_value=len(index),
-                step=1, value=min(st.session_state.node_num, len(index)),
-                label_visibility="collapsed",
-            )
-        with c_btn:
-            if st.button("Select", use_container_width=True):
-                st.session_state.node_num = int(node_num)
-                st.session_state.selected_id = index[int(node_num)].id
+        # ── Node navigation ───────────────────────────────────────────────────
+        total = len(index)
+        # Resolve the number of the currently selected node from the index
+        cur_num = next(
+            (n for n, p in index.items() if p.id == st.session_state.selected_id), 1
+        )
+
+        st.markdown("<div style='margin-top:10px;'></div>", unsafe_allow_html=True)
+
+        # Primary nav: ◀ Prev  |  counter label  |  Next ▶
+        c_prev, c_counter, c_next = st.columns([1, 2, 1])
+        with c_prev:
+            if st.button(
+                "◀ Prev", use_container_width=True,
+                disabled=(cur_num <= 1),
+                help="Select previous node",
+            ):
+                new_num = cur_num - 1
+                st.session_state.node_num    = new_num
+                st.session_state.selected_id = index[new_num].id
                 st.rerun()
+        with c_counter:
+            st.markdown(
+                f'<div style="text-align:center;padding:6px 0;font-size:13px;'
+                f'font-weight:600;opacity:0.7;">node {cur_num} / {total}</div>',
+                unsafe_allow_html=True,
+            )
+        with c_next:
+            if st.button(
+                "Next ▶", use_container_width=True,
+                disabled=(cur_num >= total),
+                help="Select next node",
+            ):
+                new_num = cur_num + 1
+                st.session_state.node_num    = new_num
+                st.session_state.selected_id = index[new_num].id
+                st.rerun()
+
+        # Secondary nav: jump directly to any node by number
+        with st.expander("Jump to node…", expanded=False):
+            c_jump_input, c_jump_btn = st.columns([3, 1])
+            with c_jump_input:
+                jump_num = st.number_input(
+                    "Node number", min_value=1, max_value=total,
+                    step=1, value=cur_num, label_visibility="collapsed",
+                )
+            with c_jump_btn:
+                if st.button("Go", use_container_width=True):
+                    st.session_state.node_num    = int(jump_num)
+                    st.session_state.selected_id = index[int(jump_num)].id
+                    st.rerun()
 
     with col_panel:
         if selected:
@@ -310,16 +376,15 @@ def _render_builder() -> None:
 
             st.markdown(
                 f'<div style="padding:14px 16px;background:#f0f9ff;border-radius:10px;'
-                f'border-left:4px solid {color};margin-bottom:16px;">'
+                f'border-left:4px solid {color};margin-bottom:12px;">'
                 f'<div style="font-size:11px;color:{color};font-weight:700;'
                 f'text-transform:uppercase;letter-spacing:.05em;">{icon} {selected.ptype.value}</div>'
                 f'<div style="font-size:17px;font-weight:700;color:#0f172a;margin-top:4px;">'
                 f'{_html.escape(selected.name)}</div>'
-                f'<div style="font-size:13px;color:#475569;margin-top:8px;line-height:1.6;">'
-                f'{_html.escape(selected.description)}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
+            _render_description(selected.description)
 
         allowed = get_allowed_children(selected.ptype) if selected else []
         if allowed:
@@ -439,6 +504,7 @@ def _launch_experiment(
     mission_name: str,
     mission_desc: str,
     pipeline: list[tuple[PostType, int]],
+    max_concurrent: int = 4,
 ) -> str:
     """Write config, create experiment directory, launch worker subprocess."""
     EXPERIMENTS_DIR.mkdir(exist_ok=True)
@@ -448,11 +514,12 @@ def _launch_experiment(
     exp_dir.mkdir()
 
     config = {
-        "mission_name": mission_name,
-        "mission_desc": mission_desc,
-        "pipeline":     [[pt.value, b] for pt, b in pipeline],
-        "started_at":   datetime.now().isoformat(),
-        "experiment_id": exp_id,
+        "mission_name":    mission_name,
+        "mission_desc":    mission_desc,
+        "pipeline":        [[pt.value, b] for pt, b in pipeline],
+        "started_at":      datetime.now().isoformat(),
+        "experiment_id":   exp_id,
+        "max_concurrent":  max_concurrent,
     }
     (exp_dir / "config.json").write_text(json.dumps(config, indent=2))
     (exp_dir / "status.json").write_text(json.dumps({"state": "starting"}, indent=2))
@@ -460,11 +527,13 @@ def _launch_experiment(
 
     worker = Path(__file__).parent / "experiment_worker.py"
     stderr_log = open(exp_dir / "worker_stderr.log", "w")  # noqa: WPS515
+    env = {**os.environ, "EXPERIMENT_MAX_CONCURRENT": str(max_concurrent)}
     subprocess.Popen(
         [sys.executable, str(worker), str(exp_dir)],
         cwd=str(Path(__file__).parent),
         stdout=subprocess.DEVNULL,
         stderr=stderr_log,
+        env=env,
     )
     return exp_id
 
@@ -479,10 +548,12 @@ def _rerun_experiment(source_exp_id: str) -> str:
     if not raw_pipeline:
         raise ValueError("Saved experiment has no pipeline; cannot rerun.")
     pipeline = [(PostType(pt), int(b)) for pt, b in raw_pipeline]
+    max_concurrent = int(config.get("max_concurrent", 4))
     return _launch_experiment(
         str(config["mission_name"]).strip(),
         str(config["mission_desc"]).strip(),
         pipeline,
+        max_concurrent=max_concurrent,
     )
 
 
@@ -495,13 +566,17 @@ def _resume_experiment_worker(exp_id: str) -> None:
     exp_dir = EXPERIMENTS_DIR / exp_id
     if not (exp_dir / "config.json").exists():
         raise FileNotFoundError(f"No config for experiment {exp_id!r}")
+    config = json.loads((exp_dir / "config.json").read_text())
+    max_concurrent = int(config.get("max_concurrent", 4))
     worker = Path(__file__).parent / "experiment_worker.py"
     stderr_log = open(exp_dir / "worker_stderr.log", "a")  # noqa: WPS515
+    env = {**os.environ, "EXPERIMENT_MAX_CONCURRENT": str(max_concurrent)}
     subprocess.Popen(
         [sys.executable, str(worker), str(exp_dir.resolve())],
         cwd=str(Path(__file__).parent.resolve()),
         stdout=subprocess.DEVNULL,
         stderr=stderr_log,
+        env=env,
     )
 
 
@@ -725,7 +800,9 @@ def _render_experiment_details(exp_id: str) -> None:
 
         results = _read_results(exp_id)
         if results:
-            tab_tree, tab_solutions, tab_dl = st.tabs(["🌳 Tree", "✅ Solutions", "⬇️ Download"])
+            tab_tree, tab_solutions, tab_nodes, tab_dl = st.tabs(
+                ["🌳 Tree", "✅ Solutions", "📋 Node Details", "⬇️ Download"]
+            )
 
             with tab_tree:
                 try:
@@ -744,21 +821,37 @@ def _render_experiment_details(exp_id: str) -> None:
                     sol_icon  = PTYPE_ICON.get(PostType.SOLUTION, "✅")
                     for i, sol in enumerate(sols, 1):
                         safe_sol_name = _html.escape(sol.get("name", ""))
-                        safe_sol_desc = _html.escape(sol.get("description", ""))
                         with st.expander(
                             f"{sol_icon} {i}. {sol.get('name', '')}",
                             expanded=(i <= 3),
                         ):
                             st.markdown(
-                                f'<div style="padding:12px 14px;background:{sol_color}0d;'
-                                f'border-left:3px solid {sol_color};border-radius:6px;">'
-                                f'<div style="font-size:15px;font-weight:700;color:{sol_color};'
-                                f'margin-bottom:8px;">{sol_icon} {safe_sol_name}</div>'
-                                f'<div style="font-size:13px;line-height:1.65;">'
-                                f'{safe_sol_desc}</div>'
-                                f'</div>',
+                                f'<div style="font-size:14px;font-weight:700;'
+                                f'color:{sol_color};margin-bottom:10px;">'
+                                f'{sol_icon} {safe_sol_name}</div>',
                                 unsafe_allow_html=True,
                             )
+                            _render_description(sol.get("description", ""))
+
+            with tab_nodes:
+                try:
+                    root = dict_to_tree(results["tree"])
+                    all_nodes = _all_nodes(root)
+                    st.caption(f"{len(all_nodes)} nodes in this experiment tree")
+                    for num, post, _ in all_nodes:
+                        icon  = PTYPE_ICON.get(post.ptype, "•")
+                        color = PTYPE_COLOR.get(post.ptype, "#333")
+                        with st.expander(f"{icon} {num}. {post.name}", expanded=False):
+                            st.markdown(
+                                f'<span style="font-size:11px;font-weight:700;'
+                                f'color:{color};background:{color}18;'
+                                f'padding:2px 8px;border-radius:10px;">'
+                                f'{post.ptype.value}</span>',
+                                unsafe_allow_html=True,
+                            )
+                            _render_description(post.description)
+                except (KeyError, ValueError) as _err:
+                    st.error(f"Could not load nodes: {_err}")
 
             with tab_dl:
                 st.download_button(
@@ -944,6 +1037,17 @@ def _render_runner() -> None:
                 est = b_goal * b_abs * b_analogy * b_insp * b_solution
                 st.caption(f"Theoretical max solutions: **{est}**")
 
+                st.markdown("**Performance**")
+                max_concurrent = st.slider(
+                    "⚡  Parallel requests",
+                    min_value=1, max_value=16, value=4,
+                    help=(
+                        "Max number of parent nodes processed simultaneously. "
+                        "Higher = faster, but may hit API rate limits. "
+                        "Use 4 for free-tier keys, 8–12 for paid."
+                    ),
+                )
+
                 if st.form_submit_button("🚀 Launch Experiment", type="primary", use_container_width=True):
                     if not mission_name.strip() or not mission_desc.strip():
                         st.error("Mission name and description are required.")
@@ -957,7 +1061,8 @@ def _render_runner() -> None:
                             (PostType.SOLUTION,    b_solution),
                         ]
                         exp_id = _launch_experiment(
-                            mission_name.strip(), mission_desc.strip(), pipeline
+                            mission_name.strip(), mission_desc.strip(), pipeline,
+                            max_concurrent=max_concurrent,
                         )
                         st.session_state.viewed_exp_id = exp_id
                         st.rerun()

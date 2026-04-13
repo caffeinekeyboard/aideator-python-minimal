@@ -19,7 +19,9 @@ from __future__ import annotations
 import logging
 import os
 import random
+import threading
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -179,6 +181,14 @@ def run_creative_pipeline(
 ) -> tuple[Post, list[Post]]:
     """Execute the full abstraction-and-analogy pipeline layer-by-layer.
 
+    LLM calls are parallelised across parent nodes within each layer.
+    Children of the same parent remain sequential so sibling prompts include
+    already-generated siblings for diversity.
+
+    Configure concurrency via env vars:
+      EXPERIMENT_MAX_CONCURRENT      (default 4)
+      EXPERIMENT_INTRA_PARENT_DELAY  (default 0.0)
+
     Returns:
         A tuple of (root mission Post, flat list of SOLUTION Posts).
     """
@@ -193,12 +203,15 @@ def run_creative_pipeline(
         " -> ".join(pt.value.upper() for pt, _ in WORKFLOW_PIPELINE),
     )
 
-    # Start with the root mission as the only node in the current layer
+    max_workers = max(1, int(os.getenv("EXPERIMENT_MAX_CONCURRENT", "4")))
+    intra_delay = max(0.0, float(os.getenv("EXPERIMENT_INTRA_PARENT_DELAY", "0.0")))
+    logger.info("Concurrency: max_workers=%d, intra_parent_delay=%.2fs", max_workers, intra_delay)
+
     current_nodes: list[Post] = [root]
+    log_lock = threading.Lock()
 
     for layer_idx, (target_type, branching_factor) in enumerate(WORKFLOW_PIPELINE, 1):
         total_layers = len(WORKFLOW_PIPELINE)
-        expected = len(current_nodes) * branching_factor
         logger.info(
             "--- Layer %d/%d: %s (branching=%d, parents=%d, expected=%d) ---",
             layer_idx,
@@ -206,32 +219,51 @@ def run_creative_pipeline(
             target_type.value.upper(),
             branching_factor,
             len(current_nodes),
-            expected,
+            len(current_nodes) * branching_factor,
         )
+
+        def _generate_for_parent(
+            parent: Post,
+            _type: PostType = target_type,
+            _b: int = branching_factor,
+            _li: int = layer_idx,
+        ) -> list[Post]:
+            """Generate `branching_factor` children for one parent, sequentially."""
+            results: list[Post] = []
+            for child_num in range(1, _b + 1):
+                with log_lock:
+                    logger.info(
+                        "  Parent '%s' -> %s child %d/%d",
+                        parent.name, _type.value.upper(), child_num, _b,
+                    )
+                new_post = robust_propose_achiever(engine, _type, parent)
+                if new_post is not None:
+                    results.append(new_post)
+                    with log_lock:
+                        logger.info("    -> Generated: '%s'", new_post.name)
+                else:
+                    with log_lock:
+                        logger.warning("    -> Skipped (error or retries exhausted)")
+                if intra_delay > 0:
+                    time.sleep(intra_delay)
+            return results
 
         next_layer: list[Post] = []
 
-        for parent_idx, parent in enumerate(current_nodes, 1):
-            for child_num in range(1, branching_factor + 1):
-                logger.info(
-                    "  [%d/%d] Parent '%s' -> %s child %d/%d",
-                    parent_idx,
-                    len(current_nodes),
-                    parent.name,
-                    target_type.value.upper(),
-                    child_num,
-                    branching_factor,
-                )
-
-                new_post = robust_propose_achiever(engine, target_type, parent)
-                if new_post is not None:
-                    next_layer.append(new_post)
-                    logger.info("    -> Generated: '%s'", new_post.name)
-                else:
-                    logger.warning("    -> Skipped (error or retries exhausted)")
-                delay = experiment_request_delay_seconds()
-                if delay > 0:
-                    time.sleep(delay)
+        if len(current_nodes) == 1:
+            next_layer = _generate_for_parent(current_nodes[0])
+        else:
+            with ThreadPoolExecutor(max_workers=min(max_workers, len(current_nodes))) as executor:
+                futures = {
+                    executor.submit(_generate_for_parent, parent): parent
+                    for parent in current_nodes
+                }
+                for future in as_completed(futures):
+                    try:
+                        posts = future.result()
+                        next_layer.extend(posts)
+                    except Exception as exc:
+                        logger.error("Parent thread error: %s", exc)
 
         if not next_layer:
             logger.error(
@@ -242,10 +274,8 @@ def run_creative_pipeline(
 
         current_nodes = next_layer
 
-    # The final layer contains all SOLUTION nodes (unless the pipeline broke early)
     solutions = [p for p in current_nodes if p.ptype == PostType.SOLUTION]
 
-    # ----- Export full tree to JSON -----
     output_path = "experiment_results.json"
     export_json(root, output_path)
     logger.info("Tree exported to %s", output_path)

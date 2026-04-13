@@ -9,6 +9,16 @@ Reads config.json from the experiment directory and writes:
   - status.json   current state (starting / running / complete / failed)
   - log.jsonl     append-only event log (one JSON object per line)
   - results.json  final tree + solutions list (written only on completion)
+
+Parallelism
+-----------
+LLM calls are parallelised *across parent nodes* within each layer using a
+ThreadPoolExecutor.  Children of the same parent are still generated
+sequentially so that each sibling prompt can include the already-generated
+siblings for diversity.  Configure concurrency via env vars:
+
+  EXPERIMENT_MAX_CONCURRENT      (default 4) — max parallel parent threads
+  EXPERIMENT_INTRA_PARENT_DELAY  (default 0.0) — seconds between sibling calls
 """
 
 from __future__ import annotations
@@ -16,8 +26,10 @@ from __future__ import annotations
 import json
 import os
 import sys
+import threading
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -41,10 +53,17 @@ def _write_status(exp_dir: Path, data: dict) -> None:
     tmp.rename(exp_dir / "status.json")
 
 
-def _append_log(exp_dir: Path, entry: dict) -> None:
+def _append_log(exp_dir: Path, entry: dict, lock: threading.Lock | None = None) -> None:
+    """Append a JSON entry to log.jsonl.  Pass a lock when called from threads."""
     entry.setdefault("time", datetime.now().isoformat())
-    with open(exp_dir / "log.jsonl", "a") as f:
-        f.write(json.dumps(entry) + "\n")
+    line = json.dumps(entry) + "\n"
+    if lock:
+        with lock:
+            with open(exp_dir / "log.jsonl", "a") as f:
+                f.write(line)
+    else:
+        with open(exp_dir / "log.jsonl", "a") as f:
+            f.write(line)
 
 
 # ── Main worker logic ─────────────────────────────────────────────────────────
@@ -73,6 +92,10 @@ def run(exp_dir_str: str) -> None:
     current_nodes = [root]
     nodes_generated = 1
 
+    # Concurrency settings
+    max_workers = max(1, int(os.getenv("EXPERIMENT_MAX_CONCURRENT", "4")))
+    intra_delay = max(0.0, float(os.getenv("EXPERIMENT_INTRA_PARENT_DELAY", "0.0")))
+
     for layer_idx, (target_type, branching) in enumerate(pipeline, 1):
         _write_status(exp_dir, {
             "state": "running",
@@ -89,26 +112,56 @@ def run(exp_dir_str: str) -> None:
             "expected": len(current_nodes) * branching,
         })
 
-        next_layer: list = []
-        for parent in current_nodes:
-            for _ in range(branching):
+        # Shared mutable state accessed from worker threads
+        log_lock = threading.Lock()
+        counter_lock = threading.Lock()
+        nodes_generated_local = [0]  # list so threads can mutate via closure
+
+        def _generate_for_parent(parent, _layer=layer_idx, _type=target_type, _b=branching):
+            """Generate `branching` children for a single parent, sequentially."""
+            results = []
+            for _ in range(_b):
                 try:
-                    post = robust_propose_achiever(engine, target_type, parent)
+                    post = robust_propose_achiever(engine, _type, parent)
                 except Exception as exc:
-                    _append_log(exp_dir, {"event": "error", "message": str(exc)})
+                    _append_log(exp_dir, {"event": "error", "message": str(exc)}, log_lock)
                     continue
                 if post:
-                    next_layer.append(post)
-                    nodes_generated += 1
+                    results.append(post)
+                    with counter_lock:
+                        nodes_generated_local[0] += 1
                     _append_log(exp_dir, {
                         "event": "node",
-                        "layer": layer_idx,
+                        "layer": _layer,
                         "type": post.ptype.value,
                         "name": post.name,
-                    })
-                delay = experiment_request_delay_seconds()
-                if delay > 0:
-                    time.sleep(delay)
+                    }, log_lock)
+                if intra_delay > 0:
+                    time.sleep(intra_delay)
+            return results
+
+        next_layer: list = []
+
+        if len(current_nodes) == 1:
+            # Single parent — no benefit from a thread pool, run inline
+            next_layer = _generate_for_parent(current_nodes[0])
+        else:
+            with ThreadPoolExecutor(max_workers=min(max_workers, len(current_nodes))) as executor:
+                futures = {
+                    executor.submit(_generate_for_parent, parent): parent
+                    for parent in current_nodes
+                }
+                for future in as_completed(futures):
+                    try:
+                        posts = future.result()
+                        next_layer.extend(posts)
+                    except Exception as exc:
+                        _append_log(exp_dir, {
+                            "event": "error",
+                            "message": f"Parent thread failed: {exc}",
+                        }, log_lock)
+
+        nodes_generated += nodes_generated_local[0]
 
         if not next_layer:
             _write_status(exp_dir, {
