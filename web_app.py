@@ -13,6 +13,7 @@ Two tabs:
 
 from __future__ import annotations
 
+import html as _html
 import json
 import os
 import re
@@ -20,15 +21,17 @@ import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 from aideator.engine import IdeaEngine
 from aideator.models import Post, PostType
 from aideator.serialization import dict_to_tree, import_json, tree_to_dict
 from aideator.transitions import get_allowed_children
+from aideator.tree import context as _node_context
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -72,10 +75,18 @@ PTYPE_COLOR: dict[PostType, str] = {
 }
 
 STATE_ICON = {
-    "starting": "🔵",
-    "running":  "🟡",
-    "complete": "✅",
-    "failed":   "❌",
+    "starting": "⟳",
+    "running":  "⟳",
+    "complete": "✓",
+    "failed":   "✗",
+}
+
+STATE_COLOR = {
+    "starting": "#2563eb",
+    "running":  "#2563eb",
+    "complete": "#16a34a",
+    "failed":   "#dc2626",
+    "unknown":  "#94a3b8",
 }
 
 # ── Session state ──────────────────────────────────────────────────────────────
@@ -83,6 +94,7 @@ def _init_state() -> None:
     defaults: dict = {
         "root":          None,   # builder: active tree root
         "selected_id":   None,   # builder: selected node id
+        "node_num":      1,      # builder: last node number chosen
         "engine":        None,   # builder: IdeaEngine instance
         "viewed_exp_id": None,   # runner:  experiment currently on display
     }
@@ -128,41 +140,72 @@ def _tree_html(
     selected_id: str | None = None,
     scrollable: bool = False,
 ) -> tuple[str, dict[int, Post]]:
-    """Render the tree as styled HTML. Returns (html, {num: Post})."""
+    """Render the tree as styled HTML with box-drawing connectors. Returns (html, {num: Post})."""
     index: dict[int, Post] = {}
     rows: list[str] = []
+    counter = [1]
 
-    for num, post, depth in _all_nodes(root):
+    def _row(post: Post, prefix: str, connector: str) -> None:
+        num = counter[0]
+        counter[0] += 1
         index[num] = post
-        icon   = PTYPE_ICON.get(post.ptype, "•")
-        color  = PTYPE_COLOR.get(post.ptype, "#333")
-        is_sel = post.id == selected_id
 
-        indent_px  = depth * 22
-        row_bg     = "background:#dbeafe;border-left:3px solid #2563eb;" if is_sel else ""
-        name_style = "font-weight:700;" if is_sel else "font-weight:400;"
+        icon    = PTYPE_ICON.get(post.ptype, "•")
+        color   = PTYPE_COLOR.get(post.ptype, "#333")
+        is_sel  = post.id == selected_id
+        row_bg  = (
+            "background:#dbeafe;border-left:3px solid var(--primary-color,#2563eb);"
+            if is_sel else ""
+        )
+        name_wt = "font-weight:700;" if is_sel else "font-weight:500;"
+        safe_name = _html.escape(post.name)
+
+        pre_html = (
+            f'<span style="font-family:\'SF Mono\',\'Fira Code\',monospace;'
+            f'font-size:12px;color:#cbd5e1;white-space:pre;flex-shrink:0;">'
+            f'{_html.escape(prefix)}{_html.escape(connector)}'
+            f'</span>'
+        ) if (prefix or connector) else ""
 
         rows.append(
-            f'<div style="display:flex;align-items:center;padding:3px 8px;'
-            f'border-radius:5px;margin:2px 0;{row_bg}">'
-            f'<span style="min-width:{indent_px}px;display:inline-block;"></span>'
-            f'<span style="margin-right:5px;font-size:14px;">{icon}</span>'
+            f'<div style="display:flex;align-items:center;padding:3px 6px;'
+            f'border-radius:5px;margin:1px 0;{row_bg}">'
+            + pre_html +
+            f'<span style="margin-right:6px;font-size:14px;flex-shrink:0;">{icon}</span>'
             f'<span style="font-size:10px;font-weight:700;color:{color};'
             f'background:{color}18;padding:1px 6px;border-radius:3px;'
-            f'margin-right:6px;white-space:nowrap;">{post.ptype.value}</span>'
-            f'<span style="{name_style}font-size:13px;color:#1e293b;">'
-            f'<span style="color:#94a3b8;margin-right:4px;">{num}.</span>'
-            f'{post.name}</span>'
+            f'margin-right:7px;white-space:nowrap;flex-shrink:0;">{post.ptype.value}</span>'
+            f'<span style="{name_wt}font-size:13px;">'
+            f'<span style="opacity:0.4;margin-right:5px;font-size:11px;">{num}</span>'
+            f'{safe_name}'
+            f'</span>'
             f'</div>'
         )
 
-    scroll = "max-height:440px;overflow-y:auto;" if scrollable else ""
-    html = (
-        f'<div style="font-family:\'SF Mono\',\'Fira Code\',monospace;line-height:1.7;'
-        f'padding:10px;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;{scroll}">'
-        + "".join(rows) + "</div>"
+        children = post.achievers
+        for i, child in enumerate(children):
+            is_last = i == len(children) - 1
+            child_connector = "└─ " if is_last else "├─ "
+            # Extend the prefix: last children leave a gap, others leave a vertical bar
+            if not connector:          # root: no continuation indent
+                child_prefix = ""
+            elif connector.startswith("└"):
+                child_prefix = prefix + "   "
+            else:
+                child_prefix = prefix + "│  "
+            _row(child, child_prefix, child_connector)
+
+    _row(root, "", "")
+
+    scroll = "max-height:500px;overflow-y:auto;" if scrollable else ""
+    wrapper = (
+        f'<div style="font-family:system-ui,sans-serif;line-height:1.85;'
+        f'padding:12px 10px;background:var(--secondary-background-color,#f8fafc);'
+        f'border-radius:10px;border:1px solid #e2e8f0;{scroll}">'
+        + "".join(rows)
+        + "</div>"
     )
-    return html, index
+    return wrapper, index
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -196,7 +239,8 @@ def _render_builder() -> None:
             st.markdown("#### Load from File")
             with st.form("load_form"):
                 uploaded = st.file_uploader("Upload a saved JSON tree", type="json")
-                if st.form_submit_button("📂 Load Tree", use_container_width=True) and uploaded:
+                submitted = st.form_submit_button("📂 Load Tree", use_container_width=True)
+                if submitted and uploaded:
                     try:
                         data = json.load(uploaded)
                         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
@@ -210,6 +254,8 @@ def _render_builder() -> None:
                         st.rerun()
                     except Exception as e:
                         st.error(f"Failed to load: {e}")
+                elif submitted:
+                    st.warning("Please upload a JSON file before clicking Load Tree.")
         return
 
     root     = st.session_state.root
@@ -225,10 +271,12 @@ def _render_builder() -> None:
         with c_input:
             node_num = st.number_input(
                 "Node number", min_value=1, max_value=len(index),
-                step=1, value=1, label_visibility="collapsed",
+                step=1, value=min(st.session_state.node_num, len(index)),
+                label_visibility="collapsed",
             )
         with c_btn:
             if st.button("Select", use_container_width=True):
+                st.session_state.node_num = int(node_num)
                 st.session_state.selected_id = index[int(node_num)].id
                 st.rerun()
 
@@ -236,15 +284,39 @@ def _render_builder() -> None:
         if selected:
             color = PTYPE_COLOR.get(selected.ptype, "#333")
             icon  = PTYPE_ICON.get(selected.ptype, "")
+
+            # ── Ancestor breadcrumb ───────────────────────────────────────────
+            try:
+                ancestors = list(reversed(_node_context(selected)))  # root → selected
+            except ValueError:
+                ancestors = [selected]
+            if len(ancestors) > 1:
+                crumb_parts = []
+                for anc in ancestors[:-1]:  # all except selected itself
+                    anc_icon  = PTYPE_ICON.get(anc.ptype, "")
+                    anc_color = PTYPE_COLOR.get(anc.ptype, "#94a3b8")
+                    crumb_parts.append(
+                        f'<span style="color:{anc_color};font-weight:600;font-size:12px;">'
+                        f'{anc_icon} {_html.escape(anc.name)}</span>'
+                    )
+                crumb_html = ' <span style="color:#cbd5e1;font-size:11px;">›</span> '.join(crumb_parts)
+                st.markdown(
+                    f'<div style="font-size:12px;margin-bottom:6px;opacity:0.8;">'
+                    f'{crumb_html}'
+                    f' <span style="color:#cbd5e1;font-size:11px;">›</span>'
+                    f'</div>',
+                    unsafe_allow_html=True,
+                )
+
             st.markdown(
                 f'<div style="padding:14px 16px;background:#f0f9ff;border-radius:10px;'
                 f'border-left:4px solid {color};margin-bottom:16px;">'
                 f'<div style="font-size:11px;color:{color};font-weight:700;'
                 f'text-transform:uppercase;letter-spacing:.05em;">{icon} {selected.ptype.value}</div>'
                 f'<div style="font-size:17px;font-weight:700;color:#0f172a;margin-top:4px;">'
-                f'{selected.name}</div>'
+                f'{_html.escape(selected.name)}</div>'
                 f'<div style="font-size:13px;color:#475569;margin-top:8px;line-height:1.6;">'
-                f'{selected.description}</div>'
+                f'{_html.escape(selected.description)}</div>'
                 f'</div>',
                 unsafe_allow_html=True,
             )
@@ -284,9 +356,7 @@ def _render_builder() -> None:
             use_container_width=True,
         )
         if st.button("🗑️ Reset Tree", use_container_width=True):
-            st.session_state.root        = None
-            st.session_state.selected_id = None
-            st.session_state.engine      = None
+            st.session_state.pending_reset_tree = True
             st.rerun()
 
 
@@ -321,6 +391,7 @@ def _list_experiments() -> list[dict]:
             "id":              exp_dir.name,
             "path":            str(exp_dir),
             "mission_name":    config.get("mission_name", "Unknown"),
+            "mission_desc":    config.get("mission_desc", ""),
             "started_at":      config.get("started_at", ""),
             "state":           status.get("state", "unknown"),
             "total_solutions": status.get("total_solutions", 0),
@@ -388,9 +459,12 @@ def _launch_experiment(
     (exp_dir / "log.jsonl").write_text("")
 
     worker = Path(__file__).parent / "experiment_worker.py"
+    stderr_log = open(exp_dir / "worker_stderr.log", "w")  # noqa: WPS515
     subprocess.Popen(
         [sys.executable, str(worker), str(exp_dir)],
         cwd=str(Path(__file__).parent),
+        stdout=subprocess.DEVNULL,
+        stderr=stderr_log,
     )
     return exp_id
 
@@ -422,9 +496,12 @@ def _resume_experiment_worker(exp_id: str) -> None:
     if not (exp_dir / "config.json").exists():
         raise FileNotFoundError(f"No config for experiment {exp_id!r}")
     worker = Path(__file__).parent / "experiment_worker.py"
+    stderr_log = open(exp_dir / "worker_stderr.log", "a")  # noqa: WPS515
     subprocess.Popen(
         [sys.executable, str(worker), str(exp_dir.resolve())],
         cwd=str(Path(__file__).parent.resolve()),
+        stdout=subprocess.DEVNULL,
+        stderr=stderr_log,
     )
 
 
@@ -445,6 +522,7 @@ def _delete_experiment_dialog(exp_id: str) -> None:
         if st.button("Delete permanently", type="primary", use_container_width=True):
             _delete_experiment_dir(exp_id)
             st.session_state.pop("pending_delete_exp", None)
+            st.toast("Experiment deleted.", icon="🗑️")
             st.rerun()
     with c2:
         if st.button("Cancel", use_container_width=True):
@@ -453,7 +531,7 @@ def _delete_experiment_dialog(exp_id: str) -> None:
 
 
 def _experiment_can_resume(state: str) -> bool:
-    return state in ("starting", "running", "failed")
+    return state in ("starting", "failed")
 
 
 def _maybe_show_delete_dialog() -> None:
@@ -463,55 +541,117 @@ def _maybe_show_delete_dialog() -> None:
         _delete_experiment_dialog(exp_id)
 
 
-# ── Live experiment progress (periodic fragment rerun, no parent window reload) ─
+@st.dialog("Reset tree?")
+def _reset_tree_dialog() -> None:
+    st.markdown("Discard the current idea tree? **This cannot be undone.**")
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("Reset", type="primary", use_container_width=True):
+            st.session_state.root        = None
+            st.session_state.selected_id = None
+            st.session_state.node_num    = 1
+            st.session_state.engine      = None
+            st.session_state.pop("pending_reset_tree", None)
+            st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True):
+            st.session_state.pop("pending_reset_tree", None)
+            st.rerun()
+
+
+def _maybe_show_reset_dialog() -> None:
+    if st.session_state.get("pending_reset_tree"):
+        _reset_tree_dialog()
+
+
+# ── Live experiment progress (autorefresh full rerun — avoids orphaned st.fragment) ─
+
+def _should_autorefresh_running_experiment(tab: str) -> bool:
+    """True when the main view is showing a run that is still active (poll disk every few seconds)."""
+    if tab not in ("runner", "history"):
+        return False
+    vid = st.session_state.get("viewed_exp_id")
+    if not vid or not (EXPERIMENTS_DIR / vid).exists():
+        return False
+    status = _read_status(vid)
+    return status.get("state") in ("starting", "running")
+
 
 def _render_experiment_live_progress(exp_id: str) -> None:
-    """Poll status/log while worker runs; uses st.fragment instead of JS page reload."""
+    """Show status/log while worker runs; parent script reruns on an interval via st_autorefresh."""
+    status = _read_status(exp_id)
+    state = status.get("state", "unknown")
+    if state not in ("starting", "running"):
+        return
 
-    @st.fragment(run_every=timedelta(seconds=4))
-    def _live_poll() -> None:
-        status = _read_status(exp_id)
-        state = status.get("state", "unknown")
-        if state not in ("starting", "running"):
-            st.rerun()
-            return
+    layer = status.get("layer", 0)
+    total_lay = status.get("total_layers", 1)
+    nodes = status.get("nodes_generated", 0)
+    cur_type = status.get("current_type") or "—"
+    progress = layer / total_lay if total_lay else 0
 
-        layer = status.get("layer", 0)
-        total_lay = status.get("total_layers", 1)
-        nodes = status.get("nodes_generated", 0)
-        cur_type = status.get("current_type") or "—"
-        progress = layer / total_lay if total_lay else 0
+    st.progress(progress, text=f"Layer {layer} / {total_lay}  ·  {cur_type.upper()}")
+    st.caption(f"Nodes generated so far: **{nodes}**")
 
-        st.progress(progress, text=f"Layer {layer} / {total_lay}  ·  {cur_type.upper()}")
-        st.caption(f"Nodes generated so far: **{nodes}**")
+    log_entries = _read_log(exp_id)
+    node_entries = [e for e in log_entries if e.get("event") == "node"]
 
-        log_entries = _read_log(exp_id)
-        node_entries = [e for e in log_entries if e.get("event") == "node"]
+    if node_entries:
+        # ── Type count breakdown ──────────────────────────────────────────────
+        type_counts: dict[str, int] = {}
+        for e in node_entries:
+            t = e.get("type", "?")
+            type_counts[t] = type_counts.get(t, 0) + 1
 
-        if node_entries:
-            st.markdown("**Recently generated nodes**")
-            rows = []
-            for e in node_entries[-30:]:
-                ptype_str = e.get("type", "")
-                try:
-                    icon = PTYPE_ICON.get(PostType(ptype_str), "•")
-                    color = PTYPE_COLOR.get(PostType(ptype_str), "#333")
-                except ValueError:
-                    icon, color = "•", "#333"
-                rows.append(
-                    f'<div style="padding:3px 8px;font-size:13px;">'
-                    f'{icon} <span style="font-size:10px;color:{color};font-weight:700;'
-                    f'background:{color}18;padding:1px 5px;border-radius:3px;">'
-                    f'{ptype_str}</span> {e.get("name", "")}</div>'
-                )
-            st.markdown(
-                '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;'
-                'max-height:280px;overflow-y:auto;padding:6px;">'
-                + "".join(rows) + "</div>",
-                unsafe_allow_html=True,
+        badge_html = ""
+        for ptype_str, cnt in type_counts.items():
+            try:
+                icon  = PTYPE_ICON.get(PostType(ptype_str), "•")
+                color = PTYPE_COLOR.get(PostType(ptype_str), "#333")
+            except ValueError:
+                icon, color = "•", "#888"
+            badge_html += (
+                f'<span style="display:inline-flex;align-items:center;gap:4px;'
+                f'font-size:11px;font-weight:700;color:{color};'
+                f'background:{color}18;padding:3px 8px;border-radius:12px;'
+                f'border:1px solid {color}30;">'
+                f'{icon} {ptype_str} <span style="opacity:0.7;">×{cnt}</span>'
+                f'</span>'
             )
+        st.markdown(
+            f'<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 14px;">'
+            f'{badge_html}</div>',
+            unsafe_allow_html=True,
+        )
 
-    _live_poll()
+        # ── Live node feed ────────────────────────────────────────────────────
+        st.markdown("**Live node feed**")
+        rows = []
+        for e in reversed(node_entries[-40:]):
+            ptype_str = e.get("type", "")
+            try:
+                icon  = PTYPE_ICON.get(PostType(ptype_str), "•")
+                color = PTYPE_COLOR.get(PostType(ptype_str), "#333")
+            except ValueError:
+                icon, color = "•", "#333"
+            safe_name = _html.escape(e.get("name", ""))
+            rows.append(
+                f'<div style="display:flex;align-items:center;gap:7px;'
+                f'padding:4px 8px;border-bottom:1px solid #f1f5f9;font-size:13px;">'
+                f'<span style="font-size:14px;flex-shrink:0;">{icon}</span>'
+                f'<span style="font-size:10px;font-weight:700;color:{color};'
+                f'background:{color}18;padding:1px 5px;border-radius:3px;'
+                f'white-space:nowrap;flex-shrink:0;">{ptype_str}</span>'
+                f'<span style="color:inherit;">{safe_name}</span>'
+                f'</div>'
+            )
+        st.markdown(
+            '<div style="background:var(--secondary-background-color,#f8fafc);'
+            'border:1px solid #e2e8f0;border-radius:8px;'
+            'max-height:260px;overflow-y:auto;">'
+            + "".join(rows) + "</div>",
+            unsafe_allow_html=True,
+        )
 
 
 # ── Experiment detail view ────────────────────────────────────────────────────
@@ -528,12 +668,16 @@ def _render_experiment_details(exp_id: str) -> None:
 
     # ── Header ────────────────────────────────────────────────────────────────
     badge = STATE_ICON.get(state, "⚪")
+    badge_color = STATE_COLOR.get(state, STATE_COLOR["unknown"])
     started = config.get("started_at", "")[:19].replace("T", " ")
     st.markdown(
-        f'<div style="padding:12px 16px;background:#f8fafc;border-radius:10px;'
-        f'border:1px solid #e2e8f0;margin-bottom:16px;">'
-        f'<div style="font-size:18px;font-weight:700;color:#0f172a;">'
-        f'{badge} {config["mission_name"]}</div>'
+        f'<div style="padding:12px 16px;background:var(--secondary-background-color,#f8fafc);'
+        f'border-radius:10px;border:1px solid #e2e8f0;margin-bottom:16px;">'
+        f'<div style="font-size:18px;font-weight:700;">'
+        f'{config["mission_name"]}'
+        f'<span style="font-size:12px;font-weight:700;color:{badge_color};'
+        f'background:{badge_color}18;padding:2px 9px;border-radius:10px;margin-left:10px;">'
+        f'{badge} {state}</span></div>'
         f'<div style="font-size:12px;color:#94a3b8;margin-top:4px;">'
         f'Started: {started} &nbsp;·&nbsp; ID: <code>{exp_id}</code></div>'
         f'</div>',
@@ -564,7 +708,7 @@ def _render_experiment_details(exp_id: str) -> None:
             st.session_state.pending_delete_exp = exp_id
             st.rerun()
 
-    # ── Running: live progress (fragment refresh — avoids full-page reload loops) ─
+    # ── Running: live progress (refreshed by st_autorefresh when this view is active) ─
     if state in ("starting", "running"):
         _render_experiment_live_progress(exp_id)
 
@@ -584,18 +728,37 @@ def _render_experiment_details(exp_id: str) -> None:
             tab_tree, tab_solutions, tab_dl = st.tabs(["🌳 Tree", "✅ Solutions", "⬇️ Download"])
 
             with tab_tree:
-                root = dict_to_tree(results["tree"])
-                html, _ = _tree_html(root, scrollable=True)
-                st.markdown(html, unsafe_allow_html=True)
+                try:
+                    root = dict_to_tree(results["tree"])
+                    html, _ = _tree_html(root, scrollable=True)
+                    st.markdown(html, unsafe_allow_html=True)
+                except (KeyError, ValueError) as _err:
+                    st.error(f"Could not render tree: {_err}")
 
             with tab_solutions:
                 sols = results.get("solutions", [])
                 if not sols:
                     st.warning("No solutions found.")
                 else:
+                    sol_color = PTYPE_COLOR.get(PostType.SOLUTION, "#1B5E20")
+                    sol_icon  = PTYPE_ICON.get(PostType.SOLUTION, "✅")
                     for i, sol in enumerate(sols, 1):
-                        with st.expander(f"{i}. {sol['name']}", expanded=(i <= 3)):
-                            st.markdown(sol["description"])
+                        safe_sol_name = _html.escape(sol.get("name", ""))
+                        safe_sol_desc = _html.escape(sol.get("description", ""))
+                        with st.expander(
+                            f"{sol_icon} {i}. {sol.get('name', '')}",
+                            expanded=(i <= 3),
+                        ):
+                            st.markdown(
+                                f'<div style="padding:12px 14px;background:{sol_color}0d;'
+                                f'border-left:3px solid {sol_color};border-radius:6px;">'
+                                f'<div style="font-size:15px;font-weight:700;color:{sol_color};'
+                                f'margin-bottom:8px;">{sol_icon} {safe_sol_name}</div>'
+                                f'<div style="font-size:13px;line-height:1.65;">'
+                                f'{safe_sol_desc}</div>'
+                                f'</div>',
+                                unsafe_allow_html=True,
+                            )
 
             with tab_dl:
                 st.download_button(
@@ -614,6 +777,12 @@ def _render_experiment_details(exp_id: str) -> None:
         if tb:
             with st.expander("Traceback"):
                 st.code(tb, language="python")
+        stderr_log = EXPERIMENTS_DIR / exp_id / "worker_stderr.log"
+        if stderr_log.exists():
+            content = stderr_log.read_text().strip()
+            if content:
+                with st.expander("Worker output (stderr)"):
+                    st.code(content)
 
     else:
         st.info(f"Status: {state}")
@@ -638,10 +807,21 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
         elif state == "running" or state == "starting":
             suffix = f" · layer {exp['layer']}/{exp['total_layers']}"
 
+        badge_color = STATE_COLOR.get(state, STATE_COLOR["unknown"])
         is_viewing = exp["id"] == st.session_state.get("viewed_exp_id")
         eid = exp["id"]
         with st.container(border=True):
-            st.markdown(f"**{icon} {exp['mission_name']}**{suffix}  ")
+            st.markdown(
+                f'<span style="font-weight:700;">{exp["mission_name"]}</span>'
+                f'<span style="font-size:11px;font-weight:700;color:{badge_color};'
+                f'background:{badge_color}18;padding:1px 7px;border-radius:10px;'
+                f'margin-left:8px;">{icon} {state}{suffix}</span>',
+                unsafe_allow_html=True,
+            )
+            desc = exp.get("mission_desc", "")
+            if desc:
+                preview = desc[:90] + ("…" if len(desc) > 90 else "")
+                st.caption(preview)
             cap = f"{started} · `{eid}`"
             if is_viewing:
                 cap = f"👁 **Shown in panel →** · {cap}"
@@ -715,7 +895,6 @@ def _render_experiment_history_page() -> None:
             key="hist_all_runs",
             border=True,
             height=560,
-            autoscroll=False,
         ):
             _render_experiment_history_cards(key_prefix="histpg_")
 
@@ -802,14 +981,14 @@ _init_state()
 
 st.markdown(
     "<h2 style='margin-bottom:0;'>🌳 Aideator</h2>"
-    "<p style='color:#64748b;margin-top:4px;margin-bottom:24px;'>"
+    "<p style='color:#64748b;margin-top:4px;margin-bottom:8px;'>"
     "LLM-powered idea tree builder using structured deliberation.</p>",
     unsafe_allow_html=True,
 )
 
-# Use radio (not st.tabs) so only the selected view runs — avoids running Builder +
-# Runner + History on every rerun (fragments, LLM init side effects, etc.).
-_tab = st.radio(
+# Use segmented_control (not st.tabs) so only the selected view runs — avoids running
+# Builder + Runner + History on every rerun (LLM init side effects, etc.).
+_tab = st.segmented_control(
     "Main view",
     options=("builder", "runner", "history"),
     format_func=lambda x: (
@@ -819,10 +998,16 @@ _tab = st.radio(
         if x == "runner"
         else "📜  Experiment History"
     ),
-    horizontal=True,
     label_visibility="collapsed",
     key="main_view_tab",
+    default="builder",
 )
+st.divider()
+
+_tab = _tab or "builder"
+
+if _should_autorefresh_running_experiment(_tab):
+    st_autorefresh(interval=4_000, limit=None, key="running_exp_poll")
 
 if _tab == "builder":
     _render_builder()
@@ -832,3 +1017,4 @@ else:
     _render_experiment_history_page()
 
 _maybe_show_delete_dialog()
+_maybe_show_reset_dialog()
