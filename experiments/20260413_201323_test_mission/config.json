@@ -1,0 +1,33 @@
+{
+  "mission_name": "Test mission",
+  "mission_desc": "Develop novel methods to store grid-scale renewable energy that do not rely on rare-earth lithium-ion batteries, targeting cost, scalability, and environmental sustainability.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      1
+    ],
+    [
+      "abstraction",
+      1
+    ],
+    [
+      "analogy",
+      1
+    ],
+    [
+      "inspiration",
+      1
+    ],
+    [
+      "solution",
+      4
+    ]
+  ],
+  "started_at": "2026-04-13T20:13:23.933077",
+  "experiment_id": "20260413_201323_test_mission",
+  "max_concurrent": 6
+}

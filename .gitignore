@@ -20,7 +20,3 @@ streamlit.log
 docker-compose.yml
 .dockerignore
 Dockerfile
-*.json
-*.jsonl
-!experiments/
-!experiments/**

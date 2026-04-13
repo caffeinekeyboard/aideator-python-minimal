@@ -42,6 +42,63 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# ── Global CSS ─────────────────────────────────────────────────────────────────
+st.markdown(
+    """
+<style>
+/* ── Card component ──────────────────────────────────────────────────────── */
+.aid-card {
+    background: var(--secondary-background-color, #f8fafc);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+}
+
+/* ── Metric pill ─────────────────────────────────────────────────────────── */
+.metric-pill {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 20px;
+    background: var(--secondary-background-color, #f8fafc);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    min-width: 100px;
+}
+.metric-pill .mp-val {
+    font-size: 26px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+.metric-pill .mp-lbl {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-top: 4px;
+}
+
+/* ── Section heading ─────────────────────────────────────────────────────── */
+.aid-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 10px;
+    margin-top: 4px;
+}
+
+/* ── Subtle dividers ─────────────────────────────────────────────────────── */
+hr { border-color: #e2e8f0 !important; margin: 14px 0 !important; }
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
 # ── Constants ──────────────────────────────────────────────────────────────────
 EXPERIMENTS_DIR  = Path(__file__).parent / "experiments"
 SAVED_TREES_DIR  = Path(__file__).parent / "saved_trees"
@@ -304,7 +361,7 @@ def _render_builder() -> None:
         col_new, col_load = st.columns(2, gap="large")
 
         with col_new:
-            st.markdown("#### New Mission")
+            st.markdown('<div class="aid-section-title">New Mission</div>', unsafe_allow_html=True)
             with st.form("new_mission_form"):
                 name = st.text_input("Mission name", placeholder="e.g. Urban Transportation Reform")
                 desc = st.text_area("Description", placeholder="Scope, constraints, goals…", height=120)
@@ -323,7 +380,7 @@ def _render_builder() -> None:
                             st.error(f"Failed to initialise engine: {e}")
 
         with col_load:
-            st.markdown("#### Load Tree")
+            st.markdown('<div class="aid-section-title">Load Tree</div>', unsafe_allow_html=True)
 
             # ── Saved trees ───────────────────────────────────────────────────
             saved = _list_saved_trees()
@@ -384,7 +441,7 @@ def _render_builder() -> None:
     col_tree, col_panel = st.columns([3, 2], gap="large")
 
     with col_tree:
-        st.markdown("##### Idea Tree")
+        st.markdown('<div class="aid-section-title">Idea Tree</div>', unsafe_allow_html=True)
         tree_html, index = _tree_html(root, st.session_state.selected_id, scrollable=True)
         st.markdown(tree_html, unsafe_allow_html=True)
         # ── Node navigation ───────────────────────────────────────────────────
@@ -481,7 +538,7 @@ def _render_builder() -> None:
 
         allowed = get_allowed_children(selected.ptype) if selected else []
         if allowed:
-            st.markdown("**Add a child node**")
+            st.markdown('<div class="aid-section-title" style="margin-top:16px;">Add a child node</div>', unsafe_allow_html=True)
             child_type = st.selectbox(
                 "Child type", options=allowed,
                 format_func=lambda t: f"{PTYPE_ICON.get(t, '')}  {t.value}",
@@ -1330,8 +1387,8 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
 
 def _render_experiment_history_page() -> None:
     """List on the left; **Open** shows the same experiment details on the right."""
+    st.markdown('<div class="aid-section-title">Experiment History</div>', unsafe_allow_html=True)
     st.caption("Runs live under `experiments/`. **Open** loads progress, results, and downloads in the panel beside the list.")
-    st.subheader("Experiment History")
 
     viewed_id = st.session_state.get("viewed_exp_id")
     collapsed = st.session_state.get("hist_runs_collapsed", False)
@@ -1361,7 +1418,7 @@ def _render_experiment_history_page() -> None:
         col_list, col_detail = st.columns([2, 3], gap="large")
 
         with col_list:
-            st.markdown("##### All runs")
+            st.markdown('<div class="aid-section-title">All runs</div>', unsafe_allow_html=True)
             with st.container(
                 key="hist_all_runs",
                 border=True,
@@ -1370,7 +1427,7 @@ def _render_experiment_history_page() -> None:
                 _render_experiment_history_cards(key_prefix="histpg_")
 
         with col_detail:
-            st.markdown("##### Experiment")
+            st.markdown('<div class="aid-section-title">Experiment</div>', unsafe_allow_html=True)
             if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
                 _render_experiment_details(viewed_id)
             else:
@@ -1382,6 +1439,7 @@ def _render_experiment_history_page() -> None:
 # ── Runner tab ────────────────────────────────────────────────────────────────
 
 def _render_runner() -> None:
+    st.markdown('<div class="aid-section-title">Experiment Runner</div>', unsafe_allow_html=True)
     st.caption(
         "Experiments run as **background processes** and persist across page refreshes "
         "and tab switches. Results are saved to `experiments/` automatically."
@@ -1458,6 +1516,125 @@ def _render_runner() -> None:
             )
 
 
+# ── Metrics page ─────────────────────────────────────────────────────────────
+
+def _render_metrics() -> None:
+    """Experiment Metrics — aggregate stats across all runs."""
+    experiments = _list_experiments()
+
+    # ── Aggregate numbers ─────────────────────────────────────────────────────
+    total_runs      = len(experiments)
+    complete_runs   = [e for e in experiments if e["state"] == "complete"]
+    failed_runs     = [e for e in experiments if e["state"] == "failed"]
+    running_runs    = [e for e in experiments if e["state"] in ("starting", "running")]
+    total_solutions = sum(e.get("total_solutions", 0) for e in complete_runs)
+    total_nodes     = sum(e.get("nodes_generated", 0) for e in complete_runs)
+    avg_solutions   = (total_solutions / len(complete_runs)) if complete_runs else 0
+
+    # ── Summary pills ─────────────────────────────────────────────────────────
+    st.markdown(
+        '<div class="aid-section-title">Overview</div>',
+        unsafe_allow_html=True,
+    )
+    pill_cols = st.columns(6)
+    _pills = [
+        (total_runs,              "Total Runs"),
+        (len(complete_runs),      "Completed"),
+        (len(running_runs),       "Running"),
+        (len(failed_runs),        "Failed"),
+        (total_solutions,         "Solutions"),
+        (f"{avg_solutions:.1f}",  "Avg / Run"),
+    ]
+    for col, (val, lbl) in zip(pill_cols, _pills):
+        col.markdown(
+            f'<div class="metric-pill">'
+            f'<span class="mp-val">{val}</span>'
+            f'<span class="mp-lbl">{lbl}</span>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if not experiments:
+        st.info("No experiments found. Launch one from the **Runner** page.")
+        return
+
+    # ── Per-run table ─────────────────────────────────────────────────────────
+    st.markdown(
+        '<div class="aid-section-title">All Runs</div>',
+        unsafe_allow_html=True,
+    )
+
+    rows_html = ""
+    for e in experiments:
+        state      = e["state"]
+        badge_col  = STATE_COLOR.get(state, STATE_COLOR["unknown"])
+        icon       = STATE_ICON.get(state, "⚪")
+        started    = e.get("started_at", "")[:16].replace("T", " ")
+        sols       = e.get("total_solutions", "—") if state == "complete" else "—"
+        nodes      = e.get("nodes_generated", "—") if state == "complete" else "—"
+        name       = _html.escape(e["mission_name"])
+        rows_html += (
+            f'<tr>'
+            f'<td style="padding:9px 12px;font-weight:600;">{name}</td>'
+            f'<td style="padding:9px 12px;">'
+            f'<span style="font-size:11px;font-weight:700;color:{badge_col};'
+            f'background:{badge_col}18;padding:2px 8px;border-radius:8px;">'
+            f'{icon} {state}</span></td>'
+            f'<td style="padding:9px 12px;color:#64748b;font-size:12px;">{started}</td>'
+            f'<td style="padding:9px 12px;text-align:center;">{nodes}</td>'
+            f'<td style="padding:9px 12px;text-align:center;">{sols}</td>'
+            f'</tr>'
+        )
+
+    st.markdown(
+        '<div style="overflow-x:auto;">'
+        '<table style="width:100%;border-collapse:collapse;font-size:13px;'
+        'background:var(--secondary-background-color,#f8fafc);'
+        'border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">'
+        '<thead><tr style="background:#0f172a;color:#94a3b8;">'
+        '<th style="padding:10px 12px;text-align:left;font-weight:700;font-size:11px;'
+        'text-transform:uppercase;letter-spacing:.06em;">Mission</th>'
+        '<th style="padding:10px 12px;text-align:left;font-weight:700;font-size:11px;'
+        'text-transform:uppercase;letter-spacing:.06em;">Status</th>'
+        '<th style="padding:10px 12px;text-align:left;font-weight:700;font-size:11px;'
+        'text-transform:uppercase;letter-spacing:.06em;">Started</th>'
+        '<th style="padding:10px 12px;text-align:center;font-weight:700;font-size:11px;'
+        'text-transform:uppercase;letter-spacing:.06em;">Nodes</th>'
+        '<th style="padding:10px 12px;text-align:center;font-weight:700;font-size:11px;'
+        'text-transform:uppercase;letter-spacing:.06em;">Solutions</th>'
+        '</tr></thead>'
+        f'<tbody>{rows_html}</tbody>'
+        '</table></div>',
+        unsafe_allow_html=True,
+    )
+
+    # ── Solutions by run bar chart ────────────────────────────────────────────
+    if complete_runs:
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="aid-section-title">Solutions per Completed Run</div>',
+            unsafe_allow_html=True,
+        )
+        chart_data = {
+            e["mission_name"][:28] + ("…" if len(e["mission_name"]) > 28 else ""): e.get("total_solutions", 0)
+            for e in complete_runs
+        }
+        st.bar_chart(chart_data, use_container_width=True, height=220)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            '<div class="aid-section-title">Nodes Generated per Completed Run</div>',
+            unsafe_allow_html=True,
+        )
+        node_data = {
+            e["mission_name"][:28] + ("…" if len(e["mission_name"]) > 28 else ""): e.get("nodes_generated", 0)
+            for e in complete_runs
+        }
+        st.bar_chart(node_data, use_container_width=True, height=220)
+
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1475,14 +1652,13 @@ st.markdown(
 # Builder + Runner + History on every rerun (LLM init side effects, etc.).
 _tab = st.segmented_control(
     "Main view",
-    options=("builder", "runner", "history"),
-    format_func=lambda x: (
-        "🌳  Interactive Builder"
-        if x == "builder"
-        else "🚀  Experiment Runner"
-        if x == "runner"
-        else "📜  Experiment History"
-    ),
+    options=("builder", "runner", "history", "metrics"),
+    format_func=lambda x: {
+        "builder": "🌳  Builder",
+        "runner":  "🚀  Runner",
+        "history": "📜  History",
+        "metrics": "📊  Metrics",
+    }[x],
     label_visibility="collapsed",
     key="main_view_tab",
     default="builder",
@@ -1498,8 +1674,10 @@ if _tab == "builder":
     _render_builder()
 elif _tab == "runner":
     _render_runner()
-else:
+elif _tab == "history":
     _render_experiment_history_page()
+elif _tab == "metrics":
+    _render_metrics()
 
 _maybe_show_delete_dialog()
 _maybe_show_reset_dialog()
