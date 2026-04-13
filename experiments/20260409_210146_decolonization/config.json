@@ -1,0 +1,32 @@
+{
+  "mission_name": "Decolonization",
+  "mission_desc": "When the United Nations was founded in 1945, some 750 million people, nearly a third of the world's population, lived in Territories that were dependent on colonial Powers. Today, there are  17 Non-Self-Governing Territories remaining and fewer than 2 million people live in them. The wave of decolonization, which changed the face of the planet, was born with the UN and represents the world body\u2019s first great success.\n\nAs a result of decolonization many Territories became independent and joined the UN.\n\nThe international trusteeship system was established by the UN Charter. Affirming the principle of self-determination, the Charter describes the responsibility of States for territories under their administration as \u201ca sacred trust\u201d in which the interests of their inhabitants are paramount",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      3
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:01:46.209317",
+  "experiment_id": "20260409_210146_decolonization"
+}

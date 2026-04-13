@@ -16,9 +16,20 @@ GEMINI_API_KEY="your-api-key-here"
 
 ## Quick Start
 
+**CLI:**
 ```bash
 python main.py
 ```
+
+**Web UI:**
+```bash
+.venv/bin/python -m streamlit run web_app.py
+```
+Opens at `http://localhost:7500` (see `.streamlit/config.toml`; override with `--server.port`).
+
+Two tabs:
+- **Interactive Builder** — build an idea tree node-by-node, guided by the LLM
+- **Experiment Runner** — automated breadth-first pipeline with live progress and configurable branching
 
 You'll be prompted to create a new mission or load an existing tree from a JSON file. Choose `n` for new, then provide a name and description for your deliberation.
 
@@ -87,7 +98,7 @@ When you add a child post, Aideator sends the full ancestor context to the LLM, 
 
 (n)ew mission or (l)oad from file? n
 Mission name: Urban Transportation Reform
-Mission description: How can our city reduce traffic congestion while improving public transit access for all residents?
+Mission description:  can our city reduce traffic congestion while improving public transit access for all residents?How
 
 Mission created: "Urban Transportation Reform"
 
@@ -127,8 +138,53 @@ aideator/
   serialization.py   JSON import/export and tree display
   cli.py             Interactive command-line interface
 main.py              Entry point
+web_app.py           Streamlit web UI (Interactive Builder + Experiment Runner)
 experiment_runner.py Automated large-scale ideation experiment
+tests/
+  test_tree.py           Tree operations (context, find_first, build_post, describe_context)
+  test_transitions.py    Transition graph lock-in tests
+  test_llm_parsing.py    JSON parsing (parse_response, extract candidates, clean)
+  test_engine.py         IdeaEngine with fake LLM stub
+  test_serialization.py  Import/export and round-trip integrity
+  test_prompts.py        Prompt structure and content invariants
+  test_print_tree.py     CLI tree display and preorder index mapping
 ```
+
+---
+
+## Tests
+
+The test suite contains **109 tests** across 7 files. All tests are network-free — no `GEMINI_API_KEY` required.
+
+### Run all tests
+
+```bash
+python -m pytest tests/ -v
+```
+
+### Run a specific file
+
+```bash
+python -m pytest tests/test_tree.py -v
+python -m pytest tests/test_engine.py -v
+python -m pytest tests/test_llm_parsing.py -v
+python -m pytest tests/test_serialization.py -v
+python -m pytest tests/test_prompts.py -v
+python -m pytest tests/test_transitions.py -v
+python -m pytest tests/test_print_tree.py -v
+```
+
+### Test coverage summary
+
+| File | Tests | What it covers |
+|------|-------|----------------|
+| `test_tree.py` | 26 | `context()`, `find_first()`, `build_post()` dedup, `describe_context()` |
+| `test_llm_parsing.py` | 20 | Fenced/raw JSON extraction, trailing commas, type field, error cases |
+| `test_engine.py` | 11 | Mission creation, child proposal, invalid transitions, type mismatch, dedup |
+| `test_serialization.py` | 18 | `tree_to_dict`, `dict_to_tree`, round-trip integrity, friendly errors, file I/O |
+| `test_prompts.py` | 25 | Preamble, context inclusion rules, JSON template, per-type prompt checks |
+| `test_transitions.py` | 9 | Exact edge set, ACTION_NAMES coverage, validate/reject transitions |
+| `test_print_tree.py` | 6 | Preorder numbering, index mapping, output labels |
 
 ---
 
@@ -240,6 +296,20 @@ Make sure your `.env` file contains a valid `GEMINI_API_KEY` before running. The
 5. Print a summary of all generated solutions to the console
 
 The default mission is **"Next-Gen Grid-Scale Energy Storage"** — developing novel methods to store grid-scale renewable energy without relying on rare-earth lithium-ion batteries. You can change this by editing the `mission` and `desc` variables in the `if __name__ == "__main__"` block.
+
+### Experiment API tuning (503 / rate limits)
+
+Bulk runs (`experiment_runner.py` and the Streamlit **Experiment Runner** worker) use a **separate model default** so interactive use can stay on Pro while experiments default to a lighter model when you have not set a model:
+
+| Variable | Role |
+|----------|------|
+| `GEMINI_MODEL` | Used by **CLI / web** `LLMClient()` when no explicit model is passed (default `gemini-2.5-pro` if unset). |
+| `GEMINI_MODEL_EXPERIMENT` | Optional override **only** for experiments. If unset, experiments use `GEMINI_MODEL` if set, otherwise **`gemini-2.5-flash`** (2.0 Flash is retired for new keys). |
+| `EXPERIMENT_LLM_MAX_RETRIES` | Max retries on capacity errors (default **10**). |
+| `EXPERIMENT_LLM_BACKOFF_BASE` | Initial backoff in seconds before exponential growth (default **3.0**). |
+| `EXPERIMENT_REQUEST_DELAY_SECONDS` | Pause after each generation attempt in seconds (default **0.75**; set **0** to disable). |
+
+Retry logic also treats the substring `unavailable` as a capacity-style error (matches Gemini 503 payloads).
 
 ### Output File
 

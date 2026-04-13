@@ -17,11 +17,15 @@ as the effective "purpose" layer.
 from __future__ import annotations
 
 import logging
+import os
 import random
 import time
 from typing import Optional
 
+from dotenv import load_dotenv
+
 from aideator.engine import IdeaEngine
+from aideator.llm import LLMClient
 from aideator.models import Post, PostType
 from aideator.serialization import export_json
 
@@ -43,7 +47,39 @@ _CAPACITY_KEYWORDS: list[str] = [
     "quota",
     "rate",
     "overloaded",
+    "unavailable",
 ]
+
+
+def experiment_gemini_model() -> str:
+    """Model for bulk experiments: GEMINI_MODEL_EXPERIMENT, else GEMINI_MODEL, else a current Flash.
+
+    ``gemini-2.0-flash`` is deprecated for new API keys (404). Default is ``gemini-2.5-flash``.
+    """
+    load_dotenv()
+    for key in ("GEMINI_MODEL_EXPERIMENT", "GEMINI_MODEL"):
+        v = os.getenv(key)
+        if v and v.strip():
+            return v.strip()
+    return "gemini-2.5-flash"
+
+
+def experiment_retry_settings(
+    max_retries: int | None = None,
+    base_wait: float | None = None,
+) -> tuple[int, float]:
+    """Resolve retry count and initial backoff (seconds) from args or env."""
+    load_dotenv()
+    if max_retries is None:
+        max_retries = max(1, int(os.getenv("EXPERIMENT_LLM_MAX_RETRIES", "10")))
+    if base_wait is None:
+        base_wait = max(0.5, float(os.getenv("EXPERIMENT_LLM_BACKOFF_BASE", "3.0")))
+    return max_retries, base_wait
+
+
+def experiment_request_delay_seconds() -> float:
+    load_dotenv()
+    return max(0.0, float(os.getenv("EXPERIMENT_REQUEST_DELAY_SECONDS", "0.75")))
 
 
 # ---------------------------------------------------------------------------
@@ -53,26 +89,45 @@ def robust_propose_achiever(
     engine: IdeaEngine,
     child_type: PostType,
     parent_post: Post,
-    max_retries: int = 6,
+    max_retries: int | None = None,
+    base_wait: float | None = None,
 ) -> Optional[Post]:
     """Wrap ``engine.propose_achiever`` with exponential back-off and jitter.
 
-    Retryable errors (rate limits, capacity) are retried up to *max_retries*
-    times.  Non-capacity errors (e.g. prompt-validation failures) are logged
-    and the branch is skipped by returning ``None``.
+    Three error categories are handled differently:
+
+    - **Logic bugs** (ValueError, TypeError, AttributeError): these indicate a
+      programming error in the pipeline configuration or prompt logic. They are
+      re-raised immediately so they surface rather than being silently swallowed.
+    - **Capacity / rate-limit errors**: retried up to *max_retries* times with
+      exponential back-off and jitter.
+    - **Other transient API errors**: logged and the branch is skipped (None
+      returned) so one bad response doesn't abort the whole experiment.
+
+    *max_retries* / *base_wait* default from env ``EXPERIMENT_LLM_MAX_RETRIES``
+    (default 10) and ``EXPERIMENT_LLM_BACKOFF_BASE`` (default 3.0) when omitted.
     """
-    base_wait: float = 2.0
+    max_retries, base_wait = experiment_retry_settings(max_retries, base_wait)
 
     for attempt in range(1, max_retries + 1):
         try:
             return engine.propose_achiever(child_type, parent_post)
+
+        except (ValueError, TypeError, AttributeError) as exc:
+            # Logic bugs must surface — do not silently skip
+            logger.error(
+                "Logic error proposing %s for '%s': %s — re-raising.",
+                child_type.value,
+                parent_post.name,
+                exc,
+            )
+            raise
 
         except Exception as exc:
             error_msg = str(exc).lower()
             is_capacity_error = any(kw in error_msg for kw in _CAPACITY_KEYWORDS)
 
             if is_capacity_error and attempt < max_retries:
-                # Exponential back-off: 2, 4, 8, 16 ... + random jitter
                 wait = base_wait * (2 ** (attempt - 1)) + random.uniform(0, 1)
                 logger.warning(
                     "API capacity/rate error. Retrying in %.2fs "
@@ -84,7 +139,6 @@ def robust_propose_achiever(
                 )
                 time.sleep(wait)
             elif is_capacity_error:
-                # Exhausted retries on a capacity error
                 logger.error(
                     "Failed to propose %s after %d retries: %s",
                     child_type.value,
@@ -93,16 +147,15 @@ def robust_propose_achiever(
                 )
                 return None
             else:
-                # Non-capacity error -> skip this branch, don't crash
+                # Unexpected transient error — log and skip this branch
                 logger.error(
-                    "Non-retryable error proposing %s for '%s': %s",
+                    "Unexpected error proposing %s for '%s': %s",
                     child_type.value,
                     parent_post.name,
                     exc,
                 )
                 return None
 
-    # Should not be reached, but guard against it
     return None
 
 
@@ -129,10 +182,12 @@ def run_creative_pipeline(
     Returns:
         A tuple of (root mission Post, flat list of SOLUTION Posts).
     """
-    engine = IdeaEngine()
+    model = experiment_gemini_model()
+    engine = IdeaEngine(LLMClient(model_name=model))
     root: Post = engine.create_mission(mission_name, mission_desc)
 
     logger.info("Mission created: '%s'", mission_name)
+    logger.info("Experiment LLM model: %s", model)
     logger.info(
         "Pipeline: %s",
         " -> ".join(pt.value.upper() for pt, _ in WORKFLOW_PIPELINE),
@@ -174,6 +229,9 @@ def run_creative_pipeline(
                     logger.info("    -> Generated: '%s'", new_post.name)
                 else:
                     logger.warning("    -> Skipped (error or retries exhausted)")
+                delay = experiment_request_delay_seconds()
+                if delay > 0:
+                    time.sleep(delay)
 
         if not next_layer:
             logger.error(

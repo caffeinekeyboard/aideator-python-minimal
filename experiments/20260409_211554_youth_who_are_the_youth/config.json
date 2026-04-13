@@ -1,0 +1,32 @@
+{
+  "mission_name": "Youth. Who Are the Youth?",
+  "mission_desc": "There is no universally agreed international definition of the youth age group. For statistical purposes, however, the United Nations\u2014without prejudice to any other definitions made by Member States\u2014defines \u2018youth\u2019 as those persons between the ages of 15 and 24 years. This definition, which arose in the context of preparations for the International Youth Year (1985) (see A/36/215), was endorsed by the General Assembly in its resolution 36/28 of 1981. All UN statistics on youth are based on this definition, as is reflected in the annual yearbooks of statistics published by the UN system on demography, education, employment and health.\n\nThis statistically oriented definition of youth, in turn, entails that children are considered those persons under the age of 14. Worthy of note, however, is that Article 1 of the United Nations Convention on the Rights of the Child defines \u2018children\u2019 as persons up to the age of 18. At the time, it was hoped that the Convention would provide protection and rights to as large an age-group as possible, especially as there was no similar document on the rights of youth.\n\nMany countries also draw the line on youth with regard to the age at which a person is given equal treatment under the law\u2014often referred to as the \u2018age of majority.\u2019 This age is commonly 18 in many countries; so that once a person attains this age, he or she is considered to be an adult. Nonetheless, the operational definition and nuances of the term \u2018youth\u2019 vary from country to country, depending on relative sociocultural, institutional, economic and political factors.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      2
+    ],
+    [
+      "abstraction",
+      2
+    ],
+    [
+      "analogy",
+      2
+    ],
+    [
+      "inspiration",
+      1
+    ],
+    [
+      "solution",
+      1
+    ]
+  ],
+  "started_at": "2026-04-09T21:15:54.935860",
+  "experiment_id": "20260409_211554_youth_who_are_the_youth"
+}

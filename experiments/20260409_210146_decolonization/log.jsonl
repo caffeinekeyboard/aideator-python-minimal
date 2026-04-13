@@ -1,0 +1,496 @@
+{"event": "start", "mission": "Decolonization", "time": "2026-04-09T21:01:47.494556"}
+{"event": "config", "llm_model": "gemini-2.5-flash", "time": "2026-04-09T21:01:47.574278"}
+{"event": "layer_start", "layer": 1, "type": "stakeholder", "parents": 1, "expected": 1, "time": "2026-04-09T21:01:47.574904"}
+{"event": "node", "layer": 1, "type": "stakeholder", "name": "Indigenous Peoples Within States", "time": "2026-04-09T21:02:00.617791"}
+{"event": "layer_done", "layer": 1, "generated": 1, "time": "2026-04-09T21:02:01.618941"}
+{"event": "layer_start", "layer": 2, "type": "goal", "parents": 1, "expected": 3, "time": "2026-04-09T21:02:01.619781"}
+{"event": "node", "layer": 2, "type": "goal", "name": "Realize Inherent Indigenous Self-Determination", "time": "2026-04-09T21:02:11.811250"}
+{"event": "node", "layer": 2, "type": "goal", "name": "Reclaim Indigenous Lands and Resources", "time": "2026-04-09T21:02:21.420660"}
+{"event": "node", "layer": 2, "type": "goal", "name": "Achieve Reparative Justice for Past Harms", "time": "2026-04-09T21:02:36.901900"}
+{"event": "layer_done", "layer": 2, "generated": 3, "time": "2026-04-09T21:02:37.902739"}
+{"event": "layer_start", "layer": 3, "type": "abstraction", "parents": 3, "expected": 9, "time": "2026-04-09T21:02:37.903567"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Unleashing Intrinsic Foundational Agency", "time": "2026-04-09T21:02:51.102028"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Reconstituting Sovereign Operational Domains", "time": "2026-04-09T21:03:07.508732"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Intrinsic Blueprint Self-Governance", "time": "2026-04-09T21:03:25.110532"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Restoring Foundational Operational Substrates", "time": "2026-04-09T21:03:37.671925"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Regenerating Self-Sustaining Ecologies", "time": "2026-04-09T21:03:53.168750"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Reinstating Primordial Sovereign Entitlements", "time": "2026-04-09T21:04:10.030511"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Restoring Foundational Systemic Equilibrium", "time": "2026-04-09T21:04:21.131854"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Reclaiming Original Path and Potential", "time": "2026-04-09T21:04:36.482002"}
+{"event": "node", "layer": 3, "type": "abstraction", "name": "Rectifying Illegitimate Value Reassignment", "time": "2026-04-09T21:04:55.512207"}
+{"event": "layer_done", "layer": 3, "generated": 9, "time": "2026-04-09T21:04:56.513463"}
+{"event": "layer_start", "layer": 4, "type": "analogy", "parents": 9, "expected": 36, "time": "2026-04-09T21:04:56.514152"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Unleashing the Processor's Full Potential", "time": "2026-04-09T21:05:06.984021"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Undammed River's Resurgence", "time": "2026-04-09T21:05:17.404403"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Unfettered Artist's Expression", "time": "2026-04-09T21:05:28.628250"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Unjammed Clockwork", "time": "2026-04-09T21:05:40.036595"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reintegrating a Self-Sustaining Ecosystem", "time": "2026-04-09T21:05:52.296429"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Decentralizing a Software Monolith", "time": "2026-04-09T21:06:05.321002"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Restoring a Grand Organ's Voice", "time": "2026-04-09T21:06:21.459900"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Restoring Archival Domain Authority", "time": "2026-04-09T21:06:37.447781"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Wild Seed's Struggle", "time": "2026-04-09T21:06:50.549745"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Regimented River Delta", "time": "2026-04-09T21:07:07.021888"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Artist's Muzzled Muse", "time": "2026-04-09T21:07:19.819155"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "The Protocol's Undermined Autonomy", "time": "2026-04-09T21:07:34.251360"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Regenerating a Paved-Over Wetland Ecosystem", "time": "2026-04-09T21:07:46.626171"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Unpacking the Base OS", "time": "2026-04-09T21:07:57.437575"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Recalibrating Master Clockwork", "time": "2026-04-09T21:08:08.938577"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Unveiling the Primal Narrative", "time": "2026-04-09T21:08:25.821203"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Metabolic System Re-Wilding", "time": "2026-04-09T21:08:36.227633"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Self-Healing Software Architecture", "time": "2026-04-09T21:08:46.917279"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Urban Water Cycle Restoration", "time": "2026-04-09T21:09:03.093835"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Kitchen Compost-to-Crop Loop", "time": "2026-04-09T21:09:16.454178"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Re-Wilding Primal Ecosystems", "time": "2026-04-09T21:09:31.380194"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reclaiming Digital Code Provenance", "time": "2026-04-09T21:09:43.781805"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reconstituting Suppressed Languages", "time": "2026-04-09T21:09:56.422279"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reclaiming Natural Health Sovereignty", "time": "2026-04-09T21:10:05.434102"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Rebuilding Soil's Living Foundation", "time": "2026-04-09T21:10:14.702822"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Stabilizing Core Software Architecture", "time": "2026-04-09T21:10:29.719797"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "National Economic Structural Reform", "time": "2026-04-09T21:10:45.142292"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Realigning Core Body Mechanics", "time": "2026-04-09T21:10:53.369138"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Architectural Grandeur Reclaimed", "time": "2026-04-09T21:11:03.874076"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reclaiming Software's Core Design", "time": "2026-04-09T21:11:16.762690"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Reclaiming Ecosystem's True Potential", "time": "2026-04-09T21:11:28.087284"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Athlete's Peak Path Recaptured", "time": "2026-04-09T21:11:39.572362"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Digital Asset Misassignment Correction", "time": "2026-04-09T21:11:50.261089"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Contaminated Farmland Restoration Project", "time": "2026-04-09T21:12:01.307784"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Ecological Niche Reclamation", "time": "2026-04-09T21:12:16.034843"}
+{"event": "node", "layer": 4, "type": "analogy", "name": "Academic Credit Restoration", "time": "2026-04-09T21:12:26.167387"}
+{"event": "layer_done", "layer": 4, "generated": 36, "time": "2026-04-09T21:12:27.169687"}
+{"event": "layer_start", "layer": 5, "type": "inspiration", "parents": 36, "expected": 108, "time": "2026-04-09T21:12:27.170529"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Orchestral System Harmony Conductor", "time": "2026-04-09T21:12:34.982986"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Adaptive Internal Environment Manager", "time": "2026-04-09T21:12:47.115528"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Adaptive Logic Re-Sculptor", "time": "2026-04-09T21:12:57.664980"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Dismantling Restraint, Unleashing Natural Flow", "time": "2026-04-09T21:13:08.437908"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Circumventing Obstacles, Forging New Paths", "time": "2026-04-09T21:13:19.621787"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Engineered Permeability, Guided Resurgence", "time": "2026-04-09T21:13:29.937494"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Dreamscape's Boundless Imagery", "time": "2026-04-09T21:13:38.830350"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Volcanic Surge's Formative Roar", "time": "2026-04-09T21:13:50.064652"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Fractal's Unending Unfold", "time": "2026-04-09T21:14:02.243765"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Harmonious Guiding Directive", "time": "2026-04-09T21:14:10.228647"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Intrinsic Adaptive Part Alignment", "time": "2026-04-09T21:14:22.781865"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Ambient Kinetic Smoothing", "time": "2026-04-09T21:14:31.684856"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Symbiotic Root-Web Integration", "time": "2026-04-09T21:14:40.093644"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Keystone Apex Reintegration", "time": "2026-04-09T21:14:51.758052"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Environmental Scaffolding Restoration", "time": "2026-04-09T21:15:03.434354"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Federated Urban Ecosystem", "time": "2026-04-09T21:15:12.710755"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Evolving Biological Specialization System", "time": "2026-04-09T21:15:25.334484"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Autonomous Nodes, Fluid Alliances", "time": "2026-04-09T21:15:36.735921"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Re-calibrating the Cosmic Observatory", "time": "2026-04-09T21:15:47.670323"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Cultivating Ancient Forest Heart", "time": "2026-04-09T21:15:57.868550"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Weaving the Unseen Harmonies", "time": "2026-04-09T21:16:10.982467"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Recalibrating the Guiding Light", "time": "2026-04-09T21:16:20.625484"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Re-syncing the Global Clock Network", "time": "2026-04-09T21:16:32.610493"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Re-establishing the Foundational Keystone", "time": "2026-04-09T21:16:43.698329"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Mycorrhizal Network's Embrace", "time": "2026-04-09T21:16:53.340013"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Wind's Miniature Oasis", "time": "2026-04-09T21:17:03.003327"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Forager's Hidden Seed Cache", "time": "2026-04-09T21:17:13.561166"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Irrigation Grid Delta", "time": "2026-04-09T21:17:21.497335"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Regimented Circuit Trace Delta", "time": "2026-04-09T21:17:33.759497"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Structured Authority Distribution Network", "time": "2026-04-09T21:17:45.775178"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Muse's Unspoken Overture", "time": "2026-04-09T21:17:55.264861"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Art Born of Unspoken Restraint", "time": "2026-04-09T21:18:06.323236"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Inspiration's Transmuted Material Form", "time": "2026-04-09T21:18:15.970849"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Self-Powered Chronometric Integrity", "time": "2026-04-09T21:18:25.603902"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Decentralized Consensus Guardianship", "time": "2026-04-09T21:18:33.921268"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Adaptive Autonomous Immune System", "time": "2026-04-09T21:18:44.507804"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Daylighting a Buried Waterway", "time": "2026-04-09T21:18:52.487192"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Paved Surface Bioconversion", "time": "2026-04-09T21:19:03.679553"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Watershed Re-Patterning for Satellite Wetlands", "time": "2026-04-09T21:19:15.466218"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Chef's Mise en Place", "time": "2026-04-09T21:19:22.605848"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Archaeological System Excavation", "time": "2026-04-09T21:19:34.755911"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "System Biome Mapping", "time": "2026-04-09T21:19:44.732739"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Epochal Stellar System Readjustment", "time": "2026-04-09T21:19:55.409622"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Quantum Logic Recompilation", "time": "2026-04-09T21:20:03.872344"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Concertmaster's Core Pitch Reset", "time": "2026-04-09T21:20:12.881951"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Excavating Ancient Bedrock Stories", "time": "2026-04-09T21:20:22.038692"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Unlocking the Inner Archetypal Story", "time": "2026-04-09T21:20:32.893546"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Deciphering the Universe's Birth Story", "time": "2026-04-09T21:20:41.908094"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Metabolic Ecosystem Re-Generation", "time": "2026-04-09T21:20:51.034461"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Shedding Modern Metabolic Cages", "time": "2026-04-09T21:21:03.794253"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Re-Igniting Primal Metabolic Programming", "time": "2026-04-09T21:21:13.362737"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Adaptive Immunological System Architecture", "time": "2026-04-09T21:21:26.364433"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Dynamic Crust Architecture", "time": "2026-04-09T21:21:41.942146"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Swarm Resilience Architecture", "time": "2026-04-09T21:21:56.401688"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Urban Hydrologic Garden Cultivation", "time": "2026-04-09T21:22:04.666037"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Closed-Loop City Water Economy", "time": "2026-04-09T21:22:16.760103"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Porous City Rebirth", "time": "2026-04-09T21:22:30.062083"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Industrial Waste-to-Resource Web", "time": "2026-04-09T21:22:41.644445"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Experiential Wisdom Loop", "time": "2026-04-09T21:22:51.640855"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Digital Content Revitalization Loop", "time": "2026-04-09T21:23:05.742365"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Spontaneous Riverine Network Development", "time": "2026-04-09T21:23:19.598413"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Primal Symbiotic Matrix Restoration", "time": "2026-04-09T21:23:30.855357"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Catalytic Niche Ignition", "time": "2026-04-09T21:23:41.004751"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Software Supply Chain Forensics", "time": "2026-04-09T21:23:51.997232"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Self-Attesting Code Genome", "time": "2026-04-09T21:24:02.591497"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Digital Guild of Stewards", "time": "2026-04-09T21:24:16.433385"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Stellar Linguistic Revival Nucleation", "time": "2026-04-09T21:24:26.833256"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Ecocultural Linguistic Seedbed Cultivation", "time": "2026-04-09T21:24:37.455349"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Rebuilding Linguistic Infrastructure Networks", "time": "2026-04-09T21:24:53.931269"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Foraging Your Own Healing Path", "time": "2026-04-09T21:25:02.719841"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Becoming Your Body's Architect", "time": "2026-04-09T21:25:11.324138"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Rewilding Your Inner Terrain", "time": "2026-04-09T21:25:22.926775"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Vibrant Coral City Regeneration", "time": "2026-04-09T21:25:32.783441"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Micro-Scaffold Assemblers", "time": "2026-04-09T21:25:44.326426"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Activated Metabolic Carbon Pathways", "time": "2026-04-09T21:25:57.408502"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Architectural Biome Isolation Strategy", "time": "2026-04-09T21:26:08.420818"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Gravitational Core Alignment", "time": "2026-04-09T21:26:20.623732"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Self-Regulating Architectural Core", "time": "2026-04-09T21:26:32.537653"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Regenerative Economic Permaculture Design", "time": "2026-04-09T21:26:40.391487"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Streamlined National Flow Re-engineering", "time": "2026-04-09T21:26:48.659397"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "National Economic Consciousness Evolution", "time": "2026-04-09T21:26:57.603092"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Subtle Structural Re-calibration of Foundations", "time": "2026-04-09T21:27:07.514268"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Catalyzing Ecosystemic Equilibrium", "time": "2026-04-09T21:27:17.158044"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Re-optimizing Algorithmic Pathways", "time": "2026-04-09T21:27:26.093772"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "The Resurgence of Ancient Craftsmanship", "time": "2026-04-09T21:27:34.281214"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Repurposed Grandeur for Modernity", "time": "2026-04-09T21:27:43.315741"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Contextual Cohesion Re-established", "time": "2026-04-09T21:27:57.979982"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Permaculture Software Design", "time": "2026-04-09T21:28:03.846517"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Core Software Architectural Restoration", "time": "2026-04-09T21:28:14.543530"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Core Design Craftsmanship Approach", "time": "2026-04-09T21:28:30.277365"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Underground Web of Life Restoration", "time": "2026-04-09T21:28:39.817574"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Restoring Wild Trophic Cascades", "time": "2026-04-09T21:28:49.049062"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Indigenous Wisdom's Renewal", "time": "2026-04-09T21:28:59.149945"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "AI-Driven Peak Performance Digital Twin", "time": "2026-04-09T21:29:05.733778"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Environmental Epoch Re-Creation", "time": "2026-04-09T21:29:17.452741"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Brainwave Peak Re-patterning", "time": "2026-04-09T21:29:28.361422"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Verifiable Digital Provenance Ledger", "time": "2026-04-09T21:29:35.982241"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Digital Self-Correcting Identity", "time": "2026-04-09T21:29:51.139747"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Context-Aware Digital Steward", "time": "2026-04-09T21:30:01.483799"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Nature's Own Soil Purifiers", "time": "2026-04-09T21:30:08.024839"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Deep Dig & Replenish", "time": "2026-04-09T21:30:19.179494"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Chemical Bind & Secure", "time": "2026-04-09T21:30:25.691157"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Bio-Architects' Resurgent Ecosystem Building", "time": "2026-04-09T21:30:35.405559"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Subterranean Microbial Network Weaving", "time": "2026-04-09T21:30:46.750770"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Corridor Weaving for Niche Diffusion", "time": "2026-04-09T21:30:59.100243"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Prior Learning Data Recovery Service", "time": "2026-04-09T21:31:08.906573"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Experiential Learning Alchemy Lab", "time": "2026-04-09T21:31:23.497294"}
+{"event": "node", "layer": 5, "type": "inspiration", "name": "Learning Blueprint Restoration Bureau", "time": "2026-04-09T21:31:36.279826"}
+{"event": "layer_done", "layer": 5, "generated": 108, "time": "2026-04-09T21:31:37.280944"}
+{"event": "layer_start", "layer": 6, "type": "solution", "parents": 108, "expected": 324, "time": "2026-04-09T21:31:37.281788"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Community Harmony Conductor", "time": "2026-04-09T21:31:47.257239"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inter-Governmental Harmony Conductor", "time": "2026-04-09T21:32:01.241555"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Foundational Sovereignty Orchestrator", "time": "2026-04-09T21:32:13.579272"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Indigenous Sovereignty Steward", "time": "2026-04-09T21:32:24.286243"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonial Sovereignty Climate System", "time": "2026-04-09T21:32:42.140598"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Adaptive Indigenous Sovereignty Interface", "time": "2026-04-09T21:32:58.364903"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Logic Re-Sculpting Framework", "time": "2026-04-09T21:33:06.539857"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Foundational Logic Weaver", "time": "2026-04-09T21:33:22.070373"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Operational Accelerator Matrix", "time": "2026-04-09T21:33:36.736747"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereignty Resurgence Compacts", "time": "2026-04-09T21:33:44.041154"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Bio-Cultural Territorial Resurgence", "time": "2026-04-09T21:33:56.277194"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Law Revitalization Networks", "time": "2026-04-09T21:34:07.351191"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Pathway Networks", "time": "2026-04-09T21:34:14.341314"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereign Recognition Pathway", "time": "2026-04-09T21:34:26.482746"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Global Indigenous Diplomatic Nexus", "time": "2026-04-09T21:34:37.810638"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Sovereignty Permeability Framework", "time": "2026-04-09T21:34:48.083681"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Resource Conduits Re-engineering", "time": "2026-04-09T21:34:58.435566"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous-Led Knowledge Weirs", "time": "2026-04-09T21:35:09.006052"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Futures Dream Weavers", "time": "2026-04-09T21:35:17.051070"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Systems Unbound", "time": "2026-04-09T21:35:31.909011"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Dream Covenants", "time": "2026-04-09T21:35:42.574126"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Activation Protocol", "time": "2026-04-09T21:35:51.520980"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Formation Fund", "time": "2026-04-09T21:36:04.234326"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Governance Crucible", "time": "2026-04-09T21:36:15.526008"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Sovereignty's Fractal Unfold", "time": "2026-04-09T21:36:22.948893"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Principles Unfolding Nexus", "time": "2026-04-09T21:36:36.688889"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Relational Governance Recursion", "time": "2026-04-09T21:36:47.006760"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Integrated Self-Determination Framework", "time": "2026-04-09T21:36:56.813143"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Autonomy Re-Genesis Directive", "time": "2026-04-09T21:37:07.725496"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Global Indigenous Nationhood Compacts", "time": "2026-04-09T21:37:16.962535"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Adaptive Self-Determined Indigenous Protocols", "time": "2026-04-09T21:37:27.730055"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Autonomous Indigenous Institutional Realignment", "time": "2026-04-09T21:37:38.887199"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Community Consensus Alignment", "time": "2026-04-09T21:37:53.744715"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Determination Recalibration Matrix", "time": "2026-04-09T21:38:05.395088"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Continuous Cultural Affirmation Pulse", "time": "2026-04-09T21:38:18.060554"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Autonomous Indigenous Catalytic Flow", "time": "2026-04-09T21:38:29.882195"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Interconnection Web", "time": "2026-04-09T21:38:38.456905"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Foundational Indigenous Ecological Co-Governance", "time": "2026-04-09T21:38:51.884549"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Jurisdictional Symbiosis Frameworks", "time": "2026-04-09T21:39:05.307530"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Jurisdiction Activation Framework", "time": "2026-04-09T21:39:14.846629"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Financial Self-Governance Endowment", "time": "2026-04-09T21:39:26.972422"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge Nexus Initiative", "time": "2026-04-09T21:39:36.901003"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Foundational Governance Scaffolding Restoration", "time": "2026-04-09T21:39:46.960827"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Territorial & Epistemic Restoration Foundations", "time": "2026-04-09T21:39:56.626721"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Operational Infrastructure Scaffolding", "time": "2026-04-09T21:40:10.565254"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereign Ecologies Framework", "time": "2026-04-09T21:40:18.589119"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Federated Indigenous Service Micro-Domains", "time": "2026-04-09T21:40:31.288790"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Federated Indigenous Data & Knowledge Commons", "time": "2026-04-09T21:40:46.118251"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Operational Specialization Compacts", "time": "2026-04-09T21:40:57.533876"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Self-Directed Domain Evolution", "time": "2026-04-09T21:41:09.425874"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inter-Sovereign Specialization Protocol", "time": "2026-04-09T21:41:22.792911"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Domain Protocols", "time": "2026-04-09T21:41:32.276460"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Autonomous Indigenous Functional Domains", "time": "2026-04-09T21:41:43.181260"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Grassroots Sovereign Nodes Network", "time": "2026-04-09T21:41:55.352275"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Pluralism Re-calibration Initiative", "time": "2026-04-09T21:42:06.177426"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Governance Constellation Re-Calibration", "time": "2026-04-09T21:42:18.909615"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Harmonizing Sovereign Observatories Framework", "time": "2026-04-09T21:42:32.149537"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Reawakening Indigenous Self-Governing Heart", "time": "2026-04-09T21:42:41.218774"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Stewarding Ancestral Lands, Nurturing Autonomy", "time": "2026-04-09T21:42:53.102007"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Flowering Indigenous Economic & Social Systems", "time": "2026-04-09T21:43:05.801906"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Weaving Indigenous Governance Resonance", "time": "2026-04-09T21:43:13.759021"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Regenerating Indigenous Relational Ecosystems", "time": "2026-04-09T21:43:27.652928"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Harmonized Inter-Indigenous Operational Fabric", "time": "2026-04-09T21:43:43.449180"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Legal Light Councils", "time": "2026-04-09T21:43:54.937320"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Digital Sovereignty Networks", "time": "2026-04-09T21:44:02.490645"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge & Learning Hubs", "time": "2026-04-09T21:44:11.872007"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Domain Re-synchronization Framework", "time": "2026-04-09T21:44:20.313088"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous-Led Jurisdictional Re-synchronization", "time": "2026-04-09T21:44:35.321735"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Alignment Feedback Loop", "time": "2026-04-09T21:44:45.557995"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Restoring Indigenous Foundational Governance", "time": "2026-04-09T21:44:53.259327"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Elevating Indigenous Territorial Sovereignty", "time": "2026-04-09T21:45:06.320306"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Reclaiming Indigenous Epistemic Sovereignty", "time": "2026-04-09T21:45:16.355884"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Governance Mycorrhizal Network", "time": "2026-04-09T21:45:25.208558"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Root Governance Revival", "time": "2026-04-09T21:45:36.923497"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Mycelial Resource Pathways", "time": "2026-04-09T21:45:49.049271"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Micro-Jurisdiction Havens", "time": "2026-04-09T21:46:03.180525"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Blueprint Reclamation & Nurturing Funds", "time": "2026-04-09T21:46:18.205995"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Global Digital Indigenous Governance Commons", "time": "2026-04-09T21:46:28.974717"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Governance Seedbed Sanctuaries", "time": "2026-04-09T21:46:41.863055"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Digital Knowledge Caches", "time": "2026-04-09T21:46:53.240229"}
+{"event": "node", "layer": 6, "type": "solution", "name": "The Unseen Governance Weave", "time": "2026-04-09T21:47:06.667870"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Governing Delta Systems", "time": "2026-04-09T21:47:17.550109"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Re-engineered Sovereign Distribution Networks", "time": "2026-04-09T21:47:31.066511"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Deconstructing Imposed Flow Grids", "time": "2026-04-09T21:47:44.168552"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Self-Traced Governance Pathways", "time": "2026-04-09T21:47:52.725663"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Interconnect Protocols", "time": "2026-04-09T21:48:03.915548"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Digital Infrastructure Delta", "time": "2026-04-09T21:48:16.149323"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Distribution Network", "time": "2026-04-09T21:48:24.270949"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Governance Blueprint Architecture", "time": "2026-04-09T21:48:41.868235"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Inherent Authority Flow Systems", "time": "2026-04-09T21:48:56.662208"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Intrinsic Blueprint Governance Weaving", "time": "2026-04-09T21:49:04.072178"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Cultural Performance & Recognition", "time": "2026-04-09T21:49:14.334763"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Bio-Cultural Resonance Systems", "time": "2026-04-09T21:49:25.069815"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Inlay Governance", "time": "2026-04-09T21:49:38.475019"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Cultivating Sovereign Voids", "time": "2026-04-09T21:49:51.605074"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Responsive Governance Refraction", "time": "2026-04-09T21:50:08.524011"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Self-Determination's Foundational Embodiment", "time": "2026-04-09T21:50:16.851466"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Territory's Inherent Self-Stewardship", "time": "2026-04-09T21:50:27.593319"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Knowledge's Indigenous Materialization", "time": "2026-04-09T21:50:39.208895"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Indigenous Governance Protocol Nexus", "time": "2026-04-09T21:50:47.098554"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Intergenerational Cultural & Governance Hubs", "time": "2026-04-09T21:51:00.785768"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land & Law Autonomy Trusts", "time": "2026-04-09T21:51:15.231750"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Global Indigenous Autonomy Safeguard Network", "time": "2026-04-09T21:51:22.825767"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Protocol Ledger of Self-Governance", "time": "2026-04-09T21:51:38.473625"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decentralized Indigenous Anti-Subversion Consensus", "time": "2026-04-09T21:51:50.805612"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Adaptive Indigenous Sovereignty Protocol", "time": "2026-04-09T21:52:00.426878"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Blueprint Rejuvenation System", "time": "2026-04-09T21:52:13.966055"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Indigenous Jurisdictional Harmonizer", "time": "2026-04-09T21:52:24.356352"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Domain Decolonization & Restoration", "time": "2026-04-09T21:52:31.527565"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Ecological Restoration & Stewardship Mapping", "time": "2026-04-09T21:52:40.562792"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dismantling Colonial Resource Infrastructure", "time": "2026-04-09T21:52:55.312247"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Footprint Bioregeneration", "time": "2026-04-09T21:53:08.725731"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Deep Earth Hydrological Reactivation", "time": "2026-04-09T21:53:21.608010"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Pavement Symbiotic Bio-Reclamation", "time": "2026-04-09T21:53:43.521088"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Networked Indigenous Stewardship Enclaves", "time": "2026-04-09T21:53:52.819136"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Bioregional Resource Co-Governance", "time": "2026-04-09T21:54:06.996722"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Resource Diversion Zones", "time": "2026-04-09T21:54:21.016942"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Domain Stewardship Blueprint", "time": "2026-04-09T21:54:31.396126"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Foundational Resource De-Layering Protocol", "time": "2026-04-09T21:54:44.445169"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Stewardship Core Reassembly", "time": "2026-04-09T21:54:54.049942"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Systems Reconstitution Excavation", "time": "2026-04-09T21:55:01.705671"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Colonial Overlays Decommissioning Protocol", "time": "2026-04-09T21:55:12.749700"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Biocultural System Re-Excavation", "time": "2026-04-09T21:55:22.284646"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Biome Stewardship Restoration", "time": "2026-04-09T21:55:35.266825"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Colonial Overlay Deconstruction Map", "time": "2026-04-09T21:55:44.262619"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Operational Biome Reconnection Blueprint", "time": "2026-04-09T21:55:59.398932"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Jurisdictional Re-Alignment Framework", "time": "2026-04-09T21:56:07.569251"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Bioregional Recalibration Initiative", "time": "2026-04-09T21:56:18.682344"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Economic Sovereignty Recalibration", "time": "2026-04-09T21:56:29.501706"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Logic Recompilation Framework", "time": "2026-04-09T21:56:35.005596"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Quantum Geospatial Recompilation of Indigenous Territories", "time": "2026-04-09T21:56:43.925154"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Quantum Socio-Economic Infrastructural Recompilation", "time": "2026-04-09T21:56:54.003563"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Jurisdictional Paramountcy Declaration", "time": "2026-04-09T21:57:02.581016"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous-Led Land Restoration Blueprint", "time": "2026-04-09T21:57:12.046190"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Data Sovereignty Mandate", "time": "2026-04-09T21:57:21.065587"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Bedrock Stewardship Reconstruction", "time": "2026-04-09T21:57:29.500414"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Living Bedrock Resurgence Initiatives", "time": "2026-04-09T21:57:37.579485"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Territorial Primal Law Codes", "time": "2026-04-09T21:57:49.074738"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land-Spirit Narrative Reawakening", "time": "2026-04-09T21:57:56.428689"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primal Land Law System Restoration", "time": "2026-04-09T21:58:11.562245"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Embodied Land Wisdom Reclamation", "time": "2026-04-09T21:58:24.501677"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Narrative Reconstruction Initiative", "time": "2026-04-09T21:58:34.315479"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primal Land Function Re-instatement", "time": "2026-04-09T21:58:47.880440"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Primal Governance Code Decipherment", "time": "2026-04-09T21:59:00.697457"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Metabolism Revival", "time": "2026-04-09T21:59:08.861301"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Bioregional Metabolism Network", "time": "2026-04-09T21:59:22.177756"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land Kinship Re-Patterning", "time": "2026-04-09T21:59:36.021664"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land Re-Wilding & Sovereignty", "time": "2026-04-09T21:59:44.576231"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Re-Wilding Indigenous Resource Economies", "time": "2026-04-09T21:59:56.945220"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge Stewardship Re-Wilding", "time": "2026-04-09T22:00:08.659951"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Ecological Stewardship Re-ignition", "time": "2026-04-09T22:00:17.335869"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Eco-Genetic Genesis Re-Activation", "time": "2026-04-09T22:00:30.595588"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Biogeo-Energetic Resonance Activation", "time": "2026-04-09T22:00:43.127005"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Territory Regenerative Defense", "time": "2026-04-09T22:00:53.229474"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Adaptive Eco-Sovereignty Regeneration System", "time": "2026-04-09T22:01:07.439343"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Biocultural Ecosovereignty Re-Coding System", "time": "2026-04-09T22:01:19.215817"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Indigenous Land Re-Architecture", "time": "2026-04-09T22:01:28.147372"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Autochthonous Crust Re-genesis", "time": "2026-04-09T22:01:40.675781"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Synchronized Terra-Governance Re-patterning", "time": "2026-04-09T22:01:55.425814"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Bio-Cultural Swarm Restoration Network", "time": "2026-04-09T22:02:05.211497"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Defense Swarm", "time": "2026-04-09T22:02:18.209032"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Resource Regeneration Protocol Swarm", "time": "2026-04-09T22:02:29.445781"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Hydrologic Living Knowledge Gardens", "time": "2026-04-09T22:02:38.057294"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Urban Bioregional Water Weave Gardens", "time": "2026-04-09T22:02:51.549810"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Hydrologic Reparation Enclaves", "time": "2026-04-09T22:03:02.832829"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Water Sovereignty Loops", "time": "2026-04-09T22:03:10.261611"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Watershed Rehydration", "time": "2026-04-09T22:03:22.438292"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Advanced Water Economy", "time": "2026-04-09T22:03:32.990478"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Ecological Infiltration Zones", "time": "2026-04-09T22:03:41.557491"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Porous Ancestral Domain Integration", "time": "2026-04-09T22:04:00.158837"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Bioregional Permeation Networks", "time": "2026-04-09T22:04:13.948255"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Resource Regeneration Web", "time": "2026-04-09T22:04:22.953733"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Regenerative Resource Hubs", "time": "2026-04-09T22:04:34.163956"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Industrial Reclamation & Repurposing Hubs", "time": "2026-04-09T22:04:45.863876"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Stewardship & Adaptive Reclamation Nexus", "time": "2026-04-09T22:04:54.467108"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Biocultural Restoration Learning Loops", "time": "2026-04-09T22:05:09.786578"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Jurisprudence & Governance Incubation", "time": "2026-04-09T22:05:20.681080"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Knowledge Weave", "time": "2026-04-09T22:05:30.141492"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Eco-Cultural Restoration & Resource Loop", "time": "2026-04-09T22:05:40.170485"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land Sovereignty Re-architecture Program", "time": "2026-04-09T22:05:53.458923"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Spontaneous Indigenous Sovereignty Pathways", "time": "2026-04-09T22:06:03.492146"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Re-Sovereignty Flow Network", "time": "2026-04-09T22:06:16.058881"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Land Re-Patterning & Flow", "time": "2026-04-09T22:06:27.209865"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primal Indigenous Land-Culture Symbiosis Re-Activation", "time": "2026-04-09T22:06:35.315761"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Inherent Jurisdiction Reset Protocol", "time": "2026-04-09T22:06:47.274103"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Resource Metabolism Recalibration", "time": "2026-04-09T22:06:59.237884"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Eco-Sovereignty Catalytic Niche Ventures", "time": "2026-04-09T22:07:11.186420"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Jurisdictional Reclamation Zones", "time": "2026-04-09T22:07:23.469123"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Land-Truth Mapping Initiative", "time": "2026-04-09T22:07:33.565745"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Domain Provenance Ledger", "time": "2026-04-09T22:07:40.548523"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Resource Flow Forensics", "time": "2026-04-09T22:07:52.690690"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Biocultural Heritage Change-Tracking", "time": "2026-04-09T22:08:06.906229"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Self-Attesting Ancestral Domain Ledger", "time": "2026-04-09T22:08:16.509400"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Self-Attesting Indigenous Stewardship Genome", "time": "2026-04-09T22:08:27.036715"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Self-Attesting Primordial Rights Genome", "time": "2026-04-09T22:08:37.918710"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Stewardship Digital Ledger", "time": "2026-04-09T22:08:45.954946"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Integrity Network", "time": "2026-04-09T22:08:57.093315"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Governance Provenance Trace", "time": "2026-04-09T22:09:09.031633"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Domain Nucleation & Rebirth", "time": "2026-04-09T22:09:18.131799"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Land-Kinship Revival Nucleus", "time": "2026-04-09T22:09:31.440364"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Jurisdictional Revival Nexus", "time": "2026-04-09T22:09:40.683101"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Stewardship Re-Germination", "time": "2026-04-09T22:09:49.196124"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ecocultural Land-Syntax Reclamation Hubs", "time": "2026-04-09T22:10:03.073513"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ecocultural Governance Seedbed Cultivation", "time": "2026-04-09T22:10:13.512308"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land Data Sovereignty Network", "time": "2026-04-09T22:10:22.795907"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Land Governance Revitalization Networks", "time": "2026-04-09T22:10:34.934171"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land-Narrative Regeneration Networks", "time": "2026-04-09T22:10:46.576086"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Reclaiming Ancestral Resource Sovereignty", "time": "2026-04-09T22:10:52.895492"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Land Claim Cartography", "time": "2026-04-09T22:11:05.857599"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Ceremony & Land Reanimation", "time": "2026-04-09T22:11:17.760465"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Blueprinting & Governance", "time": "2026-04-09T22:11:25.016064"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Regenerative Earth-Body Architecture", "time": "2026-04-09T22:11:40.074229"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Primordial Land-Body Self-Healing Facilitation", "time": "2026-04-09T22:11:55.270581"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Biocultural Rewilding", "time": "2026-04-09T22:12:03.263283"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Legal & Economic Disentanglement", "time": "2026-04-09T22:12:16.288830"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Knowledge & Spirit Re-Alignment", "time": "2026-04-09T22:12:25.410748"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Foundational Ecosystem Restoration Fund", "time": "2026-04-09T22:12:33.476620"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Law Regeneration Zones", "time": "2026-04-09T22:12:44.391861"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Governance Weaving Councils", "time": "2026-04-09T22:12:54.180349"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Foundational Re-Scaffolding", "time": "2026-04-09T22:13:05.228691"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Digital Heritage Reconstruction Network", "time": "2026-04-09T22:13:17.619821"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Localized Regenerative Ecosystem Scaffolds", "time": "2026-04-09T22:13:30.612141"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonizing Metabolic Justice Pathways", "time": "2026-04-09T22:13:47.926413"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Endogenous Metabolic Activation", "time": "2026-04-09T22:14:03.182685"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Juris-Economic Pathway Catalysts", "time": "2026-04-09T22:14:15.404481"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Reparation Sovereignty Biomes", "time": "2026-04-09T22:14:21.761363"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Perpetual Reparations Trust Biome", "time": "2026-04-09T22:14:32.440255"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonized Historical Narrative Biome", "time": "2026-04-09T22:14:42.919495"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Gravitational Justice Core", "time": "2026-04-09T22:14:55.450646"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Constitutional Reparative Justice Core", "time": "2026-04-09T22:15:09.128349"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Re-Anchoring", "time": "2026-04-09T22:15:22.699560"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Dynamic Reparative Co-Governance Core", "time": "2026-04-09T22:15:31.556171"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonized Epistemic Core", "time": "2026-04-09T22:15:42.172170"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereignty-Aligned Relational Core", "time": "2026-04-09T22:15:51.538846"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Regenerative Reparation Networks", "time": "2026-04-09T22:16:02.730156"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Stewardship Co-Governance Framework", "time": "2026-04-09T22:16:17.321126"}
+{"event": "node", "layer": 6, "type": "solution", "name": "National Reparative Investment Mandate", "time": "2026-04-09T22:16:31.696555"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Systemic Reparation Flow Re-engineering", "time": "2026-04-09T22:16:43.361390"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Interface System Redesign", "time": "2026-04-09T22:16:57.197504"}
+{"event": "node", "layer": 6, "type": "solution", "name": "National Policy Decolonization Flow Re-engineering", "time": "2026-04-09T22:17:12.267599"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Indigenous Economic Reintegration & Reparations", "time": "2026-04-09T22:17:20.290227"}
+{"event": "node", "layer": 6, "type": "solution", "name": "National Economic Reparation Mandate", "time": "2026-04-09T22:17:36.698695"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonial Economic Paradigm Shift", "time": "2026-04-09T22:17:48.783823"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Integrated Sovereignty Foundational Re-calibration", "time": "2026-04-09T22:17:57.350334"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Epistemic Harmony Recalibration", "time": "2026-04-09T22:18:09.266096"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Economic Re-anchoring System", "time": "2026-04-09T22:18:22.373198"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Restoration Ecosystem Catalyst", "time": "2026-04-09T22:18:34.927331"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Legal Reciprocity Frameworks", "time": "2026-04-09T22:18:47.567839"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge & Data Sovereignty Mandate", "time": "2026-04-09T22:18:58.613651"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Systemic Reparation Pathway Re-optimization", "time": "2026-04-09T22:19:07.057265"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Jurisprudence Algorithmic Recalibration", "time": "2026-04-09T22:19:18.240111"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonized Reparation Protocol Pathways", "time": "2026-04-09T22:19:29.179185"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Cultural Sovereignty Restoration Hubs", "time": "2026-04-09T22:19:37.958717"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonial Craftsmanship Reparation Initiative", "time": "2026-04-09T22:19:50.502805"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Grandeur Rebuilding Commission", "time": "2026-04-09T22:20:01.750043"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Innovation Districts", "time": "2026-04-09T22:20:11.034916"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Wisdom Co-Governance Integration", "time": "2026-04-09T22:20:22.138074"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sacred Sites Re-Activation Hubs", "time": "2026-04-09T22:20:32.202996"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Land Cohesion Restoration Compacts", "time": "2026-04-09T22:20:40.936828"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Legal System Cohesion Framework", "time": "2026-04-09T22:20:53.247071"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Systems Cohesion Restoration", "time": "2026-04-09T22:21:05.590135"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Pathways Permaculture Co-Design", "time": "2026-04-09T22:21:17.054556"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Permaculture Justice Refactor", "time": "2026-04-09T22:21:28.229853"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Regenerative Digital Knowledge Weave", "time": "2026-04-09T22:21:40.538816"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Decolonial Systemic Restoration Initiative", "time": "2026-04-09T22:21:48.024809"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Knowledge Architecture Restoration", "time": "2026-04-09T22:21:57.798395"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Economic Protocols Restoration", "time": "2026-04-09T22:22:07.867513"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Architecture Restoration", "time": "2026-04-09T22:22:16.151468"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Cultural System Refactoring and Restoration", "time": "2026-04-09T22:22:25.445908"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Economic Blueprint Restoration", "time": "2026-04-09T22:22:35.523792"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Cultural Mycorrhizae Restoration", "time": "2026-04-09T22:22:45.406246"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Rooted Sovereignty & Land Restitution", "time": "2026-04-09T22:22:57.979866"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Economic Lifeblood Recirculation", "time": "2026-04-09T22:23:10.322655"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Stewardship Restoration Cascade", "time": "2026-04-09T22:23:20.486143"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Jurisdictional Flourishing Cascade", "time": "2026-04-09T22:23:33.179404"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Wisdom and Language Regeneration Cascade", "time": "2026-04-09T22:23:45.395303"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereign Renewal Zones", "time": "2026-04-09T22:23:52.414688"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Systemic Co-Governance and Knowledge Rejuvenation", "time": "2026-04-09T22:24:03.439038"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Wisdom & Cultural Restitution Trust", "time": "2026-04-09T22:24:12.542047"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Flourishing Digital Twin", "time": "2026-04-09T22:24:24.399141"}
+{"event": "node", "layer": 6, "type": "solution", "name": "AI-Driven Restorative Justice Digital Twin", "time": "2026-04-09T22:24:37.946082"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Reparation Journey Optimization Digital Twin", "time": "2026-04-09T22:24:51.552401"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Futures Restoration Project", "time": "2026-04-09T22:25:01.709521"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Epoch Re-Creation Institutes", "time": "2026-04-09T22:25:14.041726"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Original Pedagogy Restoration Hubs", "time": "2026-04-09T22:25:27.393646"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Re-Patterning", "time": "2026-04-09T22:25:38.796645"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Resonance Re-Patterning", "time": "2026-04-09T22:25:49.892472"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Neural Blueprint Re-patterning", "time": "2026-04-09T22:26:02.864665"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Restitution Provenance Ledger", "time": "2026-04-09T22:26:10.878376"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Benefit Redirection Protocol", "time": "2026-04-09T22:26:21.486106"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Authorization Ledger", "time": "2026-04-09T22:26:30.748451"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Right Validation Network", "time": "2026-04-09T22:26:40.678998"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Epistemic Integrity Network", "time": "2026-04-09T22:26:51.476121"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Self-Determination Ledger", "time": "2026-04-09T22:27:03.499920"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Resource Reclamation Steward", "time": "2026-04-09T22:27:15.163611"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Adaptive Governance Restoration Steward", "time": "2026-04-09T22:27:29.205512"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Opportunity Re-Routing Steward", "time": "2026-04-09T22:27:43.258711"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereignty Ecosystem Regeneration", "time": "2026-04-09T22:27:52.955956"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Restorative Resource Repatriation System", "time": "2026-04-09T22:28:05.733629"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Systemic Reparative Recalibration Protocols", "time": "2026-04-09T22:28:18.483533"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Deep Structural Dismantling and Re-Indigenization", "time": "2026-04-09T22:28:25.933904"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Asset Restitution & Sovereign Endowment", "time": "2026-04-09T22:28:34.795138"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Cultural Ecology Excavation & Replanting", "time": "2026-04-09T22:28:47.890144"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Reparative Justice Binding Protocol", "time": "2026-04-09T22:28:58.219630"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty Reclamation Infusion", "time": "2026-04-09T22:29:10.745354"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Colonial Contaminant Neutralization Protocol", "time": "2026-04-09T22:29:24.696541"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Ecosystem Governance Architects", "time": "2026-04-09T22:29:33.979903"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Resource Sovereignty Re-Engineering", "time": "2026-04-09T22:29:47.438750"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Knowledge & Praxis Weavers", "time": "2026-04-09T22:30:00.642527"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Knowledge Network Weaving", "time": "2026-04-09T22:30:10.045954"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Resource Governance & Ecological Re-patterning", "time": "2026-04-09T22:30:25.447937"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Foundational Truth & Data Weaving", "time": "2026-04-09T22:30:37.727801"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Autonomy Weaving Pathways for Justice", "time": "2026-04-09T22:30:49.553877"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Heritage Repatriation Corridors", "time": "2026-04-09T22:31:02.792191"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Knowledge and Practice Diffusion Corridors", "time": "2026-04-09T22:31:14.606782"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge Value Reinstatement", "time": "2026-04-09T22:31:25.105556"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Economic Reparations Data Service", "time": "2026-04-09T22:31:39.512059"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Sovereignty & Narrative Recovery", "time": "2026-04-09T22:31:49.854359"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Reparation Value Lab", "time": "2026-04-09T22:31:57.569320"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Sovereign Systems Re-Legitimization Lab", "time": "2026-04-09T22:32:08.347478"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Provenance Re-Attribution Lab", "time": "2026-04-09T22:32:19.662234"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Ancestral Blueprint Restoration Bureau", "time": "2026-04-09T22:32:29.331952"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Indigenous Knowledge Blueprint Reclamation Bureau", "time": "2026-04-09T22:32:39.910388"}
+{"event": "node", "layer": 6, "type": "solution", "name": "Economic Self-Sufficiency Blueprint Restoration", "time": "2026-04-09T22:32:53.351140"}
+{"event": "layer_done", "layer": 6, "generated": 324, "time": "2026-04-09T22:32:54.351981"}
+{"event": "complete", "total_solutions": 324, "nodes_generated": 482, "time": "2026-04-09T22:32:54.368565"}

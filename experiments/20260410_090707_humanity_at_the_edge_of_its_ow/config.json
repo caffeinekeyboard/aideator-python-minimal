@@ -1,0 +1,32 @@
+{
+  "mission_name": "Humanity at the Edge of Its Own Humanity",
+  "mission_desc": "We live in a century of extraordinary achievement.Humanity has split the atom, mapped the genome, and sent astronauts to the Moon, with plans now underway to reach Mars. Our knowledge has expanded, our tools have become more powerful, and our capacity to shape the world around us exceeds anything previous generations could have imagined. We communicate instantaneously across continents, diagnose diseases earlier, monitor climate patterns in real time, and design artificial intelligences that can aid in everything from medicine to climate modelling.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      3
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-10T09:07:07.277609",
+  "experiment_id": "20260410_090707_humanity_at_the_edge_of_its_ow"
+}

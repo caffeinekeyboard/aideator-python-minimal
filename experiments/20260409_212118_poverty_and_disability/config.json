@@ -1,0 +1,32 @@
+{
+  "mission_name": "Poverty and disability",
+  "mission_desc": "The World Bank estimates that 20% of the world\u2019s poorest people are living with some kind of disability. \n\nAround 80% of people living with a disability are based in countries where communities often lack the governance, infrastructure, and facilities to support them. People with disabilities live without many basic services that others find easier to access, such as health care and education. \n\nThe reduced access to education or skill-building opportunities makes it difficult for people living with disabilities to find employment and to build a stable livelihood. The lack of suitable health care makes them more vulnerable to disease which, in turn, adds to the occurrence of health issues in developing countries. \n\nAlong with the physical stress that they experience, people with disabilities often experience emotional stress from social stigma and discrimination, inhibited from engaging in communal activities with limited support to develop their independence.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      3
+    ],
+    [
+      "abstraction",
+      2
+    ],
+    [
+      "analogy",
+      3
+    ],
+    [
+      "inspiration",
+      3
+    ],
+    [
+      "solution",
+      3
+    ]
+  ],
+  "started_at": "2026-04-09T21:21:18.145765",
+  "experiment_id": "20260409_212118_poverty_and_disability"
+}

@@ -4,13 +4,13 @@ from aideator.models import Post, PostType
 from aideator.tree import build_post
 from aideator.transitions import validate_transition, get_allowed_children
 from aideator.prompts import build_prompt
-from aideator.llm import LLMClient
+from aideator.llm import LLMClient, LLMClientProtocol
 
 
 class IdeaEngine:
     """Core engine for building idea trees using LLM-generated proposals."""
 
-    def __init__(self, llm_client: LLMClient | None = None):
+    def __init__(self, llm_client: LLMClientProtocol | None = None):
         self.llm = llm_client or LLMClient()
 
     def create_mission(self, name: str, description: str) -> Post:
@@ -40,5 +40,9 @@ class IdeaEngine:
 
         prompt = build_prompt(ptype, purpose)
         response = self.llm.ask(prompt)
-        name, description = LLMClient.parse_response(response)
+        name, description, returned_type = LLMClient.parse_response(response)
+        if returned_type is not None and returned_type != ptype.value:
+            raise ValueError(
+                f"LLM returned type '{returned_type}' but '{ptype.value}' was requested."
+            )
         return build_post(purpose, ptype, name, description)

@@ -6,12 +6,22 @@ from aideator.models import Post, PostType
 
 
 def context(post: Post) -> list[Post]:
-    """Returns the ancestor chain: [post, parent, grandparent, ..., root]."""
+    """Returns the ancestor chain: [post, parent, grandparent, ..., root].
+    
+    Raises:
+        ValueError: If a circular reference is detected.
+    """
     chain: list[Post] = []
+    visited: set[str] = set() #<--to detect loops
     current: Optional[Post] = post
+    
     while current is not None:
+        if current.id in visited:
+            raise ValueError(f"Circular reference detected: {current.id}")
+        visited.add(current.id)
         chain.append(current)
         current = current.purpose
+    
     return chain
 
 
@@ -26,15 +36,24 @@ def find_first(ptypes: list[PostType] | PostType, post: Post) -> Optional[Post]:
 
 
 def build_post(purpose: Post, ptype: PostType, name: str, description: str) -> Post:
-    """Create a new post and attach it to the purpose's achievers list."""
+    """Create a new post and attach it to the purpose's achievers list.
+
+    Deduplication is content-based: a sibling with the same ptype and
+    normalised name (case-insensitive, stripped) is considered a duplicate
+    and the existing post is returned without adding a new one.
+    """
+    normalised = name.strip().lower()
+    for existing in purpose.achievers:
+        if existing.ptype == ptype and existing.name.strip().lower() == normalised:
+            return existing
+
     new_post = Post(
         ptype=ptype,
         name=name,
         description=description,
         purpose=purpose,
     )
-    if new_post not in purpose.achievers:
-        purpose.achievers.append(new_post)
+    purpose.achievers.append(new_post)
     return new_post
 
 

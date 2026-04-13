@@ -23,9 +23,22 @@ def tree_to_dict(post: Post) -> dict:
 
 def dict_to_tree(data: dict, purpose: Optional[Post] = None) -> Post:
     """Reconstruct a Post tree from a dict, re-linking purpose references."""
+    for field in ("id", "type", "name", "description"):
+        if field not in data:
+            raise ValueError(
+                f"Invalid tree data: missing required field '{field}'. "
+                f"Got keys: {list(data.keys())}"
+            )
+    try:
+        ptype = PostType(data["type"])
+    except ValueError:
+        valid = [t.value for t in PostType]
+        raise ValueError(
+            f"Invalid post type '{data['type']}'. Valid types are: {valid}"
+        )
     post = Post(
         id=data["id"],
-        ptype=PostType(data["type"]),
+        ptype=ptype,
         name=data["name"],
         description=data["description"],
         purpose=purpose,

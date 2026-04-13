@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+import select
 import sys
 
 from aideator.models import PostType
@@ -24,13 +24,43 @@ Commands:
 """
 
 
-def _read_input(prompt: str) -> str:
-    """Read a line of input, handling EOF."""
+def _read_raw_input(prompt: str = "") -> str:
+    """Read input without modifying whitespace, handling EOF."""
     try:
-        return input(prompt).strip()
+        return input(prompt)
     except (EOFError, KeyboardInterrupt):
         print()
         sys.exit(0)
+
+
+def _read_input(prompt: str) -> str:
+    """Read a single trimmed line of input."""
+    return _read_raw_input(prompt).strip()
+
+
+def _stdin_has_pending_line(timeout: float) -> bool:
+    """Return True when stdin has another complete line ready to read."""
+    try:
+        ready, _, _ = select.select([sys.stdin], [], [], timeout)
+    except (OSError, ValueError):
+        return False
+    return bool(ready)
+
+
+def _read_paste_aware_input(prompt: str, idle_timeout: float = 0.15) -> str:
+    """Read one line, plus any extra lines that arrived in the same paste."""
+    first_line = _read_raw_input(prompt)
+    lines: list[str] = []
+    if first_line or _stdin_has_pending_line(idle_timeout):
+        lines.append(first_line)
+
+    while _stdin_has_pending_line(idle_timeout):
+        line = sys.stdin.readline()
+        if not line:
+            break
+        lines.append(line.rstrip("\r\n"))
+
+    return "\n".join(lines).strip()
 
 
 def main() -> None:
@@ -55,7 +85,7 @@ def main() -> None:
                 print(f"Error loading file: {e}")
         elif choice.lower().startswith("n"):
             name = _read_input("Mission name: ")
-            description = _read_input("Mission description: ")
+            description = _read_paste_aware_input("Mission description: ")
             if not name or not description:
                 print("Name and description are required.")
                 continue
