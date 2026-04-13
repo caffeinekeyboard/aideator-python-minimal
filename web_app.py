@@ -121,11 +121,18 @@ def _render_description(description: str) -> None:
 # ── Session state ──────────────────────────────────────────────────────────────
 def _init_state() -> None:
     defaults: dict = {
-        "root":          None,   # builder: active tree root
-        "selected_id":   None,   # builder: selected node id
-        "node_num":      1,      # builder: last node number chosen
-        "engine":        None,   # builder: IdeaEngine instance
-        "viewed_exp_id": None,   # runner:  experiment currently on display
+        "root":               None,   # builder: active tree root
+        "selected_id":        None,   # builder: selected node id
+        "node_num":           1,      # builder: last node number chosen
+        "engine":             None,   # builder: IdeaEngine instance
+        "viewed_exp_id":      None,   # runner:  experiment currently on display
+        "hist_runs_collapsed": False, # history: hide the "All runs" list for more detail space
+        # Edit tab for completed experiments
+        "exp_edit_root":        None,   # editable Post tree for the open experiment
+        "exp_edit_exp_id":      None,   # which experiment the above tree belongs to
+        "exp_edit_selected_id": None,   # selected node within edit view
+        "exp_edit_node_num":    1,      # nav counter for edit view
+        "exp_edit_engine":      None,   # IdeaEngine for "Propose with AI" in edit tab
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -852,6 +859,214 @@ def _render_experiment_live_progress(exp_id: str) -> None:
         )
 
 
+# ── Experiment Edit tab ────────────────────────────────────────────────────────
+
+def _render_experiment_edit(exp_id: str, results: dict) -> None:
+    """Edit tab for a completed experiment: browse/edit nodes, add children, save."""
+    # ── Load or reuse editable tree in session state ─────────────────────────
+    if st.session_state.exp_edit_exp_id != exp_id:
+        root = dict_to_tree(results["tree"])
+        st.session_state.exp_edit_root        = root
+        st.session_state.exp_edit_exp_id      = exp_id
+        st.session_state.exp_edit_selected_id = root.id
+        st.session_state.exp_edit_node_num    = 1
+        st.session_state.exp_edit_engine      = IdeaEngine()
+    else:
+        root = st.session_state.exp_edit_root
+
+    edit_engine: IdeaEngine = st.session_state.exp_edit_engine
+    all_nodes = _all_nodes(root)
+    total     = len(all_nodes)
+
+    # Resolve selected node from id; fall back to root
+    sel_id = st.session_state.exp_edit_selected_id
+    edit_selected: Post | None = _find_by_id(root, sel_id) if sel_id else root
+    if edit_selected is None:
+        edit_selected = root
+        st.session_state.exp_edit_selected_id = root.id
+
+    # Current number of the selected node (1-based)
+    cur_num = next(
+        (n for n, p, _ in all_nodes if p.id == edit_selected.id),
+        1,
+    )
+    st.session_state.exp_edit_node_num = cur_num
+
+    col_tree, col_detail = st.columns([3, 2])
+
+    # ── Left: tree + navigation ──────────────────────────────────────────────
+    with col_tree:
+        tree_html, tree_index = _tree_html(root, selected_id=sel_id, scrollable=True)
+        st.markdown(tree_html, unsafe_allow_html=True)
+
+        nav_l, nav_m, nav_r = st.columns([1, 2, 1])
+        with nav_l:
+            if st.button(
+                "◀ Prev",
+                key="exp_edit_prev",
+                disabled=(cur_num <= 1),
+                use_container_width=True,
+            ):
+                new_num = cur_num - 1
+                st.session_state.exp_edit_node_num    = new_num
+                st.session_state.exp_edit_selected_id = tree_index[new_num].id
+                st.rerun()
+        with nav_m:
+            st.markdown(
+                f'<div style="text-align:center;padding:6px 0;font-size:13px;">'
+                f'node <strong>{cur_num}</strong> / {total}</div>',
+                unsafe_allow_html=True,
+            )
+        with nav_r:
+            if st.button(
+                "Next ▶",
+                key="exp_edit_next",
+                disabled=(cur_num >= total),
+                use_container_width=True,
+            ):
+                new_num = cur_num + 1
+                st.session_state.exp_edit_node_num    = new_num
+                st.session_state.exp_edit_selected_id = tree_index[new_num].id
+                st.rerun()
+
+        with st.expander("Jump to node…", expanded=False):
+            jump_num = st.number_input(
+                "Node number",
+                min_value=1,
+                max_value=total,
+                value=cur_num,
+                step=1,
+                key="exp_edit_jump_input",
+            )
+            if st.button("Go", key="exp_edit_jump_go", use_container_width=True):
+                target = tree_index.get(int(jump_num))
+                if target:
+                    st.session_state.exp_edit_node_num    = int(jump_num)
+                    st.session_state.exp_edit_selected_id = target.id
+                    st.rerun()
+
+    # ── Right: node detail + edit + add + save ────────────────────────────────
+    with col_detail:
+        # Ancestor breadcrumb
+        ancestors = list(reversed(_node_context(edit_selected)))
+        if len(ancestors) > 1:
+            crumb_parts = []
+            for anc in ancestors[:-1]:
+                anc_icon = PTYPE_ICON.get(anc.ptype, "•")
+                crumb_parts.append(
+                    f'<span style="opacity:0.6;font-size:11px;">'
+                    f'{anc_icon} {_html.escape(anc.name)}'
+                    f'</span>'
+                )
+            st.markdown(
+                " › ".join(crumb_parts),
+                unsafe_allow_html=True,
+            )
+
+        # Node card
+        icon  = PTYPE_ICON.get(edit_selected.ptype, "•")
+        color = PTYPE_COLOR.get(edit_selected.ptype, "#333")
+        st.markdown(
+            f'<div style="padding:12px 14px;background:var(--secondary-background-color,#f8fafc);'
+            f'border-radius:10px;border-left:4px solid {color};margin-bottom:12px;">'
+            f'<div style="font-size:11px;font-weight:700;color:{color};'
+            f'background:{color}18;padding:2px 8px;border-radius:10px;'
+            f'display:inline-block;margin-bottom:6px;">'
+            f'{icon} {edit_selected.ptype.value}</div>'
+            f'<div style="font-size:15px;font-weight:700;margin-bottom:4px;">'
+            f'{_html.escape(edit_selected.name)}</div>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+        _render_description(edit_selected.description)
+
+        # ── Edit name / description ──────────────────────────────────────────
+        with st.expander("✏️ Edit name / description", expanded=False):
+            with st.form("exp_edit_node_form"):
+                new_name = st.text_input("Name", value=edit_selected.name)
+                new_desc = st.text_area(
+                    "Description",
+                    value=(
+                        edit_selected.description
+                        if isinstance(edit_selected.description, str)
+                        else str(edit_selected.description)
+                    ),
+                    height=120,
+                )
+                if st.form_submit_button("Update", use_container_width=True):
+                    edit_selected.name        = new_name.strip()
+                    edit_selected.description = new_desc.strip()
+                    st.toast("Node updated.", icon="✏️")
+                    st.rerun()
+
+        # ── Add child node ───────────────────────────────────────────────────
+        allowed = get_allowed_children(edit_selected.ptype)
+        if allowed:
+            with st.expander("➕ Add child node", expanded=False):
+                child_type = st.selectbox(
+                    "Child type",
+                    options=allowed,
+                    format_func=lambda pt: f"{PTYPE_ICON.get(pt, '•')} {pt.value}",
+                    key="exp_edit_child_type",
+                )
+                ai_tab, manual_tab = st.tabs(["🤖 Propose with AI", "✏️ Add Manually"])
+
+                with ai_tab:
+                    if st.button(
+                        f"Propose {child_type.value} with AI",
+                        key="exp_edit_propose_ai",
+                        use_container_width=True,
+                    ):
+                        with st.spinner("Asking AI…"):
+                            try:
+                                new_post = edit_engine.propose_achiever(
+                                    child_type, edit_selected
+                                )
+                                st.session_state.exp_edit_selected_id = new_post.id
+                                st.toast(f"Added: {new_post.name}", icon="🤖")
+                                st.rerun()
+                            except Exception as _exc:
+                                st.error(str(_exc))
+
+                with manual_tab:
+                    with st.form("exp_edit_manual_child_form"):
+                        m_name = st.text_input("Name")
+                        m_desc = st.text_area("Description", height=80)
+                        if st.form_submit_button("Add node", use_container_width=True):
+                            if not m_name.strip():
+                                st.error("Name is required.")
+                            else:
+                                new_post = build_post(
+                                    edit_selected, child_type,
+                                    m_name.strip(), m_desc.strip(),
+                                )
+                                st.session_state.exp_edit_selected_id = new_post.id
+                                st.toast(f"Added: {new_post.name}", icon="✏️")
+                                st.rerun()
+
+        # ── Save changes ─────────────────────────────────────────────────────
+        st.divider()
+        if st.button("💾 Save Changes", type="primary", use_container_width=True,
+                     key="exp_edit_save"):
+            all_posts = [p for _, p, _ in _all_nodes(root)]
+            sols      = [p for p in all_posts if p.ptype == PostType.SOLUTION]
+            updated   = {
+                "tree": tree_to_dict(root),
+                "solutions": [
+                    {"name": s.name, "description": s.description}
+                    for s in sols
+                ],
+                "total_solutions": len(sols),
+                "completed_at": results.get("completed_at", ""),
+                "edited_at": datetime.now().isoformat(),
+            }
+            (EXPERIMENTS_DIR / exp_id / "results.json").write_text(
+                json.dumps(updated, indent=2)
+            )
+            st.toast("Saved. You can now use Continue pipeline to fill in missing children.", icon="💾")
+            st.rerun()
+
+
 # ── Experiment detail view ────────────────────────────────────────────────────
 
 def _render_experiment_details(exp_id: str) -> None:
@@ -882,8 +1097,13 @@ def _render_experiment_details(exp_id: str) -> None:
         unsafe_allow_html=True,
     )
 
-    d_resume, d_del = st.columns(2)
-    with d_resume:
+    # Load results now so we can check edited_at for the button row
+    results_early = _read_results(exp_id)
+    has_edited = bool(results_early and results_early.get("edited_at"))
+
+    btn_cols = st.columns(3 if (has_edited or _experiment_can_resume(state)) else 2)
+    col_idx = 0
+    with btn_cols[col_idx]:
         if _experiment_can_resume(state):
             if st.button(
                 "▶ Resume worker",
@@ -897,7 +1117,24 @@ def _render_experiment_details(exp_id: str) -> None:
                     st.rerun()
                 except Exception as ex:
                     st.error(str(ex))
-    with d_del:
+    col_idx += 1
+    if has_edited:
+        with btn_cols[col_idx]:
+            if st.button(
+                "▶ Continue pipeline",
+                key=f"detail_continue_{exp_id}",
+                use_container_width=True,
+                type="primary",
+                help="Resume the AI pipeline from the saved edited tree — fills in missing children.",
+            ):
+                try:
+                    _resume_experiment_worker(exp_id)
+                    st.toast("Worker started — will fill in missing children.", icon="▶️")
+                    st.rerun()
+                except Exception as ex:
+                    st.error(str(ex))
+        col_idx += 1
+    with btn_cols[col_idx]:
         if st.button(
             "🗑️ Delete run",
             key=f"detail_del_{exp_id}",
@@ -921,10 +1158,10 @@ def _render_experiment_details(exp_id: str) -> None:
         c2.metric("Total nodes", nodes)
         c3.metric("Completed", completed)
 
-        results = _read_results(exp_id)
+        results = results_early or _read_results(exp_id)
         if results:
-            tab_tree, tab_solutions, tab_nodes, tab_dl = st.tabs(
-                ["🌳 Tree", "✅ Solutions", "📋 Node Details", "⬇️ Download"]
+            tab_tree, tab_solutions, tab_nodes, tab_edit, tab_dl = st.tabs(
+                ["🌳 Tree", "✅ Solutions", "📋 Node Details", "✏️ Edit", "⬇️ Download"]
             )
 
             with tab_tree:
@@ -975,6 +1212,9 @@ def _render_experiment_details(exp_id: str) -> None:
                             _render_description(post.description)
                 except (KeyError, ValueError) as _err:
                     st.error(f"Could not load nodes: {_err}")
+
+            with tab_edit:
+                _render_experiment_edit(exp_id, results)
 
             with tab_dl:
                 st.download_button(
@@ -1091,38 +1331,52 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
 def _render_experiment_history_page() -> None:
     """List on the left; **Open** shows the same experiment details on the right."""
     st.caption("Runs live under `experiments/`. **Open** loads progress, results, and downloads in the panel beside the list.")
-    # Use Streamlit primitives (no fixed hex colors) so text stays visible in dark theme.
     st.subheader("Experiment History")
-    st.markdown(
-        "Latest runs first. **Open** shows that run on this page (right). "
-        "**Rerun** clones config into a *new* run. **▶ Resume** starts the worker again "
-        "in the same folder if a run is stuck, failed, or never finished. **🗑️** removes "
-        "that run from disk."
-    )
 
-    col_list, col_detail = st.columns([2, 3], gap="large")
+    viewed_id = st.session_state.get("viewed_exp_id")
+    collapsed = st.session_state.get("hist_runs_collapsed", False)
 
-    with col_list:
-        st.markdown("##### All runs")
-        # Fixed pixel height enables Streamlit’s built-in vertical scroll (see st.container docs).
-        # Keys become classes like st-key-streamlit-<hash>-hist_all_runs, so plain CSS selectors
-        # for st-key-hist_all_runs never matched.
-        with st.container(
-            key="hist_all_runs",
-            border=True,
-            height=560,
-        ):
-            _render_experiment_history_cards(key_prefix="histpg_")
-
-    with col_detail:
-        st.markdown("##### Experiment")
-        viewed_id = st.session_state.get("viewed_exp_id")
+    # ── Header row: description + collapse toggle ─────────────────────────────
+    hdr_left, hdr_right = st.columns([5, 1])
+    with hdr_left:
+        st.markdown(
+            "Latest runs first. **Open** shows that run on this page (right). "
+            "**Rerun** clones config into a *new* run. **▶ Resume** starts the worker again "
+            "in the same folder if a run is stuck, failed, or never finished. **🗑️** removes "
+            "that run from disk."
+        )
+    with hdr_right:
+        # Only show the toggle when an experiment is open
         if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
-            _render_experiment_details(viewed_id)
-        else:
-            st.info(
-                "Click **Open** on a run to show live progress, results, and downloads here."
-            )
+            label = "▶ Show runs" if collapsed else "◀ Hide runs"
+            if st.button(label, key="hist_collapse_toggle", use_container_width=True,
+                         help="Toggle the runs list to give more space to the detail view"):
+                st.session_state.hist_runs_collapsed = not collapsed
+                st.rerun()
+
+    # ── Body: list + detail, or full-width detail when collapsed ─────────────
+    if collapsed and viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
+        _render_experiment_details(viewed_id)
+    else:
+        col_list, col_detail = st.columns([2, 3], gap="large")
+
+        with col_list:
+            st.markdown("##### All runs")
+            with st.container(
+                key="hist_all_runs",
+                border=True,
+                height=560,
+            ):
+                _render_experiment_history_cards(key_prefix="histpg_")
+
+        with col_detail:
+            st.markdown("##### Experiment")
+            if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
+                _render_experiment_details(viewed_id)
+            else:
+                st.info(
+                    "Click **Open** on a run to show live progress, results, and downloads here."
+                )
 
 
 # ── Runner tab ────────────────────────────────────────────────────────────────
@@ -1152,11 +1406,11 @@ def _render_runner() -> None:
                     height=90,
                 )
                 st.markdown("**Branching factors**")
-                b_goal     = st.slider("🏆  Goals / Stakeholder",     1, 4, 2)
-                b_abs      = st.slider("💡  Abstractions / Goal",      1, 4, 2)
-                b_analogy  = st.slider("🔄  Analogies / Abstraction",  1, 6, 4)
-                b_insp     = st.slider("⚡  Inspirations / Analogy",   1, 4, 2)
-                b_solution = st.slider("✅  Solutions / Inspiration",  1, 4, 3)
+                b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, 2)
+                b_abs      = st.slider("💡  Abstractions / Goal",      0, 4, 2)
+                b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, 4)
+                b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, 2)
+                b_solution = st.slider("✅  Solutions / Inspiration",  0, 4, 3)
                 est = b_goal * b_abs * b_analogy * b_insp * b_solution
                 st.caption(f"Theoretical max solutions: **{est}**")
 
@@ -1176,12 +1430,15 @@ def _render_runner() -> None:
                         st.error("Mission name and description are required.")
                     else:
                         pipeline = [
-                            (PostType.STAKEHOLDER, 1),
-                            (PostType.GOAL,        b_goal),
-                            (PostType.ABSTRACTION, b_abs),
-                            (PostType.ANALOGY,     b_analogy),
-                            (PostType.INSPIRATION, b_insp),
-                            (PostType.SOLUTION,    b_solution),
+                            step for step in [
+                                (PostType.STAKEHOLDER, 1),
+                                (PostType.GOAL,        b_goal),
+                                (PostType.ABSTRACTION, b_abs),
+                                (PostType.ANALOGY,     b_analogy),
+                                (PostType.INSPIRATION, b_insp),
+                                (PostType.SOLUTION,    b_solution),
+                            ]
+                            if step[1] > 0
                         ]
                         exp_id = _launch_experiment(
                             mission_name.strip(), mission_desc.strip(), pipeline,

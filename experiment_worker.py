@@ -35,13 +35,32 @@ from pathlib import Path
 
 from aideator.engine import IdeaEngine
 from aideator.llm import LLMClient
-from aideator.models import PostType
-from aideator.serialization import tree_to_dict
+from aideator.models import Post, PostType
+from aideator.serialization import dict_to_tree, tree_to_dict
 from experiment_runner import (
     experiment_gemini_model,
     experiment_request_delay_seconds,
     robust_propose_achiever,
 )
+
+
+# ── Tree helpers ──────────────────────────────────────────────────────────────
+
+def _collect_by_type(root: Post, ptype: PostType) -> list[Post]:
+    """Walk the tree (BFS) and return all Post nodes of the given type."""
+    results = []
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.ptype == ptype:
+            results.append(node)
+        stack.extend(node.achievers)
+    return results
+
+
+def _count_all(node: Post) -> int:
+    """Count total nodes in the subtree rooted at node."""
+    return 1 + sum(_count_all(c) for c in node.achievers)
 
 
 # ── File helpers (atomic writes to avoid partial-read corruption) ─────────────
@@ -88,15 +107,49 @@ def run(exp_dir_str: str) -> None:
     model = experiment_gemini_model()
     engine = IdeaEngine(LLMClient(model_name=model))
     _append_log(exp_dir, {"event": "config", "llm_model": model})
-    root = engine.create_mission(mission_name, mission_desc)
-    current_nodes = [root]
-    nodes_generated = 1
+
+    # ── Detect edited tree: resume from results.json if edited_at is present ──
+    results_f = exp_dir / "results.json"
+    resuming = (
+        results_f.exists()
+        and json.loads(results_f.read_text()).get("edited_at")
+    )
+    if resuming:
+        existing_data = json.loads(results_f.read_text())
+        root = dict_to_tree(existing_data["tree"])
+        nodes_generated = _count_all(root)
+        _append_log(exp_dir, {
+            "event": "resume_from_edited_tree",
+            "message": "Loaded edited tree from results.json",
+            "existing_nodes": nodes_generated,
+        })
+    else:
+        root = engine.create_mission(mission_name, mission_desc)
+        nodes_generated = 1
 
     # Concurrency settings
     max_workers = max(1, int(os.getenv("EXPERIMENT_MAX_CONCURRENT", "4")))
     intra_delay = max(0.0, float(os.getenv("EXPERIMENT_INTRA_PARENT_DELAY", "0.0")))
 
-    for layer_idx, (target_type, branching) in enumerate(pipeline, 1):
+    # Parent type for each layer (used when resuming to find existing parent nodes)
+    parent_types = [PostType.MISSION] + [pt for pt, _ in pipeline[:-1]]
+
+    for layer_idx, ((target_type, branching), parent_type) in enumerate(
+        zip(pipeline, parent_types), 1
+    ):
+        # When resuming from an edited tree, discover parents from the tree
+        # rather than tracking current_nodes across layers — handles gaps/additions.
+        all_parents = _collect_by_type(root, parent_type)
+        if not all_parents:
+            _write_status(exp_dir, {
+                "state": "failed",
+                "reason": f"Layer {layer_idx}: no parent nodes of type {parent_type.value} found.",
+                "nodes_generated": nodes_generated,
+            })
+            _append_log(exp_dir, {"event": "failed", "layer": layer_idx,
+                                   "reason": f"no {parent_type.value} nodes"})
+            return
+
         _write_status(exp_dir, {
             "state": "running",
             "layer": layer_idx,
@@ -108,8 +161,8 @@ def run(exp_dir_str: str) -> None:
             "event": "layer_start",
             "layer": layer_idx,
             "type": target_type.value,
-            "parents": len(current_nodes),
-            "expected": len(current_nodes) * branching,
+            "parents": len(all_parents),
+            "expected": len(all_parents) * branching,
         })
 
         # Shared mutable state accessed from worker threads
@@ -118,9 +171,11 @@ def run(exp_dir_str: str) -> None:
         nodes_generated_local = [0]  # list so threads can mutate via closure
 
         def _generate_for_parent(parent, _layer=layer_idx, _type=target_type, _b=branching):
-            """Generate `branching` children for a single parent, sequentially."""
-            results = []
-            for _ in range(_b):
+            """Generate missing children for a single parent, sequentially."""
+            existing_children = [c for c in parent.achievers if c.ptype == _type]
+            remaining = max(0, _b - len(existing_children))
+            results = list(existing_children)
+            for _ in range(remaining):
                 try:
                     post = robust_propose_achiever(engine, _type, parent)
                 except Exception as exc:
@@ -142,14 +197,14 @@ def run(exp_dir_str: str) -> None:
 
         next_layer: list = []
 
-        if len(current_nodes) == 1:
+        if len(all_parents) == 1:
             # Single parent — no benefit from a thread pool, run inline
-            next_layer = _generate_for_parent(current_nodes[0])
+            next_layer = _generate_for_parent(all_parents[0])
         else:
-            with ThreadPoolExecutor(max_workers=min(max_workers, len(current_nodes))) as executor:
+            with ThreadPoolExecutor(max_workers=min(max_workers, len(all_parents))) as executor:
                 futures = {
                     executor.submit(_generate_for_parent, parent): parent
-                    for parent in current_nodes
+                    for parent in all_parents
                 }
                 for future in as_completed(futures):
                     try:
@@ -177,10 +232,9 @@ def run(exp_dir_str: str) -> None:
             "layer": layer_idx,
             "generated": len(next_layer),
         })
-        current_nodes = next_layer
 
     # ── Save results ──────────────────────────────────────────────────────────
-    solutions = [p for p in current_nodes if p.ptype == PostType.SOLUTION]
+    solutions = _collect_by_type(root, PostType.SOLUTION)
     results = {
         "tree": tree_to_dict(root),
         "solutions": [
