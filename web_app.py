@@ -43,7 +43,8 @@ st.set_page_config(
 )
 
 # ── Constants ──────────────────────────────────────────────────────────────────
-EXPERIMENTS_DIR = Path(__file__).parent / "experiments"
+EXPERIMENTS_DIR  = Path(__file__).parent / "experiments"
+SAVED_TREES_DIR  = Path(__file__).parent / "saved_trees"
 
 PTYPE_ICON: dict[PostType, str] = {
     PostType.MISSION:     "🎯",
@@ -129,6 +130,57 @@ def _init_state() -> None:
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
+
+
+# ── Saved-tree helpers ────────────────────────────────────────────────────────
+def _list_saved_trees() -> list[Path]:
+    """Return saved tree files sorted newest-first."""
+    if not SAVED_TREES_DIR.exists():
+        return []
+    return sorted(
+        SAVED_TREES_DIR.glob("*.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+
+
+def _save_tree(root: Post, save_name: str) -> Path:
+    """Write the current tree to `saved_trees/<save_name>.json`. Returns the path."""
+    SAVED_TREES_DIR.mkdir(exist_ok=True)
+    slug = re.sub(r"[^\w\s-]", "", save_name.strip()).strip()
+    slug = re.sub(r"\s+", "_", slug)[:50] or "tree"
+    path = SAVED_TREES_DIR / f"{slug}.json"
+    path.write_text(json.dumps(tree_to_dict(root), indent=2))
+    return path
+
+
+@st.dialog("Save Tree")
+def _save_tree_dialog(root: Post) -> None:
+    mission_name = root.name if root else "tree"
+    save_name = st.text_input(
+        "Save name",
+        value=mission_name,
+        placeholder="Give this tree a name…",
+    )
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("💾 Save", type="primary", use_container_width=True):
+            if not save_name.strip():
+                st.error("Please enter a name.")
+            else:
+                path = _save_tree(root, save_name.strip())
+                st.session_state.pop("pending_save_tree", None)
+                st.toast(f'Saved as "{path.stem}"', icon="💾")
+                st.rerun()
+    with c2:
+        if st.button("Cancel", use_container_width=True):
+            st.session_state.pop("pending_save_tree", None)
+            st.rerun()
+
+
+def _maybe_show_save_dialog() -> None:
+    if st.session_state.get("pending_save_tree"):
+        _save_tree_dialog(st.session_state.root)
 
 
 # ── Tree helpers ───────────────────────────────────────────────────────────────
@@ -264,9 +316,43 @@ def _render_builder() -> None:
                             st.error(f"Failed to initialise engine: {e}")
 
         with col_load:
-            st.markdown("#### Load from File")
+            st.markdown("#### Load Tree")
+
+            # ── Saved trees ───────────────────────────────────────────────────
+            saved = _list_saved_trees()
+            if saved:
+                st.markdown("**From saved trees**")
+                saved_labels = {p.stem: p for p in saved}
+                chosen_label = st.selectbox(
+                    "Saved tree", options=list(saved_labels.keys()),
+                    label_visibility="collapsed",
+                )
+                c_load_saved, c_del_saved = st.columns([3, 1])
+                with c_load_saved:
+                    if st.button("📂 Load", use_container_width=True, key="load_saved_btn"):
+                        try:
+                            root = import_json(str(saved_labels[chosen_label]))
+                            st.session_state.engine      = IdeaEngine()
+                            st.session_state.root        = root
+                            st.session_state.selected_id = root.id
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Failed to load: {e}")
+                with c_del_saved:
+                    if st.button("🗑️", use_container_width=True, key="del_saved_btn",
+                                 help="Delete this saved tree from disk"):
+                        try:
+                            saved_labels[chosen_label].unlink()
+                            st.toast(f'Deleted "{chosen_label}"', icon="🗑️")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Could not delete: {e}")
+                st.markdown("---")
+
+            # ── Upload from file ──────────────────────────────────────────────
+            st.markdown("**From file upload**")
             with st.form("load_form"):
-                uploaded = st.file_uploader("Upload a saved JSON tree", type="json")
+                uploaded = st.file_uploader("Upload a JSON tree file", type="json")
                 submitted = st.form_submit_button("📂 Load Tree", use_container_width=True)
                 if submitted and uploaded:
                     try:
@@ -388,21 +474,51 @@ def _render_builder() -> None:
 
         allowed = get_allowed_children(selected.ptype) if selected else []
         if allowed:
-            st.markdown("**Propose a child node**")
+            st.markdown("**Add a child node**")
             child_type = st.selectbox(
                 "Child type", options=allowed,
                 format_func=lambda t: f"{PTYPE_ICON.get(t, '')}  {t.value}",
                 label_visibility="collapsed",
             )
-            if st.button("🤖 Propose with AI", type="primary", use_container_width=True):
-                with st.spinner(f"Asking the LLM to propose a {child_type.value}…"):
-                    try:
-                        new_post = st.session_state.engine.propose_achiever(child_type, selected)
-                        st.session_state.selected_id = new_post.id
-                        st.toast(f'Created: "{new_post.name}"', icon="✅")
-                        st.rerun()
-                    except Exception as e:
-                        st.error(f"Error: {e}")
+
+            tab_ai, tab_manual = st.tabs(["🤖 Propose with AI", "✏️ Add Manually"])
+
+            with tab_ai:
+                if st.button("🤖 Propose with AI", type="primary", use_container_width=True):
+                    with st.spinner(f"Asking the LLM to propose a {child_type.value}…"):
+                        try:
+                            new_post = st.session_state.engine.propose_achiever(child_type, selected)
+                            st.session_state.selected_id = new_post.id
+                            st.toast(f'Created: "{new_post.name}"', icon="✅")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error: {e}")
+
+            with tab_manual:
+                with st.form("manual_node_form", clear_on_submit=True):
+                    manual_name = st.text_input(
+                        "Name",
+                        placeholder=f"A short name for the {child_type.value}…",
+                    )
+                    manual_desc = st.text_area(
+                        "Description",
+                        placeholder="Describe it in a few sentences…",
+                        height=100,
+                    )
+                    if st.form_submit_button("➕ Add Node", use_container_width=True):
+                        if not manual_name.strip():
+                            st.error("Name is required.")
+                        elif not manual_desc.strip():
+                            st.error("Description is required.")
+                        else:
+                            new_post = build_post(
+                                selected, child_type,
+                                manual_name.strip(), manual_desc.strip(),
+                            )
+                            st.session_state.selected_id = new_post.id
+                            st.toast(f'Added: "{new_post.name}"', icon="✅")
+                            st.rerun()
+
         elif selected:
             color = PTYPE_COLOR.get(selected.ptype, "#94a3b8")
             st.markdown(
@@ -413,13 +529,20 @@ def _render_builder() -> None:
             )
 
         st.divider()
-        st.download_button(
-            "⬇️ Download Tree (JSON)",
-            data=json.dumps(tree_to_dict(root), indent=2),
-            file_name="aideator_tree.json",
-            mime="application/json",
-            use_container_width=True,
-        )
+        c_save, c_dl = st.columns(2)
+        with c_save:
+            if st.button("💾 Save Tree", use_container_width=True):
+                st.session_state.pending_save_tree = True
+                st.rerun()
+        with c_dl:
+            dl_base = re.sub(r"\s+", "_", root.name[:30])
+            st.download_button(
+                "⬇️ Download JSON",
+                data=json.dumps(tree_to_dict(root), indent=2),
+                file_name=f"{dl_base}.json",
+                mime="application/json",
+                use_container_width=True,
+            )
         if st.button("🗑️ Reset Tree", use_container_width=True):
             st.session_state.pending_reset_tree = True
             st.rerun()
@@ -1123,3 +1246,4 @@ else:
 
 _maybe_show_delete_dialog()
 _maybe_show_reset_dialog()
+_maybe_show_save_dialog()

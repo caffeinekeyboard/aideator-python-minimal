@@ -1,0 +1,32 @@
+{
+  "mission_name": "Next-Gen Grid-Scale Energy Storage",
+  "mission_desc": "Develop novel methods to store grid-scale renewable energy that do not rely on rare-earth lithium-ion batteries, targeting cost, scalability, and environmental sustainability.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      4
+    ],
+    [
+      "abstraction",
+      4
+    ],
+    [
+      "analogy",
+      6
+    ],
+    [
+      "inspiration",
+      4
+    ],
+    [
+      "solution",
+      4
+    ]
+  ],
+  "started_at": "2026-04-13T19:20:00.455513",
+  "experiment_id": "20260413_192000_nextgen_gridscale_energy_stora"
+}

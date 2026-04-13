@@ -12,21 +12,22 @@
     ],
     [
       "abstraction",
-      2
+      1
     ],
     [
       "analogy",
-      4
+      2
     ],
     [
       "inspiration",
-      2
+      1
     ],
     [
       "solution",
       3
     ]
   ],
-  "started_at": "2026-04-10T06:56:24.271566",
-  "experiment_id": "20260410_065624_nextgen_gridscale_energy_stora"
+  "started_at": "2026-04-13T19:34:44.438049",
+  "experiment_id": "20260413_193444_nextgen_gridscale_energy_stora",
+  "max_concurrent": 16
 }
