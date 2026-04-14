@@ -1,0 +1,254 @@
+{
+  "tree": {
+    "id": "8ee7f331-6bb1-4fa6-8f1b-4888ac7f0ec4",
+    "type": "mission",
+    "name": "1) UM6P university - leader and bridge for Sub-Saharan Africa",
+    "description": "UM6P university (universite mohammed 6 polytechnic um6p.ma) is a young, well-funded and rapidly growing research university in Morocco, now ranked among the top 500 research universities globally. UM6P's goals include becoming a center for world-leading research, increasing the number of highly-educated Moroccans, and becoming a leader and bridge for Sub-Saharan Africa. Please give us some awesome ideas for how we can do that.",
+    "achievers": [
+      {
+        "id": "750fc15c-0948-4328-b14a-a23882f679d7",
+        "type": "stakeholder",
+        "name": "African Regional Development Bodies",
+        "description": "These organizations, such as regional economic communities (e.g., ECOWAS, SADC, COMESA) or specialized agencies of the African Union, focus on regional integration, policy harmonization, and large-scale development projects across Sub-Saharan Africa. Their involvement ensures UM6P's research and initiatives are strategically aligned with broader continental development agendas and can achieve widespread, systemic impact.",
+        "achievers": [
+          {
+            "id": "23f09029-921e-4a42-b523-e948470bfe71",
+            "type": "goal",
+            "name": "Evidence-Informed Regional Development Policies",
+            "description": "African Regional Development Bodies aim for a state where all their development strategies and policy frameworks are consistently informed by rigorous research and data. This ensures their initiatives are effective, credible, and strategically aligned with continental needs and challenges, leveraging institutions like UM6P for knowledge.",
+            "achievers": [
+              {
+                "id": "9994f83e-9fa3-4a2f-86a5-c97f2af0fb1e",
+                "type": "barrier",
+                "name": "Disjointed Policy-Research Agendas",
+                "description": "This barrier arises from a systemic disconnect where UM6P's robust research priorities do not consistently align with the immediate and long-term policy formulation needs of African Regional Development Bodies. As a result, even high-quality evidence may not directly address the critical questions policymakers are asking, limiting its uptake for evidence-informed policies.",
+                "achievers": [
+                  {
+                    "id": "1e3415c7-7aac-4285-9c44-379f2fa56159",
+                    "type": "cause",
+                    "name": "Ad-hoc Engagement Mechanisms",
+                    "description": "UM6P and African Regional Development Bodies primarily engage through informal, project-specific, or reactive channels rather than consistent, institutionalized platforms for sustained dialogue. This sporadic interaction prevents a deep, mutual understanding of evolving priorities and research needs, hindering strategic alignment.",
+                    "achievers": [
+                      {
+                        "id": "a3210474-b8ce-46f3-823c-f57f00a58699",
+                        "type": "solution",
+                        "name": "Strategic Africa Policy-Research Nexus",
+                        "description": "The solution is the establishment of a \"Strategic Africa Policy-Research Nexus\" program, creating institutionalized platforms for continuous dialogue between UM6P and African Regional Development Bodies. This program will include a standing joint steering committee, regular thematic policy-research workshops, and dedicated liaison officers embedded within both UM6P and key regional bodies.\n\nThis solution moves beyond sporadic interactions, fostering a deep, continuous understanding of evolving policy priorities and research capabilities. It ensures that UM6P's research agenda is proactively shaped to address critical continental challenges, while simultaneously providing regional bodies with direct access to relevant, high-quality evidence for policy formulation. This consistent engagement builds trust and facilitates the co-creation of knowledge directly applicable to regional development.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "e38e495f-8e5d-4425-881f-5c044d5121d3",
+                        "type": "solution",
+                        "name": "African Policy Co-Creation Sprints",
+                        "description": "UM6P will establish an institutionalized program of \"African Policy Co-Creation Sprints,\" inviting African Regional Development Bodies to submit specific, time-bound policy challenges. UM6P researchers and policymakers will then collaborate intensively over short periods (e.g., 2-4 weeks) to jointly develop evidence-based solutions and actionable policy recommendations for these challenges. A dedicated program office at UM6P would manage intake, team formation, and dissemination.\n\nThis solution transitions from ad-hoc interactions to a structured, demand-driven engagement model that produces immediate, tangible value for regional bodies. It ensures UM6P's research capacity is directly harnessed for urgent policy needs, fostering deep, focused collaboration and co-ownership of outputs. This agile approach builds trust and demonstrates the direct utility of research in shaping effective regional development policies.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "27ab172f-651a-474d-8bc2-1c84e136d995",
+                        "type": "solution",
+                        "name": "Embedded Policy-Research Fellowships",
+                        "description": "{'what': 'UM6P will launch an \"Embedded Policy-Research Fellowships\" program, facilitating structured, reciprocal secondments of researchers from UM6P to African Regional Development Bodies and policy experts from these bodies to UM6P. These sustained exchanges, typically lasting 6-12 months, will embed individuals within each other\\'s operational environments to collaboratively address regional development challenges and identify emerging research needs.', 'why': \"This program moves beyond sporadic interactions by fostering deep, continuous understanding and co-creation through direct, long-term immersion. It allows UM6P researchers to proactively align their work with evolving policy priorities and enables policymakers to directly leverage UM6P's expertise from within their structures. This sustained human connection builds lasting institutional bridges and ensures evidence is co-developed and applied effectively.\"}",
+                        "achievers": []
+                      },
+                      {
+                        "id": "da7bc5e0-d406-4a86-a05f-19e28f9c54ab",
+                        "type": "solution",
+                        "name": "African Policy Intelligence Hub",
+                        "description": "{'what': 'UM6P will establish an \"African Policy Intelligence Hub,\" a dedicated unit responsible for continuous monitoring of African Regional Development Bodies\\' strategic agendas and policy documents. This hub will proactively curate, synthesize, and translate UM6P\\'s relevant research outputs into targeted, actionable policy briefs, data visualizations, and foresight reports, disseminating them through regular, institutionalized communication channels tailored for policymakers.', 'why': \"This solution replaces ad-hoc interactions with a proactive, structured mechanism for continuous knowledge delivery, ensuring UM6P's expertise consistently informs regional policy. It bridges the research-policy gap by systematically translating complex research into readily usable formats, building UM6P's reputation as a go-to source for evidence-informed policy and fostering deeper, sustained engagement through tailored information flow.\"}",
+                        "achievers": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "96be838b-654a-4fe0-94c8-a702e59bf572",
+                    "type": "cause",
+                    "name": "Competing Academic-Policy Incentive Structures",
+                    "description": "UM6P researchers are often primarily incentivized by academic publications, grants for novel theoretical work, and international citations, which may not directly reward the development of immediate, actionable evidence for policy. Conversely, African Regional Development Bodies (ARDBs) may lack robust mechanisms to fund or formally recognize research that aligns with their policy cycles and applied needs. This creates a systemic disconnect in what is prioritized and funded by each party.",
+                    "achievers": [
+                      {
+                        "id": "60348a5d-5480-4b83-8783-6ca56b919695",
+                        "type": "solution",
+                        "name": "African Policy Impact Research Initiative",
+                        "description": "UM6P will launch the \"African Policy Impact Research Initiative,\" a dedicated program co-developed with African Regional Development Bodies (ARDBs) that offers competitive grants and career recognition specifically for research addressing their priority policy questions. Researchers will be evaluated not just on publications, but equally on actionable policy briefs, direct engagement with ARDBs, and the demonstrable influence of their work on regional policy outcomes.\n\nThis initiative directly reconfigures incentive structures by providing a parallel track for academic advancement that values policy relevance and impact, complementing traditional academic metrics. It ensures UM6P's research capacity is strategically directed towards and rewarded for generating evidence directly applicable to critical regional development policies, thereby bridging the current disconnect.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "0adc918c-d3dc-4946-b7e7-36e24c14c8c5",
+                        "type": "solution",
+                        "name": "Integrated Policy Scholar Program",
+                        "description": "{'What is the solution?': 'UM6P and African Regional Development Bodies (ARDBs) will establish an \"Integrated Policy Scholar Program\" featuring co-funded joint appointments and embedded fellowships. This program enables UM6P researchers to serve extended periods directly within ARDBs, actively contributing to policy design and implementation, while ARDB policy experts spend time at UM6P co-developing research agendas and translating findings.', 'Why is it a good solution?': \"This directly aligns incentives by embedding researchers within policy-making cycles, ensuring their work addresses immediate policy needs and gains direct recognition from ARDBs for its utility. Conversely, ARDB experts' presence at UM6P fosters co-creation of relevant research, making outputs inherently suited for policy uptake and bridging the knowledge translation gap organically.\"}",
+                        "achievers": []
+                      },
+                      {
+                        "id": "c841017a-f317-4f12-85bd-18fb79e43cb7",
+                        "type": "solution",
+                        "name": "Co-Funded Regional Policy-Research Consortia",
+                        "description": "{'What is the solution?': 'UM6P and African Regional Development Bodies (ARDBs) will co-establish and co-fund permanent, thematic research consortia focused on critical regional development challenges. These consortia will jointly define research agendas from inception, requiring projects to simultaneously produce top-tier academic publications and actionable, co-authored policy recommendations with explicit ARDB endorsement.', 'Why is it a good solution?': \"This inherently aligns incentives by making both academic excellence and direct policy applicability essential for the consortia's funding, evaluation, and continuation. Researchers are thus rewarded for achieving dual impact within a jointly governed structure, ensuring their work consistently meets both academic rigor and ARDBs' policy needs.\"}",
+                        "achievers": []
+                      },
+                      {
+                        "id": "c9eec6a9-c0a7-419a-8f24-68cb88f0f7ea",
+                        "type": "solution",
+                        "name": "Policy Impact Credentialing System",
+                        "description": "{'What is the solution?': 'UM6P will introduce a \"Policy Impact Credentialing System\" where African Regional Development Bodies (ARDBs) formally assess and \\'credential\\' UM6P research outputs for their direct policy utility and influence on regional development agendas. This credentialing will serve as a significant, recognized metric within UM6P\\'s academic promotion, tenure, and internal grant allocation processes, creating a direct pathway for policy-relevant work to bolster academic careers.', 'Why is it a good solution?': \"This solution directly reconfigures UM6P's internal incentive structure by giving formal academic weight to external policy validation, rewarding researchers for impactful engagement beyond traditional publications. It compels researchers to prioritize and tailor their work to ARDBs' immediate needs, ensuring that impactful policy evidence is both produced and recognized as a valuable contribution to their academic standing.\"}",
+                        "achievers": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "8519e5df-bd23-4db6-bfaf-5b3a6c10f2d8",
+                "type": "barrier",
+                "name": "Weak Evidence Integration Structures",
+                "description": "This barrier arises when African Regional Development Bodies lack formal, systematic processes, dedicated units, or established platforms designed to proactively identify, review, synthesize, and integrate external research and data into their policy formulation cycles. Even when relevant evidence from UM6P or other sources is available, its uptake is ad-hoc and dependent on individual champions rather than embedded organizational practice.",
+                "achievers": [
+                  {
+                    "id": "b3c83c7a-8cd5-4e04-b947-53e99ec7792a",
+                    "type": "cause",
+                    "name": "Reactive Policy Culture Dominance",
+                    "description": "This cause describes an organizational environment within African Regional Development Bodies where immediate concerns, political pressures, or crisis management take precedence over long-term strategic investments. This reactive mode prevents the proactive establishment and maintenance of systematic processes for evidence integration.",
+                    "achievers": [
+                      {
+                        "id": "0dc5898d-d457-4051-bddb-df3547ac9fe5",
+                        "type": "solution",
+                        "name": "Regional Foresight and Strategy Hubs",
+                        "description": "UM6P will establish co-created 'Regional Foresight and Strategy Hubs' directly within partner African Regional Development Bodies. These hubs will embed UM6P researchers and local policy analysts to collaboratively conduct horizon scanning, scenario planning, and rapid evidence synthesis on critical emerging regional challenges, generating proactive, data-driven policy briefs and strategic advisories.\n\nThis solution is effective because it directly counters reactive culture by demonstrating the immediate value of foresight in preventing and effectively addressing emerging issues, making strategic investment feel urgent and relevant. By embedding expertise and processes, it fosters a proactive, evidence-informed mindset from within, gradually shifting organizational priorities away from pure crisis management.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "ea6f1a6b-db57-4f67-9f49-011cae2d7445",
+                        "type": "solution",
+                        "name": "Proactive Policy Culture Catalysts",
+                        "description": "UM6P will establish a \"Proactive Policy Culture Catalysts Program\" tailored for mid-to-senior level leaders within African Regional Development Bodies. This immersive program, combining workshops, peer-learning networks, and applied strategic challenges, will equip participants with advanced foresight, evidence-based policy formulation, and internal advocacy skills.\nThe program aims to cultivate a critical mass of internal champions capable of systematically transforming reactive organizational behaviors and championing dedicated evidence integration structures.\nThis solution directly counters reactive culture by empowering internal champions to drive systemic change, rather than relying solely on external embeds. By building capacity and demonstrating the practical value of proactive strategies through applied projects, it shifts mindsets and priorities from within.\nIt fosters a sustainable cultural shift by investing in the human capital crucial for making evidence integration an internally-driven, high-priority imperative.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "9d91b24e-a232-4f5d-9881-9f43b3ca6367",
+                        "type": "solution",
+                        "name": "Strategic Policy Foresight Reviews",
+                        "description": "{'What is the solution?': 'UM6P will launch a \"Strategic Policy Foresight Reviews\" initiative, offering rapid, targeted, evidence-based analyses of current or imminent policy initiatives within African Regional Development Bodies. This service will proactively identify potential long-term risks, unintended consequences, and opportunities for enhanced resilience, reframing immediate concerns within a forward-looking, systemic context. It aims to demonstrate the tangible, immediate value of integrating foresight and rigorous research into policy formulation cycles.', 'Why is it a good solution?': \"This solution directly disrupts reactive policy culture by inserting a proactive, evidence-based lens into ARDBs' current priority issues and emerging crises. By providing actionable insights that mitigate future problems *related to their present concerns*, it showcases the direct utility and cost-saving potential of proactivity. This fosters an incremental shift from crisis response to strategic anticipation, making evidence integration a practical necessity rather than a long-term ideal.\"}",
+                        "achievers": []
+                      },
+                      {
+                        "id": "e6d9db29-d73c-41c4-baf8-161beca111d3",
+                        "type": "solution",
+                        "name": "Collaborative Futures Policy Challenge",
+                        "description": "UM6P will launch a \"Collaborative Futures Policy Challenge,\" an annual program where African Regional Development Bodies (ARDBs) are invited to co-define and propose critical future-oriented policy challenges facing Sub-Saharan Africa. Selected proposals will trigger joint research projects, co-funded and executed by UM6P and the partnering ARDB, specifically aimed at generating evidence-based policy frameworks and strategic recommendations for these identified future needs.\n\nThis initiative directly counters reactive culture by institutionalizing a competitive incentive for ARDBs to proactively identify and invest in long-term strategic planning and evidence integration. It shifts organizational focus from immediate crisis management to anticipatory problem-solving, demonstrating the tangible value of foresight through collaborative, high-impact research.",
+                        "achievers": []
+                      }
+                    ]
+                  },
+                  {
+                    "id": "81ab0b99-f15a-44fe-9ce2-18e12937090a",
+                    "type": "cause",
+                    "name": "Limited Structural Design Expertise",
+                    "description": "This cause highlights the absence of specialized skills and knowledge within African Regional Development Bodies needed to conceptualize, design, and implement sophisticated organizational structures and processes for evidence integration. It's not merely a lack of individuals, but an institutional gap in the know-how to build effective evidence-uptake mechanisms.",
+                    "achievers": [
+                      {
+                        "id": "91637173-40fc-4282-83e5-4c78cddda35a",
+                        "type": "solution",
+                        "name": "UM6P Evidence Structure Co-Design Hub",
+                        "description": "UM6P would establish a specialized \"Evidence Integration Structures Co-Design Hub\" (EISCH) that actively partners with African Regional Development Bodies. This hub would deploy expert teams to collaboratively assess existing organizational frameworks, design tailor-made formal processes, units, and digital platforms for systematic evidence integration, and provide hands-on support during their pilot implementation phases.\nThis solution directly remedies the \"Limited Structural Design Expertise\" by embedding specialized know-how within the bodies through active collaboration, not just consultation. It ensures that robust, context-specific evidence integration mechanisms are not only conceptualized but also practically implemented and sustained, fostering genuine ownership and systemic impact aligned with UM6P's mission as a continental bridge.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "0036d2df-1d8f-4241-9ee8-494aa9133c25",
+                        "type": "solution",
+                        "name": "Policy Evidence Structural Design Academy",
+                        "description": "UM6P establishes a \"Policy Evidence Structural Design Academy,\" offering a targeted, multi-module professional certification program for key personnel within African Regional Development Bodies. This academy provides specialized training in organizational design principles, process mapping, change management, and technology integration specifically for building robust evidence-to-policy uptake mechanisms.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "af139399-9077-48ce-baa1-6c7c15f1ea75",
+                        "type": "solution",
+                        "name": "Continental Policy Structure Toolkit",
+                        "description": "UM6P will establish a \"Continental Policy Structure Toolkit\" platform, compiling open-source, modular blueprints and customizable guides for evidence integration structures tailored for African Regional Development Bodies. This platform will provide pre-designed organizational models, process flows, technology recommendations, and resource allocation templates for effective evidence uptake.\nThis approach empowers regional bodies to self-implement sophisticated evidence integration mechanisms by providing readily available, expert-vetted design components, circumventing the need for extensive internal design expertise. It leverages UM6P's research capacity to create scalable, adaptable solutions that can be widely adopted across Sub-Saharan Africa, fostering systemic improvement.",
+                        "achievers": []
+                      },
+                      {
+                        "id": "77d005f7-716b-45d4-824f-4ad2df6a743d",
+                        "type": "solution",
+                        "name": "UM6P Evidence Structure Design Bureau",
+                        "description": "{'What is the solution?': 'UM6P will establish a dedicated \"Evidence Structure Design Bureau\" that offers end-to-end, bespoke structural design and implementation blueprinting services to African Regional Development Bodies. This bureau will act as an external design authority, engaging with regional bodies to assess needs, and then independently conceptualizing and delivering complete architectural plans for their evidence integration mechanisms, including process flows, unit structures, and technology recommendations.', 'Why is it a good solution?': \"This solution directly fills the expertise gap by outsourcing the complex task of structural design to UM6P's specialized bureau, allowing regional bodies to receive professionally crafted, ready-to-implement blueprints. It accelerates the establishment of robust evidence integration without requiring internal capacity building, ensuring high-quality, strategically aligned structures are rapidly adopted across the continent.\"}",
+                        "achievers": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "solutions": [
+    {
+      "name": "UM6P Evidence Structure Design Bureau",
+      "description": "{'What is the solution?': 'UM6P will establish a dedicated \"Evidence Structure Design Bureau\" that offers end-to-end, bespoke structural design and implementation blueprinting services to African Regional Development Bodies. This bureau will act as an external design authority, engaging with regional bodies to assess needs, and then independently conceptualizing and delivering complete architectural plans for their evidence integration mechanisms, including process flows, unit structures, and technology recommendations.', 'Why is it a good solution?': \"This solution directly fills the expertise gap by outsourcing the complex task of structural design to UM6P's specialized bureau, allowing regional bodies to receive professionally crafted, ready-to-implement blueprints. It accelerates the establishment of robust evidence integration without requiring internal capacity building, ensuring high-quality, strategically aligned structures are rapidly adopted across the continent.\"}"
+    },
+    {
+      "name": "Continental Policy Structure Toolkit",
+      "description": "UM6P will establish a \"Continental Policy Structure Toolkit\" platform, compiling open-source, modular blueprints and customizable guides for evidence integration structures tailored for African Regional Development Bodies. This platform will provide pre-designed organizational models, process flows, technology recommendations, and resource allocation templates for effective evidence uptake.\nThis approach empowers regional bodies to self-implement sophisticated evidence integration mechanisms by providing readily available, expert-vetted design components, circumventing the need for extensive internal design expertise. It leverages UM6P's research capacity to create scalable, adaptable solutions that can be widely adopted across Sub-Saharan Africa, fostering systemic improvement."
+    },
+    {
+      "name": "Policy Evidence Structural Design Academy",
+      "description": "UM6P establishes a \"Policy Evidence Structural Design Academy,\" offering a targeted, multi-module professional certification program for key personnel within African Regional Development Bodies. This academy provides specialized training in organizational design principles, process mapping, change management, and technology integration specifically for building robust evidence-to-policy uptake mechanisms."
+    },
+    {
+      "name": "UM6P Evidence Structure Co-Design Hub",
+      "description": "UM6P would establish a specialized \"Evidence Integration Structures Co-Design Hub\" (EISCH) that actively partners with African Regional Development Bodies. This hub would deploy expert teams to collaboratively assess existing organizational frameworks, design tailor-made formal processes, units, and digital platforms for systematic evidence integration, and provide hands-on support during their pilot implementation phases.\nThis solution directly remedies the \"Limited Structural Design Expertise\" by embedding specialized know-how within the bodies through active collaboration, not just consultation. It ensures that robust, context-specific evidence integration mechanisms are not only conceptualized but also practically implemented and sustained, fostering genuine ownership and systemic impact aligned with UM6P's mission as a continental bridge."
+    },
+    {
+      "name": "Collaborative Futures Policy Challenge",
+      "description": "UM6P will launch a \"Collaborative Futures Policy Challenge,\" an annual program where African Regional Development Bodies (ARDBs) are invited to co-define and propose critical future-oriented policy challenges facing Sub-Saharan Africa. Selected proposals will trigger joint research projects, co-funded and executed by UM6P and the partnering ARDB, specifically aimed at generating evidence-based policy frameworks and strategic recommendations for these identified future needs.\n\nThis initiative directly counters reactive culture by institutionalizing a competitive incentive for ARDBs to proactively identify and invest in long-term strategic planning and evidence integration. It shifts organizational focus from immediate crisis management to anticipatory problem-solving, demonstrating the tangible value of foresight through collaborative, high-impact research."
+    },
+    {
+      "name": "Strategic Policy Foresight Reviews",
+      "description": "{'What is the solution?': 'UM6P will launch a \"Strategic Policy Foresight Reviews\" initiative, offering rapid, targeted, evidence-based analyses of current or imminent policy initiatives within African Regional Development Bodies. This service will proactively identify potential long-term risks, unintended consequences, and opportunities for enhanced resilience, reframing immediate concerns within a forward-looking, systemic context. It aims to demonstrate the tangible, immediate value of integrating foresight and rigorous research into policy formulation cycles.', 'Why is it a good solution?': \"This solution directly disrupts reactive policy culture by inserting a proactive, evidence-based lens into ARDBs' current priority issues and emerging crises. By providing actionable insights that mitigate future problems *related to their present concerns*, it showcases the direct utility and cost-saving potential of proactivity. This fosters an incremental shift from crisis response to strategic anticipation, making evidence integration a practical necessity rather than a long-term ideal.\"}"
+    },
+    {
+      "name": "Proactive Policy Culture Catalysts",
+      "description": "UM6P will establish a \"Proactive Policy Culture Catalysts Program\" tailored for mid-to-senior level leaders within African Regional Development Bodies. This immersive program, combining workshops, peer-learning networks, and applied strategic challenges, will equip participants with advanced foresight, evidence-based policy formulation, and internal advocacy skills.\nThe program aims to cultivate a critical mass of internal champions capable of systematically transforming reactive organizational behaviors and championing dedicated evidence integration structures.\nThis solution directly counters reactive culture by empowering internal champions to drive systemic change, rather than relying solely on external embeds. By building capacity and demonstrating the practical value of proactive strategies through applied projects, it shifts mindsets and priorities from within.\nIt fosters a sustainable cultural shift by investing in the human capital crucial for making evidence integration an internally-driven, high-priority imperative."
+    },
+    {
+      "name": "Regional Foresight and Strategy Hubs",
+      "description": "UM6P will establish co-created 'Regional Foresight and Strategy Hubs' directly within partner African Regional Development Bodies. These hubs will embed UM6P researchers and local policy analysts to collaboratively conduct horizon scanning, scenario planning, and rapid evidence synthesis on critical emerging regional challenges, generating proactive, data-driven policy briefs and strategic advisories.\n\nThis solution is effective because it directly counters reactive culture by demonstrating the immediate value of foresight in preventing and effectively addressing emerging issues, making strategic investment feel urgent and relevant. By embedding expertise and processes, it fosters a proactive, evidence-informed mindset from within, gradually shifting organizational priorities away from pure crisis management."
+    },
+    {
+      "name": "Policy Impact Credentialing System",
+      "description": "{'What is the solution?': 'UM6P will introduce a \"Policy Impact Credentialing System\" where African Regional Development Bodies (ARDBs) formally assess and \\'credential\\' UM6P research outputs for their direct policy utility and influence on regional development agendas. This credentialing will serve as a significant, recognized metric within UM6P\\'s academic promotion, tenure, and internal grant allocation processes, creating a direct pathway for policy-relevant work to bolster academic careers.', 'Why is it a good solution?': \"This solution directly reconfigures UM6P's internal incentive structure by giving formal academic weight to external policy validation, rewarding researchers for impactful engagement beyond traditional publications. It compels researchers to prioritize and tailor their work to ARDBs' immediate needs, ensuring that impactful policy evidence is both produced and recognized as a valuable contribution to their academic standing.\"}"
+    },
+    {
+      "name": "Co-Funded Regional Policy-Research Consortia",
+      "description": "{'What is the solution?': 'UM6P and African Regional Development Bodies (ARDBs) will co-establish and co-fund permanent, thematic research consortia focused on critical regional development challenges. These consortia will jointly define research agendas from inception, requiring projects to simultaneously produce top-tier academic publications and actionable, co-authored policy recommendations with explicit ARDB endorsement.', 'Why is it a good solution?': \"This inherently aligns incentives by making both academic excellence and direct policy applicability essential for the consortia's funding, evaluation, and continuation. Researchers are thus rewarded for achieving dual impact within a jointly governed structure, ensuring their work consistently meets both academic rigor and ARDBs' policy needs.\"}"
+    },
+    {
+      "name": "Integrated Policy Scholar Program",
+      "description": "{'What is the solution?': 'UM6P and African Regional Development Bodies (ARDBs) will establish an \"Integrated Policy Scholar Program\" featuring co-funded joint appointments and embedded fellowships. This program enables UM6P researchers to serve extended periods directly within ARDBs, actively contributing to policy design and implementation, while ARDB policy experts spend time at UM6P co-developing research agendas and translating findings.', 'Why is it a good solution?': \"This directly aligns incentives by embedding researchers within policy-making cycles, ensuring their work addresses immediate policy needs and gains direct recognition from ARDBs for its utility. Conversely, ARDB experts' presence at UM6P fosters co-creation of relevant research, making outputs inherently suited for policy uptake and bridging the knowledge translation gap organically.\"}"
+    },
+    {
+      "name": "African Policy Impact Research Initiative",
+      "description": "UM6P will launch the \"African Policy Impact Research Initiative,\" a dedicated program co-developed with African Regional Development Bodies (ARDBs) that offers competitive grants and career recognition specifically for research addressing their priority policy questions. Researchers will be evaluated not just on publications, but equally on actionable policy briefs, direct engagement with ARDBs, and the demonstrable influence of their work on regional policy outcomes.\n\nThis initiative directly reconfigures incentive structures by providing a parallel track for academic advancement that values policy relevance and impact, complementing traditional academic metrics. It ensures UM6P's research capacity is strategically directed towards and rewarded for generating evidence directly applicable to critical regional development policies, thereby bridging the current disconnect."
+    },
+    {
+      "name": "African Policy Intelligence Hub",
+      "description": "{'what': 'UM6P will establish an \"African Policy Intelligence Hub,\" a dedicated unit responsible for continuous monitoring of African Regional Development Bodies\\' strategic agendas and policy documents. This hub will proactively curate, synthesize, and translate UM6P\\'s relevant research outputs into targeted, actionable policy briefs, data visualizations, and foresight reports, disseminating them through regular, institutionalized communication channels tailored for policymakers.', 'why': \"This solution replaces ad-hoc interactions with a proactive, structured mechanism for continuous knowledge delivery, ensuring UM6P's expertise consistently informs regional policy. It bridges the research-policy gap by systematically translating complex research into readily usable formats, building UM6P's reputation as a go-to source for evidence-informed policy and fostering deeper, sustained engagement through tailored information flow.\"}"
+    },
+    {
+      "name": "Embedded Policy-Research Fellowships",
+      "description": "{'what': 'UM6P will launch an \"Embedded Policy-Research Fellowships\" program, facilitating structured, reciprocal secondments of researchers from UM6P to African Regional Development Bodies and policy experts from these bodies to UM6P. These sustained exchanges, typically lasting 6-12 months, will embed individuals within each other\\'s operational environments to collaboratively address regional development challenges and identify emerging research needs.', 'why': \"This program moves beyond sporadic interactions by fostering deep, continuous understanding and co-creation through direct, long-term immersion. It allows UM6P researchers to proactively align their work with evolving policy priorities and enables policymakers to directly leverage UM6P's expertise from within their structures. This sustained human connection builds lasting institutional bridges and ensures evidence is co-developed and applied effectively.\"}"
+    },
+    {
+      "name": "African Policy Co-Creation Sprints",
+      "description": "UM6P will establish an institutionalized program of \"African Policy Co-Creation Sprints,\" inviting African Regional Development Bodies to submit specific, time-bound policy challenges. UM6P researchers and policymakers will then collaborate intensively over short periods (e.g., 2-4 weeks) to jointly develop evidence-based solutions and actionable policy recommendations for these challenges. A dedicated program office at UM6P would manage intake, team formation, and dissemination.\n\nThis solution transitions from ad-hoc interactions to a structured, demand-driven engagement model that produces immediate, tangible value for regional bodies. It ensures UM6P's research capacity is directly harnessed for urgent policy needs, fostering deep, focused collaboration and co-ownership of outputs. This agile approach builds trust and demonstrates the direct utility of research in shaping effective regional development policies."
+    },
+    {
+      "name": "Strategic Africa Policy-Research Nexus",
+      "description": "The solution is the establishment of a \"Strategic Africa Policy-Research Nexus\" program, creating institutionalized platforms for continuous dialogue between UM6P and African Regional Development Bodies. This program will include a standing joint steering committee, regular thematic policy-research workshops, and dedicated liaison officers embedded within both UM6P and key regional bodies.\n\nThis solution moves beyond sporadic interactions, fostering a deep, continuous understanding of evolving policy priorities and research capabilities. It ensures that UM6P's research agenda is proactively shaped to address critical continental challenges, while simultaneously providing regional bodies with direct access to relevant, high-quality evidence for policy formulation. This consistent engagement builds trust and facilitates the co-creation of knowledge directly applicable to regional development."
+    }
+  ],
+  "total_solutions": 16,
+  "completed_at": "2026-04-14T01:05:08.918416"
+}

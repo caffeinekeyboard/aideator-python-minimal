@@ -1,0 +1,29 @@
+{
+  "mission_name": "1) Store grid-scale renewable energy",
+  "mission_desc": "Develop novel methods to store grid-scale renewable energy that do not rely on rare-earth lithium-ion batteries, targeting cost, scalability, and environmental sustainability",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      1
+    ],
+    [
+      "barrier",
+      2
+    ],
+    [
+      "cause",
+      2
+    ],
+    [
+      "solution",
+      4
+    ]
+  ],
+  "started_at": "2026-04-14T01:01:11.784327",
+  "experiment_id": "20260414_010111_1_store_gridscale_renewable_en",
+  "max_concurrent": 10
+}

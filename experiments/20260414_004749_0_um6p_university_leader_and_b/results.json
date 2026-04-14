@@ -1,0 +1,74 @@
+{
+  "tree": {
+    "id": "dc671ea8-796b-4f19-aa2f-5b2fdbf336c4",
+    "type": "mission",
+    "name": "0) UM6P university - leader and bridge for Sub-Saharan Africa",
+    "description": "UM6P university (universite mohammed 6 polytechnic um6p.ma) is a young, well-funded and rapidly growing research university in Morocco, now ranked among the top 500 research universities globally. UM6P's goals include becoming a center for world-leading research, increasing the number of highly-educated Moroccans, and becoming a leader and bridge for Sub-Saharan Africa. Please give us some awesome ideas for how we can do that.",
+    "achievers": [
+      {
+        "id": "67cb9a2f-eb70-4fdf-bf89-8a2cbd1b9014",
+        "type": "stakeholder",
+        "name": "African Diaspora Professionals",
+        "description": "This stakeholder comprises highly skilled and experienced professionals of African descent working in academia, research, industry, and entrepreneurship globally. Their deep understanding of both global standards and African realities makes them invaluable for fostering world-class research, bridging knowledge gaps, and connecting UM6P with international networks.",
+        "achievers": [
+          {
+            "id": "2c1c43a5-ba78-4b67-be9b-b66d226a7ffa",
+            "type": "goal",
+            "name": "Strategic Knowledge Transfer to Africa",
+            "description": "This goal involves the systematic and impactful transfer of advanced knowledge, best practices, and innovative methodologies from global academic and industrial spheres to UM6P and the broader Sub-Saharan African research ecosystem. It leverages the African Diaspora Professionals' unique position to bridge knowledge gaps and localize global expertise, directly contributing to world-class research and educational development on the continent.",
+            "achievers": [
+              {
+                "id": "98b29f66-202c-4b25-8186-b698c161c237",
+                "type": "solution",
+                "name": "Diaspora-Led Impact Labs",
+                "description": "Establish \"Diaspora-Led Impact Labs\" within UM6P, where African Diaspora Professionals co-design and lead short-to-medium term research and innovation projects directly addressing critical Sub-Saharan African challenges. These labs would host UM6P faculty and postgraduate students, fostering direct, hands-on knowledge transfer and co-creation of solutions.",
+                "achievers": []
+              },
+              {
+                "id": "3e684781-385c-468a-bf11-6e6c20424c98",
+                "type": "solution",
+                "name": "Global Diaspora Virtual Mentorship Network",
+                "description": "{'What is the solution?': 'Establish a \"Global Diaspora Virtual Mentorship Network\" connecting UM6P faculty and PhD candidates with African Diaspora Professionals for sustained, remote knowledge exchange. This program facilitates structured virtual mentorships focused on joint research publication, advanced curriculum development, and successful international grant acquisition strategies.', 'Why is it a good solution?': \"This virtual model maximizes participation by removing geographical constraints, enabling consistent engagement from a broader pool of diaspora experts. It systematically infuses global academic and industrial best practices directly into UM6P's educational and research frameworks, accelerating institutional capacity building and fostering a culture of world-class scholarship.\"}",
+                "achievers": []
+              },
+              {
+                "id": "10b84f70-1e4b-4031-afaf-6f00ec372ae4",
+                "type": "solution",
+                "name": "Diaspora-Driven Innovation Gateway",
+                "description": "{'What is the solution?': 'Establish a \"Diaspora-Driven Innovation Gateway\" at UM6P, a specialized unit where African Diaspora Professionals collaboratively design, implement, and lead robust frameworks for research commercialization, intellectual property management, and startup incubation. This gateway leverages their global business acumen and networks to systematically translate UM6P\\'s world-class research into market-ready solutions and foster a vibrant entrepreneurial ecosystem.', 'Why is it a good solution?': \"This solution addresses the critical gap of translating research output into economic impact and real-world applications within the African context. By integrating the diaspora's expertise in technology transfer and venture development, UM6P can build a sustainable pipeline for impactful innovation, generate economic value from its research, and elevate its role as a regional economic catalyst. It systematically embeds global best practices for commercialization into the university's operations, extending beyond academic knowledge transfer to market-driven expertise.\"}",
+                "achievers": []
+              },
+              {
+                "id": "7b3b994c-bb51-41cf-bdf9-5ebb81d24197",
+                "type": "solution",
+                "name": "Diaspora Strategic Residency Program",
+                "description": "{'What is the solution?': 'Establish a \"Diaspora Strategic Residency Program\" inviting highly accomplished African Diaspora Professionals for dedicated, mid-term (e.g., 3-12 month) physical residencies at UM6P. These residents would be tasked with embedding advanced operational methodologies, co-developing new interdisciplinary curricula, and spearheading the establishment or enhancement of specialized research platforms and centers within the university.', 'Why is it a good solution?': \"This program facilitates deep, sustained knowledge transfer by integrating diaspora expertise directly into UM6P's institutional fabric, going beyond project-specific collaborations. The physical presence allows for hands-on operational training, the localization of global best practices, and the systematic upgrading of UM6P's infrastructure and programmatic offerings, fostering long-term self-sufficiency and world-class standards.\"}",
+                "achievers": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "solutions": [
+    {
+      "name": "Diaspora Strategic Residency Program",
+      "description": "{'What is the solution?': 'Establish a \"Diaspora Strategic Residency Program\" inviting highly accomplished African Diaspora Professionals for dedicated, mid-term (e.g., 3-12 month) physical residencies at UM6P. These residents would be tasked with embedding advanced operational methodologies, co-developing new interdisciplinary curricula, and spearheading the establishment or enhancement of specialized research platforms and centers within the university.', 'Why is it a good solution?': \"This program facilitates deep, sustained knowledge transfer by integrating diaspora expertise directly into UM6P's institutional fabric, going beyond project-specific collaborations. The physical presence allows for hands-on operational training, the localization of global best practices, and the systematic upgrading of UM6P's infrastructure and programmatic offerings, fostering long-term self-sufficiency and world-class standards.\"}"
+    },
+    {
+      "name": "Diaspora-Driven Innovation Gateway",
+      "description": "{'What is the solution?': 'Establish a \"Diaspora-Driven Innovation Gateway\" at UM6P, a specialized unit where African Diaspora Professionals collaboratively design, implement, and lead robust frameworks for research commercialization, intellectual property management, and startup incubation. This gateway leverages their global business acumen and networks to systematically translate UM6P\\'s world-class research into market-ready solutions and foster a vibrant entrepreneurial ecosystem.', 'Why is it a good solution?': \"This solution addresses the critical gap of translating research output into economic impact and real-world applications within the African context. By integrating the diaspora's expertise in technology transfer and venture development, UM6P can build a sustainable pipeline for impactful innovation, generate economic value from its research, and elevate its role as a regional economic catalyst. It systematically embeds global best practices for commercialization into the university's operations, extending beyond academic knowledge transfer to market-driven expertise.\"}"
+    },
+    {
+      "name": "Global Diaspora Virtual Mentorship Network",
+      "description": "{'What is the solution?': 'Establish a \"Global Diaspora Virtual Mentorship Network\" connecting UM6P faculty and PhD candidates with African Diaspora Professionals for sustained, remote knowledge exchange. This program facilitates structured virtual mentorships focused on joint research publication, advanced curriculum development, and successful international grant acquisition strategies.', 'Why is it a good solution?': \"This virtual model maximizes participation by removing geographical constraints, enabling consistent engagement from a broader pool of diaspora experts. It systematically infuses global academic and industrial best practices directly into UM6P's educational and research frameworks, accelerating institutional capacity building and fostering a culture of world-class scholarship.\"}"
+    },
+    {
+      "name": "Diaspora-Led Impact Labs",
+      "description": "Establish \"Diaspora-Led Impact Labs\" within UM6P, where African Diaspora Professionals co-design and lead short-to-medium term research and innovation projects directly addressing critical Sub-Saharan African challenges. These labs would host UM6P faculty and postgraduate students, fostering direct, hands-on knowledge transfer and co-creation of solutions."
+    }
+  ],
+  "total_solutions": 4,
+  "completed_at": "2026-04-14T00:48:43.199090"
+}

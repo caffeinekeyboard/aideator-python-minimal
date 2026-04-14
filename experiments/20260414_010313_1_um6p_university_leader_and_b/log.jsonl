@@ -1,0 +1,37 @@
+{"event": "start", "mission": "1) UM6P university - leader and bridge for Sub-Saharan Africa", "time": "2026-04-14T01:03:14.718893"}
+{"event": "config", "llm_model": "gemini-2.5-flash", "time": "2026-04-14T01:03:14.838742"}
+{"event": "layer_start", "layer": 1, "type": "stakeholder", "parents": 1, "expected": 1, "time": "2026-04-14T01:03:14.839304"}
+{"event": "node", "layer": 1, "type": "stakeholder", "name": "African Regional Development Bodies", "time": "2026-04-14T01:03:27.317445"}
+{"event": "layer_done", "layer": 1, "generated": 1, "time": "2026-04-14T01:03:27.318238"}
+{"event": "layer_start", "layer": 2, "type": "goal", "parents": 1, "expected": 1, "time": "2026-04-14T01:03:27.319617"}
+{"event": "node", "layer": 2, "type": "goal", "name": "Evidence-Informed Regional Development Policies", "time": "2026-04-14T01:03:35.961304"}
+{"event": "layer_done", "layer": 2, "generated": 1, "time": "2026-04-14T01:03:35.961755"}
+{"event": "layer_start", "layer": 3, "type": "barrier", "parents": 1, "expected": 2, "time": "2026-04-14T01:03:35.962716"}
+{"event": "node", "layer": 3, "type": "barrier", "name": "Disjointed Policy-Research Agendas", "time": "2026-04-14T01:03:46.783238"}
+{"event": "node", "layer": 3, "type": "barrier", "name": "Weak Evidence Integration Structures", "time": "2026-04-14T01:03:55.035136"}
+{"event": "layer_done", "layer": 3, "generated": 2, "time": "2026-04-14T01:03:55.035620"}
+{"event": "layer_start", "layer": 4, "type": "cause", "parents": 2, "expected": 4, "time": "2026-04-14T01:03:55.036749"}
+{"event": "node", "layer": 4, "type": "cause", "name": "Reactive Policy Culture Dominance", "time": "2026-04-14T01:04:06.047642"}
+{"event": "node", "layer": 4, "type": "cause", "name": "Ad-hoc Engagement Mechanisms", "time": "2026-04-14T01:04:11.005377"}
+{"event": "node", "layer": 4, "type": "cause", "name": "Limited Structural Design Expertise", "time": "2026-04-14T01:04:19.310739"}
+{"event": "node", "layer": 4, "type": "cause", "name": "Competing Academic-Policy Incentive Structures", "time": "2026-04-14T01:04:21.963662"}
+{"event": "layer_done", "layer": 4, "generated": 4, "time": "2026-04-14T01:04:21.964541"}
+{"event": "layer_start", "layer": 5, "type": "solution", "parents": 4, "expected": 16, "time": "2026-04-14T01:04:21.965649"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Strategic Africa Policy-Research Nexus", "time": "2026-04-14T01:04:26.042848"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Regional Foresight and Strategy Hubs", "time": "2026-04-14T01:04:27.654976"}
+{"event": "node", "layer": 5, "type": "solution", "name": "UM6P Evidence Structure Co-Design Hub", "time": "2026-04-14T01:04:27.908951"}
+{"event": "node", "layer": 5, "type": "solution", "name": "African Policy Impact Research Initiative", "time": "2026-04-14T01:04:29.866109"}
+{"event": "node", "layer": 5, "type": "solution", "name": "African Policy Co-Creation Sprints", "time": "2026-04-14T01:04:34.300552"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Proactive Policy Culture Catalysts", "time": "2026-04-14T01:04:37.205618"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Policy Evidence Structural Design Academy", "time": "2026-04-14T01:04:38.188322"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Embedded Policy-Research Fellowships", "time": "2026-04-14T01:04:41.584751"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Continental Policy Structure Toolkit", "time": "2026-04-14T01:04:45.402955"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Integrated Policy Scholar Program", "time": "2026-04-14T01:04:45.855684"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Strategic Policy Foresight Reviews", "time": "2026-04-14T01:04:48.720555"}
+{"event": "node", "layer": 5, "type": "solution", "name": "African Policy Intelligence Hub", "time": "2026-04-14T01:04:50.130297"}
+{"event": "node", "layer": 5, "type": "solution", "name": "UM6P Evidence Structure Design Bureau", "time": "2026-04-14T01:04:54.967928"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Co-Funded Regional Policy-Research Consortia", "time": "2026-04-14T01:04:56.916624"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Collaborative Futures Policy Challenge", "time": "2026-04-14T01:05:01.845053"}
+{"event": "node", "layer": 5, "type": "solution", "name": "Policy Impact Credentialing System", "time": "2026-04-14T01:05:08.916516"}
+{"event": "layer_done", "layer": 5, "generated": 16, "time": "2026-04-14T01:05:08.917717"}
+{"event": "complete", "total_solutions": 16, "nodes_generated": 25, "time": "2026-04-14T01:05:08.920505"}

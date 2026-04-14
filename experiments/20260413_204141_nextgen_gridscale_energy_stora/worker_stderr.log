@@ -1,7 +1,0 @@
-20:41:43 | INFO    | AFC is enabled with max remote calls: 10.
-20:41:51 | INFO    | HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
-20:41:51 | INFO    | AFC remote call 1 is done.
-20:41:51 | ERROR   | Logic error proposing solution for 'Material Recycling & Repurposing Industries': Cannot add solution to stakeholder. Allowed child types: goal — re-raising.
-20:41:51 | ERROR   | Logic error proposing solution for 'Material Recycling & Repurposing Industries': Cannot add solution to stakeholder. Allowed child types: goal — re-raising.
-20:41:51 | ERROR   | Logic error proposing solution for 'Material Recycling & Repurposing Industries': Cannot add solution to stakeholder. Allowed child types: goal — re-raising.
-20:41:51 | ERROR   | Logic error proposing solution for 'Material Recycling & Repurposing Industries': Cannot add solution to stakeholder. Allowed child types: goal — re-raising.

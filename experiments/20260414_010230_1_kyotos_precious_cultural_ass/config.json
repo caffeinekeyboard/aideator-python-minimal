@@ -1,0 +1,29 @@
+{
+  "mission_name": "1) Kyoto's precious cultural asset",
+  "mission_desc": "Come up with better ideas for how to preserve Kyoto's precious cultural assets and lifestyle while also enjoying the economic and other benefits of tourism to the city.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      1
+    ],
+    [
+      "barrier",
+      2
+    ],
+    [
+      "cause",
+      2
+    ],
+    [
+      "solution",
+      4
+    ]
+  ],
+  "started_at": "2026-04-14T01:02:30.067623",
+  "experiment_id": "20260414_010230_1_kyotos_precious_cultural_ass",
+  "max_concurrent": 9
+}

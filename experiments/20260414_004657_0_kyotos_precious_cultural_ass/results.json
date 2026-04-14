@@ -1,0 +1,74 @@
+{
+  "tree": {
+    "id": "1e3aafc9-edc5-4ff1-9fc3-332607f51ad2",
+    "type": "mission",
+    "name": "0) Kyoto's precious cultural asset",
+    "description": "come up with better ideas for how to preserve Kyoto's precious cultural assets and lifestyle while also enjoying the economic and other benefits of tourism to the city.",
+    "achievers": [
+      {
+        "id": "5816b3b4-04d9-4f6d-855e-0146f085f011",
+        "type": "stakeholder",
+        "name": "Traditional Craft Practitioners",
+        "description": "This stakeholder represents the individual artisans, craftspeople, and master practitioners of Kyoto's traditional arts and crafts, such as kimono dyeing, pottery, and tea ceremony. They embody and transmit invaluable intangible cultural heritage.",
+        "achievers": [
+          {
+            "id": "49178bcf-6c94-4947-a345-a89f932bfb32",
+            "type": "goal",
+            "name": "Continuous Craft Practice and Transmission",
+            "description": "This goal aims to ensure that the knowledge, skills, and techniques of Kyoto's traditional crafts are actively practiced by current masters and successfully passed down to new generations of apprentices. It seeks to prevent the loss of these invaluable intangible cultural assets, maintaining their living heritage for both residents and visitors.",
+            "achievers": [
+              {
+                "id": "9f9c4cec-0739-4cee-9a01-a94fad0b635e",
+                "type": "solution",
+                "name": "Kyoto Craft Apprenticeship & Experience Hubs",
+                "description": "{'What is the solution?': 'Establish regional \"Kyoto Craft Apprenticeship & Experience Hubs\" within Kyoto, offering subsidized, multi-year apprenticeship programs led by master artisans. These hubs would also host high-quality, authentic hands-on workshops and immersive demonstrations for tourists and local residents. This provides additional income streams and public engagement.', 'Why is it a good solution?': 'This ensures stable financial support for both masters and apprentices, making craft careers more viable and attractive to new generations. It transforms tourist interaction from passive viewing to active participation, creating deeper appreciation for the crafts and generating revenue that directly sustains the tradition.'}",
+                "achievers": []
+              },
+              {
+                "id": "0377f3d7-8e99-420a-96e8-de76dbcd7b51",
+                "type": "solution",
+                "name": "Kyoto Craft Digital Legacy & Innovation",
+                "description": "Establish the \"Kyoto Craft Living Archive & Innovation Network,\" a secure digital platform for master artisans to meticulously document their craft techniques, material knowledge, and oral traditions using high-quality multimedia. This platform would also facilitate peer-to-peer exchange among masters and connect them with contemporary designers and global luxury markets, fostering innovative applications and new revenue streams.\nThis approach ensures the enduring preservation of nuanced, often unwritten, craft knowledge against the risk of generational loss, making it accessible for future study and practice. By connecting tradition with innovation and new markets, it enhances the economic viability and prestige of craft careers, actively attracting and retaining new generations of practitioners to ensure continuous transmission.",
+                "achievers": []
+              },
+              {
+                "id": "666a7ef1-07d3-467c-9b53-db588b7c13cc",
+                "type": "solution",
+                "name": "Kyoto Craft Market Incubation",
+                "description": "{'What is the solution?': 'Establish a \"Kyoto Craft Innovation & Market Incubation\" program, a dedicated entity that actively partners master artisans with contemporary designers, marketing experts, and business strategists. This program focuses on co-creating and commercializing high-quality, contemporary products and experiences that leverage traditional techniques and materials for modern lifestyles and global markets, providing comprehensive branding, distribution, and sales support.', 'Why is it a good solution?': \"This approach directly enhances the economic viability of craft practices by developing new, sustainable revenue streams beyond traditional commissions or tourist experiences, making craft careers more attractive to younger generations. By fostering innovation and market relevance, it ensures continuous practice and transmission by securing a future for artisans within a dynamic commercial landscape, while also elevating global appreciation for Kyoto's cultural heritage.\"}",
+                "achievers": []
+              },
+              {
+                "id": "fe4c181a-2dfb-42a0-99b1-9a6f81376be2",
+                "type": "solution",
+                "name": "Kyoto Living Craft Residency",
+                "description": "{'What is the solution?': 'Establish the \"Kyoto Living Craft Residency,\" a dedicated program providing master artisans and their selected apprentices with fully subsidized housing and integrated studio spaces in designated heritage properties. This initiative offers a guaranteed living stipend and material allowance, freeing practitioners to dedicate themselves entirely to continuous craft practice, deep skill refinement, and immersive, full-time transmission to the next generation.', 'Why is it a good solution?': 'This program alleviates the significant economic pressures on artisans, making the pursuit of traditional crafts a more viable and attractive career path for younger generations by ensuring a stable income and living environment. It creates a focused, immersive ecosystem for daily practice and uninterrupted intergenerational transmission, actively safeguarding invaluable intangible cultural heritage and fostering its vibrant continuity.'}",
+                "achievers": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "solutions": [
+    {
+      "name": "Kyoto Living Craft Residency",
+      "description": "{'What is the solution?': 'Establish the \"Kyoto Living Craft Residency,\" a dedicated program providing master artisans and their selected apprentices with fully subsidized housing and integrated studio spaces in designated heritage properties. This initiative offers a guaranteed living stipend and material allowance, freeing practitioners to dedicate themselves entirely to continuous craft practice, deep skill refinement, and immersive, full-time transmission to the next generation.', 'Why is it a good solution?': 'This program alleviates the significant economic pressures on artisans, making the pursuit of traditional crafts a more viable and attractive career path for younger generations by ensuring a stable income and living environment. It creates a focused, immersive ecosystem for daily practice and uninterrupted intergenerational transmission, actively safeguarding invaluable intangible cultural heritage and fostering its vibrant continuity.'}"
+    },
+    {
+      "name": "Kyoto Craft Market Incubation",
+      "description": "{'What is the solution?': 'Establish a \"Kyoto Craft Innovation & Market Incubation\" program, a dedicated entity that actively partners master artisans with contemporary designers, marketing experts, and business strategists. This program focuses on co-creating and commercializing high-quality, contemporary products and experiences that leverage traditional techniques and materials for modern lifestyles and global markets, providing comprehensive branding, distribution, and sales support.', 'Why is it a good solution?': \"This approach directly enhances the economic viability of craft practices by developing new, sustainable revenue streams beyond traditional commissions or tourist experiences, making craft careers more attractive to younger generations. By fostering innovation and market relevance, it ensures continuous practice and transmission by securing a future for artisans within a dynamic commercial landscape, while also elevating global appreciation for Kyoto's cultural heritage.\"}"
+    },
+    {
+      "name": "Kyoto Craft Digital Legacy & Innovation",
+      "description": "Establish the \"Kyoto Craft Living Archive & Innovation Network,\" a secure digital platform for master artisans to meticulously document their craft techniques, material knowledge, and oral traditions using high-quality multimedia. This platform would also facilitate peer-to-peer exchange among masters and connect them with contemporary designers and global luxury markets, fostering innovative applications and new revenue streams.\nThis approach ensures the enduring preservation of nuanced, often unwritten, craft knowledge against the risk of generational loss, making it accessible for future study and practice. By connecting tradition with innovation and new markets, it enhances the economic viability and prestige of craft careers, actively attracting and retaining new generations of practitioners to ensure continuous transmission."
+    },
+    {
+      "name": "Kyoto Craft Apprenticeship & Experience Hubs",
+      "description": "{'What is the solution?': 'Establish regional \"Kyoto Craft Apprenticeship & Experience Hubs\" within Kyoto, offering subsidized, multi-year apprenticeship programs led by master artisans. These hubs would also host high-quality, authentic hands-on workshops and immersive demonstrations for tourists and local residents. This provides additional income streams and public engagement.', 'Why is it a good solution?': 'This ensures stable financial support for both masters and apprentices, making craft careers more viable and attractive to new generations. It transforms tourist interaction from passive viewing to active participation, creating deeper appreciation for the crafts and generating revenue that directly sustains the tradition.'}"
+    }
+  ],
+  "total_solutions": 4,
+  "completed_at": "2026-04-14T00:47:46.312354"
+}

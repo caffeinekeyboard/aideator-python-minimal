@@ -1,0 +1,15 @@
+{"event": "start", "mission": "0) Kyoto's precious cultural asset", "time": "2026-04-14T00:46:59.340411"}
+{"event": "config", "llm_model": "gemini-2.5-flash", "time": "2026-04-14T00:46:59.491926"}
+{"event": "layer_start", "layer": 1, "type": "stakeholder", "parents": 1, "expected": 1, "time": "2026-04-14T00:46:59.492471"}
+{"event": "node", "layer": 1, "type": "stakeholder", "name": "Traditional Craft Practitioners", "time": "2026-04-14T00:47:07.552170"}
+{"event": "layer_done", "layer": 1, "generated": 1, "time": "2026-04-14T00:47:07.552708"}
+{"event": "layer_start", "layer": 2, "type": "goal", "parents": 1, "expected": 1, "time": "2026-04-14T00:47:07.553730"}
+{"event": "node", "layer": 2, "type": "goal", "name": "Continuous Craft Practice and Transmission", "time": "2026-04-14T00:47:15.338574"}
+{"event": "layer_done", "layer": 2, "generated": 1, "time": "2026-04-14T00:47:15.339034"}
+{"event": "layer_start", "layer": 3, "type": "solution", "parents": 1, "expected": 4, "time": "2026-04-14T00:47:15.340196"}
+{"event": "node", "layer": 3, "type": "solution", "name": "Kyoto Craft Apprenticeship & Experience Hubs", "time": "2026-04-14T00:47:21.529834"}
+{"event": "node", "layer": 3, "type": "solution", "name": "Kyoto Craft Digital Legacy & Innovation", "time": "2026-04-14T00:47:27.465514"}
+{"event": "node", "layer": 3, "type": "solution", "name": "Kyoto Craft Market Incubation", "time": "2026-04-14T00:47:37.194973"}
+{"event": "node", "layer": 3, "type": "solution", "name": "Kyoto Living Craft Residency", "time": "2026-04-14T00:47:46.311037"}
+{"event": "layer_done", "layer": 3, "generated": 4, "time": "2026-04-14T00:47:46.311913"}
+{"event": "complete", "total_solutions": 4, "nodes_generated": 7, "time": "2026-04-14T00:47:46.314338"}

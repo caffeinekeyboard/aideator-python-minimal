@@ -94,6 +94,63 @@ st.markdown(
 
 /* ── Subtle dividers ─────────────────────────────────────────────────────── */
 hr { border-color: #e2e8f0 !important; margin: 14px 0 !important; }
+
+/* ── Condition preset cards ──────────────────────────────────────────────── */
+.preset-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 13px 13px 11px 17px;
+    margin-bottom: 4px;
+    background: var(--secondary-background-color, #f8fafc);
+    position: relative;
+    overflow: hidden;
+    min-height: 88px;
+}
+.preset-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 4px;
+    border-radius: 10px 0 0 10px;
+}
+.pc-c1::before { background: #16a34a; }
+.pc-c2::before { background: #2563eb; }
+.pc-c3::before { background: #7c3aed; }
+.pc-c4::before { background: #ea580c; }
+.preset-card.pc-active { background: #f8faff; border-color: #bfdbfe; }
+.pc-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+}
+.pc-c1 .pc-label { color: #16a34a; }
+.pc-c2 .pc-label { color: #2563eb; }
+.pc-c3 .pc-label { color: #7c3aed; }
+.pc-c4 .pc-label { color: #ea580c; }
+.pc-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 7px;
+}
+.pc-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    align-items: center;
+}
+.pc-step {
+    font-size: 9px;
+    font-weight: 600;
+    color: #475569;
+    background: #f1f5f9;
+    border-radius: 4px;
+    padding: 2px 5px;
+    white-space: nowrap;
+}
+.pc-arrow { font-size: 9px; color: #cbd5e1; }
 </style>
 """,
     unsafe_allow_html=True,
@@ -147,6 +204,50 @@ STATE_COLOR = {
     "failed":   "#dc2626",
     "unknown":  "#94a3b8",
 }
+
+# ── Condition presets ─────────────────────────────────────────────────────────
+CONDITION_PRESETS: list[dict] = [
+    {
+        "id": 1,
+        "label": "C1",
+        "name": "Mission Core",
+        "desc": "Stakeholder → Goal → Solution",
+        "steps": ["Goal", "Solution"],
+        "sliders": dict(b_goal=2, b_barrier=0, b_cause=0,
+                        b_abs=0, b_analogy=0, b_insp=0,
+                        b_solution=3, b_question=0, b_answer=0),
+    },
+    {
+        "id": 2,
+        "label": "C2",
+        "name": "+ Problem Analysis",
+        "desc": "… → Goal → Barrier → Cause → Solution",
+        "steps": ["Goal", "Barrier", "Cause", "Solution"],
+        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+                        b_abs=0, b_analogy=0, b_insp=0,
+                        b_solution=3, b_question=0, b_answer=0),
+    },
+    {
+        "id": 3,
+        "label": "C3",
+        "name": "+ Analogical Ideation",
+        "desc": "… → Cause → Abstraction → Analogy → Inspiration → Solution",
+        "steps": ["Cause", "Abstraction", "Analogy", "Inspiration", "Solution"],
+        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+                        b_abs=2, b_analogy=4, b_insp=2,
+                        b_solution=3, b_question=0, b_answer=0),
+    },
+    {
+        "id": 4,
+        "label": "C4",
+        "name": "+ Pregnant Question",
+        "desc": "… → Solution → Question → Answer",
+        "steps": ["Solution", "Question", "Answer"],
+        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+                        b_abs=2, b_analogy=4, b_insp=2,
+                        b_solution=3, b_question=2, b_answer=1),
+    },
+]
 
 # ── Description renderer ──────────────────────────────────────────────────────
 def _render_description(description: str) -> None:
@@ -442,7 +543,7 @@ def _render_builder() -> None:
 
     with col_tree:
         st.markdown('<div class="aid-section-title">Idea Tree</div>', unsafe_allow_html=True)
-        tree_html, index = _tree_html(root, st.session_state.selected_id, scrollable=True)
+        tree_html, index = _tree_html(root, st.session_state.selected_id, scrollable=False)
         st.markdown(tree_html, unsafe_allow_html=True)
         # ── Node navigation ───────────────────────────────────────────────────
         total = len(index)
@@ -953,7 +1054,7 @@ def _render_experiment_edit(exp_id: str, results: dict) -> None:
 
     # ── Left: tree + navigation ──────────────────────────────────────────────
     with col_tree:
-        tree_html, tree_index = _tree_html(root, selected_id=sel_id, scrollable=True)
+        tree_html, tree_index = _tree_html(root, selected_id=sel_id, scrollable=False)
         st.markdown(tree_html, unsafe_allow_html=True)
 
         nav_l, nav_m, nav_r = st.columns([1, 2, 1])
@@ -1224,7 +1325,7 @@ def _render_experiment_details(exp_id: str) -> None:
             with tab_tree:
                 try:
                     root = dict_to_tree(results["tree"])
-                    html, _ = _tree_html(root, scrollable=True)
+                    html, _ = _tree_html(root, scrollable=False)
                     st.markdown(html, unsafe_allow_html=True)
                 except (KeyError, ValueError) as _err:
                     st.error(f"Could not render tree: {_err}")
@@ -1448,8 +1549,62 @@ def _render_runner() -> None:
     col_left, col_right = st.columns([2, 3], gap="large")
 
     with col_left:
-        # ── New experiment form ────────────────────────────────────────────────
+        # ── Condition presets ──────────────────────────────────────────────────
+        active_preset = st.session_state.get("runner_active_preset", None)
+        st.markdown('<div class="aid-section-title">Condition Presets</div>', unsafe_allow_html=True)
+        pcols = st.columns(4)
+        for i, p in enumerate(CONDITION_PRESETS):
+            is_active = active_preset == p["id"]
+            active_cls = "pc-active" if is_active else ""
+            steps_html = " ".join(
+                f'<span class="pc-step">{s}</span>'
+                + ('' if j == len(p["steps"]) - 1 else '<span class="pc-arrow">›</span>')
+                for j, s in enumerate(p["steps"])
+            )
+            card_html = (
+                f'<div class="preset-card pc-c{p["id"]} {active_cls}">'
+                f'<div class="pc-label">{p["label"]}</div>'
+                f'<div class="pc-name">{p["name"]}</div>'
+                f'<div class="pc-steps">{steps_html}</div>'
+                f'</div>'
+            )
+            with pcols[i]:
+                st.markdown(card_html, unsafe_allow_html=True)
+                if st.button(
+                    "✓ Active" if is_active else "Select",
+                    key=f"preset_btn_{p['id']}",
+                    use_container_width=True,
+                    type="primary" if is_active else "secondary",
+                    help=p["desc"],
+                ):
+                    for k, v in p["sliders"].items():
+                        st.session_state[f"runner_{k}"] = v
+                    st.session_state["runner_active_preset"] = p["id"]
+                    st.rerun()
+        st.markdown("")
+
+        # ── Branching factors (outside form for live estimate updates) ───────────
         with st.expander("➕ New Experiment", expanded=True):
+            st.markdown("**Branching factors**")
+            b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, 2, key="runner_b_goal")
+            b_barrier  = st.slider("🚧  Barriers / Goal",          0, 4, 0, key="runner_b_barrier")
+            b_cause    = st.slider("🔍  Causes / Barrier",          0, 4, 0, key="runner_b_cause")
+            b_abs      = st.slider("💡  Abstractions / Cause",      0, 4, 0, key="runner_b_abs")
+            b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, 0, key="runner_b_analogy")
+            b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, 0, key="runner_b_insp")
+            b_solution = st.slider("✅  Solutions",                 0, 4, 3, key="runner_b_solution")
+            b_question = st.slider("❓  Questions / Solution",      0, 4, 0, key="runner_b_question")
+            b_answer   = st.slider("💬  Answers / Question",        0, 4, 0, key="runner_b_answer")
+            core_factors = [b_goal, b_barrier, b_cause, b_abs, b_analogy, b_insp, b_solution]
+            est = 1
+            for f in core_factors:
+                if f > 0:
+                    est *= f
+            st.caption(f"Theoretical max solutions: **{est}**")
+
+            st.divider()
+
+            # ── Mission details + launch ───────────────────────────────────────
             with st.form("runner_form"):
                 mission_name = st.text_input(
                     "Mission name", value="Next-Gen Grid-Scale Energy Storage"
@@ -1463,15 +1618,6 @@ def _render_runner() -> None:
                     ),
                     height=90,
                 )
-                st.markdown("**Branching factors**")
-                b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, 2)
-                b_abs      = st.slider("💡  Abstractions / Goal",      0, 4, 2)
-                b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, 4)
-                b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, 2)
-                b_solution = st.slider("✅  Solutions / Inspiration",  0, 4, 3)
-                est = b_goal * b_abs * b_analogy * b_insp * b_solution
-                st.caption(f"Theoretical max solutions: **{est}**")
-
                 st.markdown("**Performance**")
                 max_concurrent = st.slider(
                     "⚡  Parallel requests",
@@ -1487,14 +1633,19 @@ def _render_runner() -> None:
                     if not mission_name.strip() or not mission_desc.strip():
                         st.error("Mission name and description are required.")
                     else:
+                        _bg = st.session_state
                         pipeline = [
                             step for step in [
                                 (PostType.STAKEHOLDER, 1),
-                                (PostType.GOAL,        b_goal),
-                                (PostType.ABSTRACTION, b_abs),
-                                (PostType.ANALOGY,     b_analogy),
-                                (PostType.INSPIRATION, b_insp),
-                                (PostType.SOLUTION,    b_solution),
+                                (PostType.GOAL,        _bg.get("runner_b_goal",     2)),
+                                (PostType.BARRIER,     _bg.get("runner_b_barrier",  0)),
+                                (PostType.CAUSE,       _bg.get("runner_b_cause",    0)),
+                                (PostType.ABSTRACTION, _bg.get("runner_b_abs",      0)),
+                                (PostType.ANALOGY,     _bg.get("runner_b_analogy",  0)),
+                                (PostType.INSPIRATION, _bg.get("runner_b_insp",     0)),
+                                (PostType.SOLUTION,    _bg.get("runner_b_solution", 3)),
+                                (PostType.QUESTION,    _bg.get("runner_b_question", 0)),
+                                (PostType.ANSWER,      _bg.get("runner_b_answer",   0)),
                             ]
                             if step[1] > 0
                         ]

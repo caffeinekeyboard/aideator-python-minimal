@@ -1,0 +1,41 @@
+{
+  "mission_name": "2) UM6P university - leader and bridge for Sub-Saharan Africa",
+  "mission_desc": "UM6P university (universite mohammed 6 polytechnic um6p.ma) is a young, well-funded and rapidly growing research university in Morocco, now ranked among the top 500 research universities globally. UM6P's goals include becoming a center for world-leading research, increasing the number of highly-educated Moroccans, and becoming a leader and bridge for Sub-Saharan Africa. Please give us some awesome ideas for how we can do that.",
+  "pipeline": [
+    [
+      "stakeholder",
+      1
+    ],
+    [
+      "goal",
+      1
+    ],
+    [
+      "barrier",
+      2
+    ],
+    [
+      "cause",
+      2
+    ],
+    [
+      "abstraction",
+      2
+    ],
+    [
+      "analogy",
+      4
+    ],
+    [
+      "inspiration",
+      2
+    ],
+    [
+      "solution",
+      4
+    ]
+  ],
+  "started_at": "2026-04-14T01:06:23.044500",
+  "experiment_id": "20260414_010623_2_um6p_university_leader_and_b",
+  "max_concurrent": 10
+}
