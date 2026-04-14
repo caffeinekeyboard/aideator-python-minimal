@@ -723,8 +723,14 @@ def _exp_slug(name: str) -> str:
     return slug or "experiment"
 
 
+@st.cache_data(ttl=4)
 def _list_experiments() -> list[dict]:
-    """Return all experiment metadata sorted newest-first."""
+    """Return all experiment metadata sorted newest-first.
+
+    Cached with a 4-second TTL so repeated reruns (e.g. auto-refresh while a
+    run is in progress) do not re-read every JSON file on every tick.
+    Call ``_list_experiments.clear()`` after any mutation (delete / new run).
+    """
     if not EXPERIMENTS_DIR.exists():
         return []
     results = []
@@ -812,6 +818,7 @@ def _launch_experiment(
     (exp_dir / "config.json").write_text(json.dumps(config, indent=2))
     (exp_dir / "status.json").write_text(json.dumps({"state": "starting"}, indent=2))
     (exp_dir / "log.jsonl").write_text("")
+    _list_experiments.clear()
 
     worker = Path(__file__).parent / "experiment_worker.py"
     stderr_log = open(exp_dir / "worker_stderr.log", "w")  # noqa: WPS515
@@ -875,6 +882,7 @@ def _delete_experiment_dir(exp_id: str) -> None:
         shutil.rmtree(p)
     if st.session_state.get("viewed_exp_id") == exp_id:
         st.session_state.viewed_exp_id = None
+    _list_experiments.clear()
 
 
 @st.dialog("Delete experiment?")
@@ -1404,6 +1412,9 @@ def _render_experiment_details(exp_id: str) -> None:
 
 # ── Experiment History (list + inline detail panel) ────────────────────────────
 
+_HISTORY_PAGE_SIZE = 15
+
+
 def _render_experiment_history_cards(key_prefix: str) -> None:
     """Experiment list with Open / Rerun / Resume / Delete."""
     experiments = _list_experiments()
@@ -1411,7 +1422,15 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
         st.caption("No experiments yet. Go to **Experiment Runner** and launch one.")
         return
 
-    for exp in experiments:
+    # ── Pagination ────────────────────────────────────────────────────────────
+    total = len(experiments)
+    page_key = f"{key_prefix}page"
+    page = st.session_state.get(page_key, 0)
+    max_page = max(0, (total - 1) // _HISTORY_PAGE_SIZE)
+    page = min(page, max_page)
+    page_exps = experiments[page * _HISTORY_PAGE_SIZE : (page + 1) * _HISTORY_PAGE_SIZE]
+
+    for exp in page_exps:
         icon = STATE_ICON.get(exp["state"], "⚪")
         started = exp.get("started_at", "")[:19].replace("T", " ")
         state = exp["state"]
@@ -1485,6 +1504,20 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
                     st.session_state.pending_delete_exp = eid
                     st.rerun()
 
+    # ── Pagination controls ───────────────────────────────────────────────────
+    if max_page > 0:
+        pc1, pc2, pc3 = st.columns([1, 2, 1])
+        with pc1:
+            if page > 0 and st.button("← Prev", key=f"{key_prefix}prev", use_container_width=True):
+                st.session_state[page_key] = page - 1
+                st.rerun()
+        with pc2:
+            st.caption(f"Page {page + 1} / {max_page + 1} · {total} runs")
+        with pc3:
+            if page < max_page and st.button("Next →", key=f"{key_prefix}next", use_container_width=True):
+                st.session_state[page_key] = page + 1
+                st.rerun()
+
 
 def _render_experiment_history_page() -> None:
     """List on the left; **Open** shows the same experiment details on the right."""
@@ -1523,7 +1556,7 @@ def _render_experiment_history_page() -> None:
             with st.container(
                 key="hist_all_runs",
                 border=True,
-                height=560,
+                height=900,
             ):
                 _render_experiment_history_cards(key_prefix="histpg_")
 
@@ -1552,35 +1585,37 @@ def _render_runner() -> None:
         # ── Condition presets ──────────────────────────────────────────────────
         active_preset = st.session_state.get("runner_active_preset", None)
         st.markdown('<div class="aid-section-title">Condition Presets</div>', unsafe_allow_html=True)
-        pcols = st.columns(4)
-        for i, p in enumerate(CONDITION_PRESETS):
-            is_active = active_preset == p["id"]
-            active_cls = "pc-active" if is_active else ""
-            steps_html = " ".join(
-                f'<span class="pc-step">{s}</span>'
-                + ('' if j == len(p["steps"]) - 1 else '<span class="pc-arrow">›</span>')
-                for j, s in enumerate(p["steps"])
-            )
-            card_html = (
-                f'<div class="preset-card pc-c{p["id"]} {active_cls}">'
-                f'<div class="pc-label">{p["label"]}</div>'
-                f'<div class="pc-name">{p["name"]}</div>'
-                f'<div class="pc-steps">{steps_html}</div>'
-                f'</div>'
-            )
-            with pcols[i]:
-                st.markdown(card_html, unsafe_allow_html=True)
-                if st.button(
-                    "✓ Active" if is_active else "Select",
-                    key=f"preset_btn_{p['id']}",
-                    use_container_width=True,
-                    type="primary" if is_active else "secondary",
-                    help=p["desc"],
-                ):
-                    for k, v in p["sliders"].items():
-                        st.session_state[f"runner_{k}"] = v
-                    st.session_state["runner_active_preset"] = p["id"]
-                    st.rerun()
+        for row in range(2):
+            pcols = st.columns(2)
+            for col in range(2):
+                p = CONDITION_PRESETS[row * 2 + col]
+                is_active = active_preset == p["id"]
+                active_cls = "pc-active" if is_active else ""
+                steps_html = " ".join(
+                    f'<span class="pc-step">{s}</span>'
+                    + ('' if j == len(p["steps"]) - 1 else '<span class="pc-arrow">›</span>')
+                    for j, s in enumerate(p["steps"])
+                )
+                card_html = (
+                    f'<div class="preset-card pc-c{p["id"]} {active_cls}">'
+                    f'<div class="pc-label">{p["label"]}</div>'
+                    f'<div class="pc-name">{p["name"]}</div>'
+                    f'<div class="pc-steps">{steps_html}</div>'
+                    f'</div>'
+                )
+                with pcols[col]:
+                    st.markdown(card_html, unsafe_allow_html=True)
+                    if st.button(
+                        "✓ Active" if is_active else "Select",
+                        key=f"preset_btn_{p['id']}",
+                        use_container_width=True,
+                        type="primary" if is_active else "secondary",
+                        help=p["desc"],
+                    ):
+                        for k, v in p["sliders"].items():
+                            st.session_state[f"runner_{k}"] = v
+                        st.session_state["runner_active_preset"] = p["id"]
+                        st.rerun()
         st.markdown("")
 
         # ── Branching factors (outside form for live estimate updates) ───────────
