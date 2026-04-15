@@ -24,6 +24,7 @@ import sys
 import tempfile
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import streamlit as st
@@ -207,18 +208,19 @@ STATE_COLOR = {
 }
 
 # ── Condition presets ─────────────────────────────────────────────────────────
-SOLUTIONS_SLIDER_MAX = 500
+SOLUTIONS_SLIDER_MAX = 100
 
 CONDITION_PRESETS: list[dict] = [
     {
         "id": 1,
         "label": "C1",
         "name": "Mission → Solutions",
-        "desc": "Mission → Solution (no stakeholders/goals)",
+        "desc": "Mission → Solution (no stakeholders/goals, solutions on any challenge)",
         "steps": ["Solution"],
         "sliders": dict(b_stakeholder=0, b_goal=0, b_barrier=0, b_cause=0,
                         b_abs=0, b_analogy=0, b_insp=0,
-                        b_solution=96, b_question=0, b_answer=0),
+                        b_solution_per_challenge=96, b_question=0, b_answer=0),
+        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
     },
     {
         "id": 2,
@@ -228,7 +230,7 @@ CONDITION_PRESETS: list[dict] = [
         "steps": ["Goal", "Barrier", "Cause", "Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=0, b_analogy=0, b_insp=0,
-                        b_solution=3, b_question=0, b_answer=0),
+                        b_solution_per_challenge=3, b_question=0, b_answer=0),
         # When set, the worker will generate solutions under all listed types
         # (in addition to the standard layer chaining).
         "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
@@ -237,21 +239,23 @@ CONDITION_PRESETS: list[dict] = [
         "id": 3,
         "label": "C3",
         "name": "+ Analogical Ideation",
-        "desc": "… → Cause → Abstraction → Analogy → Inspiration → Solution",
+        "desc": "… → Cause → Abstraction → Analogy → Inspiration → Solution (solutions on any challenge)",
         "steps": ["Cause", "Abstraction", "Analogy", "Inspiration", "Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
-                        b_solution=3, b_question=0, b_answer=0),
+                        b_solution_per_challenge=3, b_question=0, b_answer=0),
+        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
     },
     {
         "id": 4,
         "label": "C4",
         "name": "+ Pregnant Question",
-        "desc": "… → Solution → Question → Answer",
+        "desc": "… → Solution → Question → Answer (solutions on any challenge)",
         "steps": ["Solution", "Question", "Answer"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
-                        b_solution=3, b_question=2, b_answer=1),
+                        b_solution_per_challenge=3, b_question=2, b_answer=1),
+        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
     },
 ]
 
@@ -284,6 +288,13 @@ def _render_description(description: str) -> None:
 
 # ── Session state ──────────────────────────────────────────────────────────────
 def _init_state() -> None:
+    # Backward compatibility for previously persisted Streamlit sessions.
+    if (
+        "runner_b_solution_per_challenge" not in st.session_state
+        and "runner_b_solution" in st.session_state
+    ):
+        st.session_state["runner_b_solution_per_challenge"] = st.session_state["runner_b_solution"]
+
     defaults: dict = {
         "root":               None,   # builder: active tree root
         "selected_id":        None,   # builder: selected node id
@@ -305,7 +316,7 @@ def _init_state() -> None:
         "runner_b_abs":      0,
         "runner_b_analogy":  0,
         "runner_b_insp":     0,
-        "runner_b_solution": 3,
+        "runner_b_solution_per_challenge": 3,
         "runner_b_question": 0,
         "runner_b_answer":   0,
         "runner_solution_parent_types": None,
@@ -334,7 +345,7 @@ def _estimate_theoretical_max_solutions(bg: dict) -> int:
             (PostType.ABSTRACTION, int(bg.get("runner_b_abs", 0))),
             (PostType.ANALOGY, int(bg.get("runner_b_analogy", 0))),
             (PostType.INSPIRATION, int(bg.get("runner_b_insp", 0))),
-            (PostType.SOLUTION, int(bg.get("runner_b_solution", 3))),
+            (PostType.SOLUTION, int(bg.get("runner_b_solution_per_challenge", 3))),
             (PostType.QUESTION, int(bg.get("runner_b_question", 0))),
             (PostType.ANSWER, int(bg.get("runner_b_answer", 0))),
         ]
@@ -357,7 +368,7 @@ def _estimate_theoretical_max_solutions(bg: dict) -> int:
             total_challenges += barriers
         if PostType.CAUSE.value in solution_parent_types:
             total_challenges += causes
-        est = max(est, total_challenges * int(bg.get("runner_b_solution", 0)))
+        est = max(est, total_challenges * int(bg.get("runner_b_solution_per_challenge", 0)))
 
     return est
 
@@ -788,6 +799,23 @@ def _exp_slug(name: str) -> str:
     return slug or "experiment"
 
 
+@st.cache_data
+def _read_json_file_cached(path_str: str, mtime_ns: int) -> Any:
+    """Read+parse a JSON file once per path/version."""
+    _ = mtime_ns  # cache key only; not used in function body
+    return json.loads(Path(path_str).read_text())
+
+
+def _read_json_file(path: Path) -> Any | None:
+    """Version-aware JSON reader (cache key = absolute path + mtime)."""
+    if not path.exists():
+        return None
+    try:
+        return _read_json_file_cached(str(path), path.stat().st_mtime_ns)
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
 @st.cache_data(ttl=4)
 def _list_experiments() -> list[dict]:
     """Return all experiment metadata sorted newest-first.
@@ -806,10 +834,9 @@ def _list_experiments() -> list[dict]:
         status_f = exp_dir / "status.json"
         if not config_f.exists():
             continue
-        try:
-            config = json.loads(config_f.read_text())
-            status = json.loads(status_f.read_text()) if status_f.exists() else {"state": "unknown"}
-        except (json.JSONDecodeError, OSError):
+        config = _read_json_file(config_f)
+        status = _read_json_file(status_f) if status_f.exists() else {"state": "unknown"}
+        if not isinstance(config, dict) or not isinstance(status, dict):
             continue
         results.append({
             "id":              exp_dir.name,
@@ -828,12 +855,10 @@ def _list_experiments() -> list[dict]:
 
 def _read_status(exp_id: str) -> dict:
     f = EXPERIMENTS_DIR / exp_id / "status.json"
-    if not f.exists():
+    data = _read_json_file(f)
+    if not isinstance(data, dict):
         return {"state": "unknown"}
-    try:
-        return json.loads(f.read_text())
-    except (json.JSONDecodeError, OSError):
-        return {"state": "unknown"}
+    return data
 
 
 def _read_log(exp_id: str) -> list[dict]:
@@ -880,12 +905,10 @@ def _read_log_tail(exp_id: str, max_lines: int = 800) -> list[dict]:
 
 def _read_results(exp_id: str) -> dict | None:
     f = EXPERIMENTS_DIR / exp_id / "results.json"
-    if not f.exists():
+    data = _read_json_file(f)
+    if not isinstance(data, dict):
         return None
-    try:
-        return json.loads(f.read_text())
-    except (json.JSONDecodeError, OSError):
-        return None
+    return data
 
 
 def _launch_experiment(
@@ -915,6 +938,7 @@ def _launch_experiment(
     (exp_dir / "config.json").write_text(json.dumps(config, indent=2))
     (exp_dir / "status.json").write_text(json.dumps({"state": "starting"}, indent=2))
     (exp_dir / "log.jsonl").write_text("")
+    _read_json_file_cached.clear()
     _list_experiments.clear()
 
     worker = Path(__file__).parent / "experiment_worker.py"
@@ -935,7 +959,9 @@ def _rerun_experiment(source_exp_id: str) -> str:
     config_f = EXPERIMENTS_DIR / source_exp_id / "config.json"
     if not config_f.exists():
         raise FileNotFoundError(f"No config for experiment {source_exp_id!r}")
-    config = json.loads(config_f.read_text())
+    config = _read_json_file(config_f)
+    if not isinstance(config, dict):
+        raise ValueError(f"Invalid config for experiment {source_exp_id!r}")
     raw_pipeline = config.get("pipeline")
     if not raw_pipeline:
         raise ValueError("Saved experiment has no pipeline; cannot rerun.")
@@ -962,7 +988,9 @@ def _resume_experiment_worker(exp_id: str) -> None:
     exp_dir = EXPERIMENTS_DIR / exp_id
     if not (exp_dir / "config.json").exists():
         raise FileNotFoundError(f"No config for experiment {exp_id!r}")
-    config = json.loads((exp_dir / "config.json").read_text())
+    config = _read_json_file(exp_dir / "config.json")
+    if not isinstance(config, dict):
+        raise ValueError(f"Invalid config for experiment {exp_id!r}")
     max_concurrent = int(config.get("max_concurrent", 4))
     worker = Path(__file__).parent / "experiment_worker.py"
     stderr_log = open(exp_dir / "worker_stderr.log", "a")  # noqa: WPS515
@@ -983,6 +1011,7 @@ def _delete_experiment_dir(exp_id: str) -> None:
         shutil.rmtree(p)
     if st.session_state.get("viewed_exp_id") == exp_id:
         st.session_state.viewed_exp_id = None
+    _read_json_file_cached.clear()
     _list_experiments.clear()
 
 
@@ -1330,6 +1359,8 @@ def _render_experiment_edit(exp_id: str, results: dict) -> None:
             (EXPERIMENTS_DIR / exp_id / "results.json").write_text(
                 json.dumps(updated, indent=2)
             )
+            _read_json_file_cached.clear()
+            _list_experiments.clear()
             st.toast("Saved. You can now use Continue pipeline to fill in missing children.", icon="💾")
             st.rerun()
 
@@ -1342,7 +1373,10 @@ def _render_experiment_details(exp_id: str) -> None:
         st.warning("Experiment data not found.")
         return
 
-    config = json.loads(config_f.read_text())
+    config = _read_json_file(config_f)
+    if not isinstance(config, dict):
+        st.warning("Experiment config is invalid.")
+        return
     status = _read_status(exp_id)
     state  = status.get("state", "unknown")
 
@@ -1435,8 +1469,8 @@ def _render_experiment_details(exp_id: str) -> None:
             except (KeyError, ValueError) as _err:
                 parse_err = str(_err)
 
-            tab_tree, tab_solutions, tab_nodes, tab_edit, tab_dl = st.tabs(
-                ["🌳 Tree", "✅ Solutions", "📋 Node Details", "✏️ Edit", "⬇️ Download"]
+            tab_tree, tab_branching, tab_solutions, tab_nodes, tab_dl = st.tabs(
+                ["🌳 Tree", "⚙️ Branching Config", "✅ Solutions", "📋 Node Details", "⬇️ Download"]
             )
 
             with tab_tree:
@@ -1446,6 +1480,35 @@ def _render_experiment_details(exp_id: str) -> None:
                     assert result_root is not None
                     html, _ = _tree_html(result_root, scrollable=False)
                     st.markdown(html, unsafe_allow_html=True)
+
+            with tab_branching:
+                raw_pipeline = config.get("pipeline", [])
+                if not raw_pipeline:
+                    st.warning("No branching config found in experiment config.")
+                else:
+                    rows = []
+                    for i, layer in enumerate(raw_pipeline, 1):
+                        try:
+                            ptype_str, branching = layer
+                        except (TypeError, ValueError):
+                            continue
+                        rows.append(
+                            {
+                                "Layer": i,
+                                "Node type": str(ptype_str),
+                                "Branching factor": int(branching),
+                            }
+                        )
+                    if rows:
+                        st.caption("Configuration used to generate this completed tree.")
+                        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+                    else:
+                        st.warning("Branching config exists but could not be parsed.")
+
+                challenge_types = config.get("solution_parent_types")
+                if challenge_types:
+                    joined = ", ".join(str(t) for t in challenge_types)
+                    st.caption(f"Solutions were also attached under challenge types: `{joined}`.")
 
             with tab_solutions:
                 sols = results.get("solutions", [])
@@ -1487,9 +1550,6 @@ def _render_experiment_details(exp_id: str) -> None:
                                 unsafe_allow_html=True,
                             )
                             _render_description(post.description)
-
-            with tab_edit:
-                _render_experiment_edit(exp_id, results)
 
             with tab_dl:
                 st.download_button(
@@ -1659,14 +1719,14 @@ def _render_experiment_history_page() -> None:
     if collapsed and viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
         _render_experiment_details(viewed_id)
     else:
-        col_list, col_detail = st.columns([2, 3], gap="large")
+        col_list, col_detail = st.columns([1.6, 3.4], gap="large")
 
         with col_list:
             st.markdown('<div class="aid-section-title">All runs</div>', unsafe_allow_html=True)
             with st.container(
                 key="hist_all_runs",
                 border=True,
-                height=900,
+                height=820,
             ):
                 _render_experiment_history_cards(key_prefix="histpg_")
 
@@ -1688,138 +1748,148 @@ def _render_runner() -> None:
         "Experiments run as **background processes** and persist across page refreshes "
         "and tab switches. Results are saved to `experiments/` automatically."
     )
+    st.info("Use this tab to configure and launch experiments only. View progress/results in **History**.")
 
-    col_left, col_right = st.columns([2, 3], gap="large")
+    # ── Condition presets ──────────────────────────────────────────────────
+    active_preset = st.session_state.get("runner_active_preset", None)
+    st.markdown('<div class="aid-section-title">Condition Presets</div>', unsafe_allow_html=True)
+    card_cols = st.columns(4)
+    for idx, p in enumerate(CONDITION_PRESETS):
+        is_active = active_preset == p["id"]
+        active_cls = "pc-active" if is_active else ""
+        steps_html = " ".join(
+            f'<span class="pc-step">{s}</span>'
+            + ('' if j == len(p["steps"]) - 1 else '<span class="pc-arrow">›</span>')
+            for j, s in enumerate(p["steps"])
+        )
+        card_html = (
+            f'<div class="preset-card pc-c{p["id"]} {active_cls}">'
+            f'<div class="pc-label">{p["label"]}</div>'
+            f'<div class="pc-name">{p["name"]}</div>'
+            f'<div class="pc-steps">{steps_html}</div>'
+            f'</div>'
+        )
+        with card_cols[idx]:
+            st.markdown(card_html, unsafe_allow_html=True)
 
-    with col_left:
-        # ── Condition presets ──────────────────────────────────────────────────
-        active_preset = st.session_state.get("runner_active_preset", None)
-        st.markdown('<div class="aid-section-title">Condition Presets</div>', unsafe_allow_html=True)
-        for row in range(2):
-            pcols = st.columns(2)
-            for col in range(2):
-                p = CONDITION_PRESETS[row * 2 + col]
-                is_active = active_preset == p["id"]
-                active_cls = "pc-active" if is_active else ""
-                steps_html = " ".join(
-                    f'<span class="pc-step">{s}</span>'
-                    + ('' if j == len(p["steps"]) - 1 else '<span class="pc-arrow">›</span>')
-                    for j, s in enumerate(p["steps"])
-                )
-                card_html = (
-                    f'<div class="preset-card pc-c{p["id"]} {active_cls}">'
-                    f'<div class="pc-label">{p["label"]}</div>'
-                    f'<div class="pc-name">{p["name"]}</div>'
-                    f'<div class="pc-steps">{steps_html}</div>'
-                    f'</div>'
-                )
-                with pcols[col]:
-                    st.markdown(card_html, unsafe_allow_html=True)
-                    if st.button(
-                        "✓ Active" if is_active else "Select",
-                        key=f"preset_btn_{p['id']}",
-                        use_container_width=True,
-                        type="primary" if is_active else "secondary",
-                        help=p["desc"],
-                    ):
-                        for k, v in p["sliders"].items():
-                            st.session_state[f"runner_{k}"] = v
-                        st.session_state["runner_solution_parent_types"] = p.get("solution_parent_types")
-                        st.session_state["runner_active_preset"] = p["id"]
-                        st.rerun()
-        st.markdown("")
+    button_cols = st.columns(4)
+    for idx, p in enumerate(CONDITION_PRESETS):
+        is_active = active_preset == p["id"]
+        with button_cols[idx]:
+            if st.button(
+                "✓ Active" if is_active else f"Select {p['label']}",
+                key=f"preset_btn_{p['id']}",
+                use_container_width=True,
+                type="primary" if is_active else "secondary",
+                help=p["desc"],
+            ):
+                for k, v in p["sliders"].items():
+                    st.session_state[f"runner_{k}"] = v
+                st.session_state["runner_solution_parent_types"] = p.get("solution_parent_types")
+                st.session_state["runner_active_preset"] = p["id"]
+                st.rerun()
+    st.markdown("")
 
-        # ── Branching factors (outside form for live estimate updates) ───────────
-        with st.expander("➕ New Experiment", expanded=True):
-            mission_name = st.text_input(
-                "Mission name", value="Next-Gen Grid-Scale Energy Storage"
-            )
-            mission_desc = st.text_area(
-                "Description",
-                value=(
-                    "Develop novel methods to store grid-scale renewable energy "
-                    "that do not rely on rare-earth lithium-ion batteries, targeting "
-                    "cost, scalability, and environmental sustainability."
+    # ── Branching factors (outside form for live estimate updates) ─────────
+    with st.expander("➕ New Experiment", expanded=True):
+        mission_name = st.text_input(
+            "Mission name", value="Next-Gen Grid-Scale Energy Storage"
+        )
+        mission_desc = st.text_area(
+            "Description",
+            value=(
+                "Develop novel methods to store grid-scale renewable energy "
+                "that do not rely on rare-earth lithium-ion batteries, targeting "
+                "cost, scalability, and environmental sustainability."
+            ),
+            height=90,
+        )
+        st.markdown("**Branching factors**")
+        b_stakeholder = st.slider("👥  Stakeholders / Mission", 0, 4, key="runner_b_stakeholder")
+        b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, key="runner_b_goal")
+        b_barrier  = st.slider("🚧  Barriers / Goal",          0, 4, key="runner_b_barrier")
+        b_cause    = st.slider("🔍  Causes / Barrier",          0, 4, key="runner_b_cause")
+        b_abs      = st.slider("💡  Abstractions / Cause",      0, 4, key="runner_b_abs")
+        b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, key="runner_b_analogy")
+        b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, key="runner_b_insp")
+        b_solution_per_challenge = st.slider(
+            "✅  Solutions / Challenge", 0, SOLUTIONS_SLIDER_MAX, key="runner_b_solution_per_challenge"
+        )
+        b_question = st.slider("❓  Questions / Solution",      0, 4, key="runner_b_question")
+        b_answer   = st.slider("💬  Answers / Question",        0, 4, key="runner_b_answer")
+        est = _estimate_theoretical_max_solutions(st.session_state)
+        st.caption(f"Theoretical max solutions: **{est}**")
+
+        st.divider()
+
+        # ── Mission details + launch ───────────────────────────────────────
+        with st.form("runner_form"):
+            st.markdown("**Performance**")
+            max_concurrent = st.slider(
+                "⚡  Parallel requests",
+                min_value=1, max_value=16, value=4,
+                help=(
+                    "Max number of parent nodes processed simultaneously. "
+                    "Higher = faster, but may hit API rate limits. "
+                    "Use 4 for free-tier keys, 8–12 for paid."
                 ),
-                height=90,
             )
-            st.markdown("**Branching factors**")
-            b_stakeholder = st.slider("👥  Stakeholders / Mission", 0, 4, key="runner_b_stakeholder")
-            b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, key="runner_b_goal")
-            b_barrier  = st.slider("🚧  Barriers / Goal",          0, 4, key="runner_b_barrier")
-            b_cause    = st.slider("🔍  Causes / Barrier",          0, 4, key="runner_b_cause")
-            b_abs      = st.slider("💡  Abstractions / Cause",      0, 4, key="runner_b_abs")
-            b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, key="runner_b_analogy")
-            b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, key="runner_b_insp")
-            b_solution = st.slider("✅  Solutions",                 0, SOLUTIONS_SLIDER_MAX, key="runner_b_solution")
-            b_question = st.slider("❓  Questions / Solution",      0, 4, key="runner_b_question")
-            b_answer   = st.slider("💬  Answers / Question",        0, 4, key="runner_b_answer")
-            est = _estimate_theoretical_max_solutions(st.session_state)
-            st.caption(f"Theoretical max solutions: **{est}**")
 
-            st.divider()
-
-            # ── Mission details + launch ───────────────────────────────────────
-            with st.form("runner_form"):
-                st.markdown("**Performance**")
-                max_concurrent = st.slider(
-                    "⚡  Parallel requests",
-                    min_value=1, max_value=16, value=4,
-                    help=(
-                        "Max number of parent nodes processed simultaneously. "
-                        "Higher = faster, but may hit API rate limits. "
-                        "Use 4 for free-tier keys, 8–12 for paid."
-                    ),
-                )
-
-                if st.form_submit_button("🚀 Launch Experiment", type="primary", use_container_width=True):
-                    if not mission_name.strip() or not mission_desc.strip():
-                        st.error("Mission name and description are required.")
-                    else:
-                        _bg = st.session_state
-                        _stakeholder = int(_bg.get("runner_b_stakeholder", 1))
-                        _goal = int(_bg.get("runner_b_goal", 2))
-                        if _goal > 0 and _stakeholder == 0:
-                            st.error("Set Stakeholders / Mission to at least 1 when Goals / Stakeholder is above 0.")
-                            return
-                        _pipe_steps: list[tuple[PostType, int]] = []
-                        if _stakeholder > 0:
-                            _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
-                        _pipe_steps.extend(
-                            [
-                                (PostType.GOAL, _goal),
-                                (PostType.BARRIER, int(_bg.get("runner_b_barrier", 0))),
-                                (PostType.CAUSE, int(_bg.get("runner_b_cause", 0))),
-                                (PostType.ABSTRACTION, int(_bg.get("runner_b_abs", 0))),
-                                (PostType.ANALOGY, int(_bg.get("runner_b_analogy", 0))),
-                                (PostType.INSPIRATION, int(_bg.get("runner_b_insp", 0))),
-                                (PostType.SOLUTION, int(_bg.get("runner_b_solution", 3))),
-                                (PostType.QUESTION, int(_bg.get("runner_b_question", 0))),
-                                (PostType.ANSWER, int(_bg.get("runner_b_answer", 0))),
-                            ]
-                        )
-                        pipeline = [step for step in _pipe_steps if step[1] > 0]
-                        solution_parent_types = _bg.get("runner_solution_parent_types")
-                        extra = {}
-                        if solution_parent_types:
-                            extra["solution_parent_types"] = list(solution_parent_types)
+            if st.form_submit_button("🚀 Launch Experiment", type="primary", use_container_width=True):
+                if not mission_name.strip() or not mission_desc.strip():
+                    st.error("Mission name and description are required.")
+                else:
+                    _bg = st.session_state
+                    _stakeholder = int(_bg.get("runner_b_stakeholder", 1))
+                    _goal = int(_bg.get("runner_b_goal", 2))
+                    if _goal > 0 and _stakeholder == 0:
+                        st.error("Set Stakeholders / Mission to at least 1 when Goals / Stakeholder is above 0.")
+                        return
+                    _pipe_steps: list[tuple[PostType, int]] = []
+                    if _stakeholder > 0:
+                        _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
+                    _pipe_steps.extend(
+                        [
+                            (PostType.GOAL, _goal),
+                            (PostType.BARRIER, int(_bg.get("runner_b_barrier", 0))),
+                            (PostType.CAUSE, int(_bg.get("runner_b_cause", 0))),
+                            (PostType.ABSTRACTION, int(_bg.get("runner_b_abs", 0))),
+                            (PostType.ANALOGY, int(_bg.get("runner_b_analogy", 0))),
+                            (PostType.INSPIRATION, int(_bg.get("runner_b_insp", 0))),
+                            (PostType.SOLUTION, int(_bg.get("runner_b_solution_per_challenge", 3))),
+                            (PostType.QUESTION, int(_bg.get("runner_b_question", 0))),
+                            (PostType.ANSWER, int(_bg.get("runner_b_answer", 0))),
+                        ]
+                    )
+                    pipeline = [step for step in _pipe_steps if step[1] > 0]
+                    solution_parent_types = _bg.get("runner_solution_parent_types")
+                    extra = {}
+                    if solution_parent_types:
+                        extra["solution_parent_types"] = list(solution_parent_types)
+                    try:
                         exp_id = _launch_experiment(
                             mission_name.strip(), mission_desc.strip(), pipeline,
                             max_concurrent=max_concurrent,
                             extra_config=extra or None,
                         )
                         st.session_state.viewed_exp_id = exp_id
-                        st.rerun()
+                        st.success(f"Experiment launched successfully: `{exp_id}`")
+                        st.toast(f"Run started: {exp_id}", icon="🚀")
+                    except Exception as ex:
+                        st.error(f"Failed to launch experiment: {ex}")
 
-    with col_right:
-        viewed_id = st.session_state.get("viewed_exp_id")
-        if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
-            _render_experiment_details(viewed_id)
+    viewed_id = st.session_state.get("viewed_exp_id")
+    if viewed_id and (EXPERIMENTS_DIR / viewed_id).exists():
+        status = _read_status(viewed_id)
+        state = status.get("state", "unknown")
+        if state in ("starting", "running"):
+            st.success(f"Current run `{viewed_id}` is {state}. Open **History** for live progress.")
+        elif state == "failed":
+            st.error(f"Current run `{viewed_id}` failed. Open **History** to inspect the error details.")
+        elif state == "complete":
+            st.info(f"Current run `{viewed_id}` is complete. Open **History** to review results.")
         else:
-            st.info(
-                "Launch a new experiment or open a run from the **Experiment History** "
-                "tab to view live progress or results."
-            )
+            st.warning(f"Current run `{viewed_id}` status is `{state}`. Open **History** for details.")
 
 
 # ── Metrics page ─────────────────────────────────────────────────────────────
