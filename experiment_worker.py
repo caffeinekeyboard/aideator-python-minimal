@@ -189,7 +189,12 @@ def run(exp_dir_str: str) -> None:
         # Special case: C2-style runs can generate solutions under any "challenge"
         # node (goal/barrier/cause) rather than only the previous stage.
         if target_type == PostType.SOLUTION and solution_parent_types:
+            # Prefer challenge-parent generation (goal/barrier/cause) when configured.
+            # Fallback to the standard parent type (e.g. mission/inspiration) so
+            # mission-only pipelines still work when no challenge nodes exist.
             all_parents = _collect_by_types(root, solution_parent_types)
+            if not all_parents:
+                all_parents = _collect_by_type(root, parent_type)
         else:
             all_parents = _collect_by_type(root, parent_type)
         if not all_parents:

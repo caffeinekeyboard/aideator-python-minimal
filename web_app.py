@@ -250,8 +250,8 @@ CONDITION_PRESETS: list[dict] = [
         "id": 4,
         "label": "C4",
         "name": "+ Pregnant Question",
-        "desc": "… → Solution → Question → Answer (solutions on any challenge)",
-        "steps": ["Solution", "Question", "Answer"],
+        "desc": "… → Solution → Question → Follow-up Solution (solutions on any challenge)",
+        "steps": ["Solution", "Question", "Follow-up Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
                         b_solution_per_challenge=3, b_question=2, b_answer=1),
@@ -347,7 +347,7 @@ def _estimate_theoretical_max_solutions(bg: dict) -> int:
             (PostType.INSPIRATION, int(bg.get("runner_b_insp", 0))),
             (PostType.SOLUTION, int(bg.get("runner_b_solution_per_challenge", 3))),
             (PostType.QUESTION, int(bg.get("runner_b_question", 0))),
-            (PostType.ANSWER, int(bg.get("runner_b_answer", 0))),
+            (PostType.SOLUTION, int(bg.get("runner_b_answer", 0))),
         ]
     )
     pipeline = [step for step in _pipe_steps if step[1] > 0]
@@ -1816,7 +1816,7 @@ def _render_runner() -> None:
             "✅  Solutions / Challenge", 0, SOLUTIONS_SLIDER_MAX, key="runner_b_solution_per_challenge"
         )
         b_question = st.slider("❓  Questions / Solution",      0, 4, key="runner_b_question")
-        b_answer   = st.slider("💬  Answers / Question",        0, 4, key="runner_b_answer")
+        b_answer   = st.slider("💬  Follow-up Solutions / Question", 0, 4, key="runner_b_answer")
         est = _estimate_theoretical_max_solutions(st.session_state)
         st.caption(f"Theoretical max solutions: **{est}**")
 
@@ -1858,7 +1858,7 @@ def _render_runner() -> None:
                             (PostType.INSPIRATION, int(_bg.get("runner_b_insp", 0))),
                             (PostType.SOLUTION, int(_bg.get("runner_b_solution_per_challenge", 3))),
                             (PostType.QUESTION, int(_bg.get("runner_b_question", 0))),
-                            (PostType.ANSWER, int(_bg.get("runner_b_answer", 0))),
+                            (PostType.SOLUTION, int(_bg.get("runner_b_answer", 0))),
                         ]
                     )
                     pipeline = [step for step in _pipe_steps if step[1] > 0]
