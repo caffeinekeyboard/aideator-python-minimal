@@ -2,7 +2,7 @@ from aideator.models import PostType
 
 
 TRANSITIONS: dict[PostType, list[PostType]] = {
-    PostType.MISSION:     [PostType.STAKEHOLDER],
+    PostType.MISSION:     [PostType.STAKEHOLDER, PostType.SOLUTION],
     PostType.STAKEHOLDER: [PostType.GOAL],
     PostType.GOAL:        [PostType.BARRIER, PostType.SOLUTION, PostType.ABSTRACTION],
     PostType.BARRIER:     [PostType.CAUSE, PostType.SOLUTION, PostType.ABSTRACTION],
@@ -10,12 +10,13 @@ TRANSITIONS: dict[PostType, list[PostType]] = {
     PostType.ABSTRACTION: [PostType.ANALOGY],
     PostType.ANALOGY:     [PostType.INSPIRATION],
     PostType.INSPIRATION: [PostType.SOLUTION],
-    PostType.SOLUTION:    [PostType.IMPROVEMENT, PostType.BARRIER, PostType.QUESTION],
+    PostType.SOLUTION:    [PostType.QUESTION],
     PostType.QUESTION:    [PostType.ANSWER],
 }
 
 ACTION_NAMES: dict[tuple[PostType, PostType], str] = {
     (PostType.MISSION, PostType.STAKEHOLDER): "add-stakeholder",
+    (PostType.MISSION, PostType.SOLUTION): "add-solution",
     (PostType.STAKEHOLDER, PostType.GOAL): "add-goal",
     (PostType.GOAL, PostType.BARRIER): "add-barrier",
     (PostType.GOAL, PostType.SOLUTION): "add-solution",
@@ -29,8 +30,6 @@ ACTION_NAMES: dict[tuple[PostType, PostType], str] = {
     (PostType.ABSTRACTION, PostType.ANALOGY): "add-analogy",
     (PostType.ANALOGY, PostType.INSPIRATION): "add-inspiration",
     (PostType.INSPIRATION, PostType.SOLUTION): "use-inspiration",
-    (PostType.SOLUTION, PostType.IMPROVEMENT): "add-improvement",
-    (PostType.SOLUTION, PostType.BARRIER): "add-barrier",
     (PostType.SOLUTION, PostType.QUESTION): "add-question",
     (PostType.QUESTION, PostType.ANSWER): "add-answer",
 }

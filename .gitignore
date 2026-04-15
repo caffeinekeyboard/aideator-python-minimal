@@ -20,3 +20,17 @@ streamlit.log
 docker-compose.yml
 .dockerignore
 Dockerfile
+
+# Generated artifacts
+artifacts/
+experiments/*/log.jsonl
+experiments/*/results.json
+experiments/*/status.json
+experiments/*/worker_stderr.log
+application/artifacts/
+application/experiments/*/log.jsonl
+application/experiments/*/results.json
+application/experiments/*/status.json
+application/experiments/*/worker_stderr.log
+application/frontend/dist/
+application/frontend/node_modules/

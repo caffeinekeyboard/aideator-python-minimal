@@ -1,5 +1,7 @@
 [server]
 port = 7500
+# For localhost-only access, set: address = "127.0.0.1"
+# (default may bind more broadly depending on Streamlit version / CLI flags.)
 
 [theme]
 primaryColor    = "#2563eb"

@@ -10,8 +10,10 @@ Valid transition path (from aideator/transitions.py):
   MISSION -> STAKEHOLDER -> GOAL -> ABSTRACTION -> ANALOGY -> INSPIRATION -> SOLUTION
 
 The user-facing "PURPOSE" concept maps to STAKEHOLDER + GOAL in the engine's
-transition graph.  We keep STAKEHOLDER thin (1 child) and use GOAL (branching=2)
-as the effective "purpose" layer.
+transition graph when goals are expanded.  The web runner omits the stakeholder
+layer when goal branching is 0 (e.g. mission→solution only).  Otherwise we keep
+STAKEHOLDER thin (1 per mission) and use GOAL (branching=2) as the effective
+"purpose" layer.
 """
 
 from __future__ import annotations

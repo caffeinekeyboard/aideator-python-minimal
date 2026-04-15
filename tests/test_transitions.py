@@ -14,6 +14,7 @@ from aideator.transitions import TRANSITIONS, ACTION_NAMES, validate_transition,
 # ---------------------------------------------------------------------------
 EXPECTED_EDGES: set[tuple[PostType, PostType]] = {
     (PostType.MISSION,      PostType.STAKEHOLDER),
+    (PostType.MISSION,      PostType.SOLUTION),
     (PostType.STAKEHOLDER,  PostType.GOAL),
     (PostType.GOAL,         PostType.BARRIER),
     (PostType.GOAL,         PostType.SOLUTION),
@@ -27,8 +28,6 @@ EXPECTED_EDGES: set[tuple[PostType, PostType]] = {
     (PostType.ABSTRACTION,  PostType.ANALOGY),
     (PostType.ANALOGY,      PostType.INSPIRATION),
     (PostType.INSPIRATION,  PostType.SOLUTION),
-    (PostType.SOLUTION,     PostType.IMPROVEMENT),
-    (PostType.SOLUTION,     PostType.BARRIER),
     (PostType.SOLUTION,     PostType.QUESTION),
     (PostType.QUESTION,     PostType.ANSWER),
 }

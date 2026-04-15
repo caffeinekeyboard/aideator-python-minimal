@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from collections.abc import Iterator
 from typing import Protocol, runtime_checkable
 
 from dotenv import load_dotenv
@@ -42,6 +43,16 @@ class LLMClient:
             contents=prompt,
         )
         return response.text
+
+    def ask_stream(self, prompt: str) -> Iterator[str]:
+        """Stream raw text chunks from Gemini; concatenation matches a non-streaming response."""
+        for chunk in self.client.models.generate_content_stream(
+            model=self.model_name,
+            contents=prompt,
+        ):
+            text = getattr(chunk, "text", None) or ""
+            if text:
+                yield text
 
     @staticmethod
     def _extract_json_candidates(text: str) -> list[str]:

@@ -37,6 +37,7 @@ from aideator.engine import IdeaEngine
 from aideator.llm import LLMClient
 from aideator.models import Post, PostType
 from aideator.serialization import dict_to_tree, tree_to_dict
+from aideator.transitions import validate_transition
 from experiment_runner import (
     experiment_gemini_model,
     experiment_request_delay_seconds,
@@ -58,9 +59,50 @@ def _collect_by_type(root: Post, ptype: PostType) -> list[Post]:
     return results
 
 
+def _collect_by_types(root: Post, ptypes: list[PostType]) -> list[Post]:
+    """Walk the tree (BFS) and return all Post nodes matching any type, de-duped by id."""
+    want = set(ptypes)
+    results: list[Post] = []
+    seen: set[str] = set()
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.ptype in want and node.id not in seen:
+            seen.add(node.id)
+            results.append(node)
+        stack.extend(node.achievers)
+    return results
+
+
 def _count_all(node: Post) -> int:
     """Count total nodes in the subtree rooted at node."""
     return 1 + sum(_count_all(c) for c in node.achievers)
+
+
+def _resolve_parent_type_for_layer(
+    pipeline: list[tuple[PostType, int]], layer_pi: int
+) -> PostType:
+    """Which parent node type receives children in pipeline layer ``layer_pi`` (0-based).
+
+    The web UI omits stages with branching 0, so the previous *listed* stage may
+    not legally parent the current target (e.g. stakeholder → solution). Walk
+    backward along earlier pipeline targets, then allow mission as a host when
+    valid (mission → solution).
+    """
+    if layer_pi == 0:
+        return PostType.MISSION
+
+    cur = pipeline[layer_pi][0]
+    for j in range(layer_pi - 1, -1, -1):
+        t = pipeline[j][0]
+        if validate_transition(t, cur):
+            return t
+    if validate_transition(PostType.MISSION, cur):
+        return PostType.MISSION
+    raise ValueError(
+        f"Pipeline layer {layer_pi} ({cur.value}): no earlier listed stage (nor "
+        "mission) can legally parent this type — adjust branching or ordering."
+    )
 
 
 # ── File helpers (atomic writes to avoid partial-read corruption) ─────────────
@@ -94,6 +136,13 @@ def run(exp_dir_str: str) -> None:
     mission_name = config["mission_name"]
     mission_desc = config["mission_desc"]
     pipeline = [(PostType(pt), b) for pt, b in config["pipeline"]]
+    solution_parent_types_raw = config.get("solution_parent_types") or None
+    solution_parent_types: list[PostType] | None = None
+    if solution_parent_types_raw:
+        try:
+            solution_parent_types = [PostType(str(x)) for x in solution_parent_types_raw]
+        except Exception:
+            solution_parent_types = None
 
     _write_status(exp_dir, {
         "state": "running",
@@ -131,15 +180,18 @@ def run(exp_dir_str: str) -> None:
     max_workers = max(1, int(os.getenv("EXPERIMENT_MAX_CONCURRENT", "4")))
     intra_delay = max(0.0, float(os.getenv("EXPERIMENT_INTRA_PARENT_DELAY", "0.0")))
 
-    # Parent type for each layer (used when resuming to find existing parent nodes)
-    parent_types = [PostType.MISSION] + [pt for pt, _ in pipeline[:-1]]
-
-    for layer_idx, ((target_type, branching), parent_type) in enumerate(
-        zip(pipeline, parent_types), 1
-    ):
+    for layer_idx, (target_type, branching) in enumerate(pipeline, start=1):
+        layer_pi = layer_idx - 1
+        parent_type = _resolve_parent_type_for_layer(pipeline, layer_pi)
         # When resuming from an edited tree, discover parents from the tree
         # rather than tracking current_nodes across layers — handles gaps/additions.
-        all_parents = _collect_by_type(root, parent_type)
+        #
+        # Special case: C2-style runs can generate solutions under any "challenge"
+        # node (goal/barrier/cause) rather than only the previous stage.
+        if target_type == PostType.SOLUTION and solution_parent_types:
+            all_parents = _collect_by_types(root, solution_parent_types)
+        else:
+            all_parents = _collect_by_type(root, parent_type)
         if not all_parents:
             _write_status(exp_dir, {
                 "state": "failed",
@@ -171,29 +223,57 @@ def run(exp_dir_str: str) -> None:
         nodes_generated_local = [0]  # list so threads can mutate via closure
 
         def _generate_for_parent(parent, _layer=layer_idx, _type=target_type, _b=branching):
-            """Generate missing children for a single parent, sequentially."""
-            existing_children = [c for c in parent.achievers if c.ptype == _type]
-            remaining = max(0, _b - len(existing_children))
-            results = list(existing_children)
-            for _ in range(remaining):
+            """Grow ``parent`` until it has ``_b`` children of ``_type`` (sequential LLM calls).
+
+            ``build_post`` dedupes same-type siblings with the same normalised name and
+            returns the existing node without attaching a duplicate. The old loop
+            treated that as success, so mission-only runs often stopped at one solution.
+            Here we only count progress when a *new* child id appears under ``parent``.
+            """
+            target_total = _b
+            max_attempts = max(80, (target_total + 1) * 25)
+            attempts = 0
+            while len([c for c in parent.achievers if c.ptype == _type]) < target_total:
+                if attempts >= max_attempts:
+                    _append_log(
+                        exp_dir,
+                        {
+                            "event": "warn",
+                            "message": (
+                                f"Stopped before {target_total} {_type.value} children "
+                                f"for '{parent.name}' after {max_attempts} attempts "
+                                "(name dedupe repeats and/or API errors)."
+                            ),
+                        },
+                        log_lock,
+                    )
+                    break
+                attempts += 1
+                before_ids = {id(c) for c in parent.achievers if c.ptype == _type}
                 try:
-                    post = robust_propose_achiever(engine, _type, parent)
+                    robust_propose_achiever(engine, _type, parent)
                 except Exception as exc:
                     _append_log(exp_dir, {"event": "error", "message": str(exc)}, log_lock)
                     continue
-                if post:
-                    results.append(post)
-                    with counter_lock:
-                        nodes_generated_local[0] += 1
-                    _append_log(exp_dir, {
-                        "event": "node",
-                        "layer": _layer,
-                        "type": post.ptype.value,
-                        "name": post.name,
-                    }, log_lock)
+                new_children = [
+                    c
+                    for c in parent.achievers
+                    if c.ptype == _type and id(c) not in before_ids
+                ]
+                if not new_children:
+                    continue
+                new_post = new_children[-1]
+                with counter_lock:
+                    nodes_generated_local[0] += 1
+                _append_log(exp_dir, {
+                    "event": "node",
+                    "layer": _layer,
+                    "type": new_post.ptype.value,
+                    "name": new_post.name,
+                }, log_lock)
                 if intra_delay > 0:
                     time.sleep(intra_delay)
-            return results
+            return [c for c in parent.achievers if c.ptype == _type]
 
         next_layer: list = []
 

@@ -25,6 +25,7 @@ import tempfile
 from datetime import datetime
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 from streamlit_autorefresh import st_autorefresh
 
@@ -206,26 +207,31 @@ STATE_COLOR = {
 }
 
 # ── Condition presets ─────────────────────────────────────────────────────────
+SOLUTIONS_SLIDER_MAX = 500
+
 CONDITION_PRESETS: list[dict] = [
     {
         "id": 1,
         "label": "C1",
-        "name": "Mission Core",
-        "desc": "Stakeholder → Goal → Solution",
-        "steps": ["Goal", "Solution"],
-        "sliders": dict(b_goal=2, b_barrier=0, b_cause=0,
+        "name": "Mission → Solutions",
+        "desc": "Mission → Solution (no stakeholders/goals)",
+        "steps": ["Solution"],
+        "sliders": dict(b_stakeholder=0, b_goal=0, b_barrier=0, b_cause=0,
                         b_abs=0, b_analogy=0, b_insp=0,
-                        b_solution=3, b_question=0, b_answer=0),
+                        b_solution=96, b_question=0, b_answer=0),
     },
     {
         "id": 2,
         "label": "C2",
         "name": "+ Problem Analysis",
-        "desc": "… → Goal → Barrier → Cause → Solution",
+        "desc": "… → Goal/Barrier/Cause → Solution (solutions on any challenge)",
         "steps": ["Goal", "Barrier", "Cause", "Solution"],
-        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+        "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=0, b_analogy=0, b_insp=0,
                         b_solution=3, b_question=0, b_answer=0),
+        # When set, the worker will generate solutions under all listed types
+        # (in addition to the standard layer chaining).
+        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
     },
     {
         "id": 3,
@@ -233,7 +239,7 @@ CONDITION_PRESETS: list[dict] = [
         "name": "+ Analogical Ideation",
         "desc": "… → Cause → Abstraction → Analogy → Inspiration → Solution",
         "steps": ["Cause", "Abstraction", "Analogy", "Inspiration", "Solution"],
-        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+        "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
                         b_solution=3, b_question=0, b_answer=0),
     },
@@ -243,7 +249,7 @@ CONDITION_PRESETS: list[dict] = [
         "name": "+ Pregnant Question",
         "desc": "… → Solution → Question → Answer",
         "steps": ["Solution", "Question", "Answer"],
-        "sliders": dict(b_goal=2, b_barrier=2, b_cause=2,
+        "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
                         b_solution=3, b_question=2, b_answer=1),
     },
@@ -271,7 +277,7 @@ def _render_description(description: str) -> None:
     if parsed:
         for key, value in parsed.items():
             st.markdown(f"**{_html.escape(str(key))}**")
-            st.markdown(str(value))
+            st.text(str(value))
     else:
         st.markdown(text)
 
@@ -291,10 +297,69 @@ def _init_state() -> None:
         "exp_edit_selected_id": None,   # selected node within edit view
         "exp_edit_node_num":    1,      # nav counter for edit view
         "exp_edit_engine":      None,   # IdeaEngine for "Propose with AI" in edit tab
+        # Runner branching sliders (bound by key; do not pass duplicate defaults on widgets)
+        "runner_b_goal":     2,
+        "runner_b_stakeholder": 1,
+        "runner_b_barrier":  0,
+        "runner_b_cause":    0,
+        "runner_b_abs":      0,
+        "runner_b_analogy":  0,
+        "runner_b_insp":     0,
+        "runner_b_solution": 3,
+        "runner_b_question": 0,
+        "runner_b_answer":   0,
+        "runner_solution_parent_types": None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
+
+
+def _estimate_theoretical_max_solutions(bg: dict) -> int:
+    """Estimate solution upper bound implied by current branching factors.
+
+    Uses the same logic as launch validation, including C2-style "solutions on
+    any challenge" mode where solutions can be attached under goals/barriers/causes.
+    """
+    _stakeholder = int(bg.get("runner_b_stakeholder", 1))
+    _goal = int(bg.get("runner_b_goal", 2))
+    _pipe_steps: list[tuple[PostType, int]] = []
+    if _stakeholder > 0:
+        _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
+    _pipe_steps.extend(
+        [
+            (PostType.GOAL, _goal),
+            (PostType.BARRIER, int(bg.get("runner_b_barrier", 0))),
+            (PostType.CAUSE, int(bg.get("runner_b_cause", 0))),
+            (PostType.ABSTRACTION, int(bg.get("runner_b_abs", 0))),
+            (PostType.ANALOGY, int(bg.get("runner_b_analogy", 0))),
+            (PostType.INSPIRATION, int(bg.get("runner_b_insp", 0))),
+            (PostType.SOLUTION, int(bg.get("runner_b_solution", 3))),
+            (PostType.QUESTION, int(bg.get("runner_b_question", 0))),
+            (PostType.ANSWER, int(bg.get("runner_b_answer", 0))),
+        ]
+    )
+    pipeline = [step for step in _pipe_steps if step[1] > 0]
+
+    est = 1
+    for _, b in pipeline:
+        est *= b
+
+    solution_parent_types = bg.get("runner_solution_parent_types")
+    if solution_parent_types and PostType.SOLUTION in [pt for pt, _ in pipeline]:
+        goals = _stakeholder * int(bg.get("runner_b_goal", 0))
+        barriers = goals * int(bg.get("runner_b_barrier", 0))
+        causes = barriers * int(bg.get("runner_b_cause", 0))
+        total_challenges = 0
+        if PostType.GOAL.value in solution_parent_types:
+            total_challenges += goals
+        if PostType.BARRIER.value in solution_parent_types:
+            total_challenges += barriers
+        if PostType.CAUSE.value in solution_parent_types:
+            total_challenges += causes
+        est = max(est, total_challenges * int(bg.get("runner_b_solution", 0)))
+
+    return est
 
 
 # ── Saved-tree helpers ────────────────────────────────────────────────────────
@@ -784,6 +849,35 @@ def _read_log(exp_id: str) -> list[dict]:
     return entries
 
 
+def _read_log_tail(exp_id: str, max_lines: int = 800) -> list[dict]:
+    """Parse the last ``max_lines`` non-empty lines of log.jsonl (for live progress polling)."""
+    f = EXPERIMENTS_DIR / exp_id / "log.jsonl"
+    if not f.exists():
+        return []
+    try:
+        size = f.stat().st_size
+    except OSError:
+        return []
+    if size == 0:
+        return []
+    chunk_size = min(size, max(65536, max_lines * 400))
+    with open(f, "rb") as fh:
+        fh.seek(-chunk_size, os.SEEK_END)
+        raw = fh.read().decode("utf-8", errors="replace")
+    lines = raw.splitlines()
+    if len(lines) > max_lines:
+        lines = lines[-max_lines:]
+    entries: list[dict] = []
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            entries.append(json.loads(line))
+        except json.JSONDecodeError:
+            pass
+    return entries
+
+
 def _read_results(exp_id: str) -> dict | None:
     f = EXPERIMENTS_DIR / exp_id / "results.json"
     if not f.exists():
@@ -799,6 +893,7 @@ def _launch_experiment(
     mission_desc: str,
     pipeline: list[tuple[PostType, int]],
     max_concurrent: int = 4,
+    extra_config: dict | None = None,
 ) -> str:
     """Write config, create experiment directory, launch worker subprocess."""
     EXPERIMENTS_DIR.mkdir(exist_ok=True)
@@ -815,6 +910,8 @@ def _launch_experiment(
         "experiment_id":   exp_id,
         "max_concurrent":  max_concurrent,
     }
+    if extra_config:
+        config.update(extra_config)
     (exp_dir / "config.json").write_text(json.dumps(config, indent=2))
     (exp_dir / "status.json").write_text(json.dumps({"state": "starting"}, indent=2))
     (exp_dir / "log.jsonl").write_text("")
@@ -844,11 +941,15 @@ def _rerun_experiment(source_exp_id: str) -> str:
         raise ValueError("Saved experiment has no pipeline; cannot rerun.")
     pipeline = [(PostType(pt), int(b)) for pt, b in raw_pipeline]
     max_concurrent = int(config.get("max_concurrent", 4))
+    extra = {}
+    if config.get("solution_parent_types"):
+        extra["solution_parent_types"] = config["solution_parent_types"]
     return _launch_experiment(
         str(config["mission_name"]).strip(),
         str(config["mission_desc"]).strip(),
         pipeline,
         max_concurrent=max_concurrent,
+        extra_config=extra or None,
     )
 
 
@@ -964,7 +1065,7 @@ def _render_experiment_live_progress(exp_id: str) -> None:
     st.progress(progress, text=f"Layer {layer} / {total_lay}  ·  {cur_type.upper()}")
     st.caption(f"Nodes generated so far: **{nodes}**")
 
-    log_entries = _read_log(exp_id)
+    log_entries = _read_log_tail(exp_id)
     node_entries = [e for e in log_entries if e.get("event") == "node"]
 
     if node_entries:
@@ -1249,11 +1350,12 @@ def _render_experiment_details(exp_id: str) -> None:
     badge = STATE_ICON.get(state, "⚪")
     badge_color = STATE_COLOR.get(state, STATE_COLOR["unknown"])
     started = config.get("started_at", "")[:19].replace("T", " ")
+    safe_mission_title = _html.escape(str(config.get("mission_name", "")))
     st.markdown(
         f'<div style="padding:12px 16px;background:var(--secondary-background-color,#f8fafc);'
         f'border-radius:10px;border:1px solid #e2e8f0;margin-bottom:16px;">'
         f'<div style="font-size:18px;font-weight:700;">'
-        f'{config["mission_name"]}'
+        f'{safe_mission_title}'
         f'<span style="font-size:12px;font-weight:700;color:{badge_color};'
         f'background:{badge_color}18;padding:2px 9px;border-radius:10px;margin-left:10px;">'
         f'{badge} {state}</span></div>'
@@ -1326,17 +1428,24 @@ def _render_experiment_details(exp_id: str) -> None:
 
         results = results_early or _read_results(exp_id)
         if results:
+            parse_err: str | None = None
+            result_root: Post | None = None
+            try:
+                result_root = dict_to_tree(results["tree"])
+            except (KeyError, ValueError) as _err:
+                parse_err = str(_err)
+
             tab_tree, tab_solutions, tab_nodes, tab_edit, tab_dl = st.tabs(
                 ["🌳 Tree", "✅ Solutions", "📋 Node Details", "✏️ Edit", "⬇️ Download"]
             )
 
             with tab_tree:
-                try:
-                    root = dict_to_tree(results["tree"])
-                    html, _ = _tree_html(root, scrollable=False)
+                if parse_err:
+                    st.error(f"Could not render tree: {parse_err}")
+                else:
+                    assert result_root is not None
+                    html, _ = _tree_html(result_root, scrollable=False)
                     st.markdown(html, unsafe_allow_html=True)
-                except (KeyError, ValueError) as _err:
-                    st.error(f"Could not render tree: {_err}")
 
             with tab_solutions:
                 sols = results.get("solutions", [])
@@ -1360,9 +1469,11 @@ def _render_experiment_details(exp_id: str) -> None:
                             _render_description(sol.get("description", ""))
 
             with tab_nodes:
-                try:
-                    root = dict_to_tree(results["tree"])
-                    all_nodes = _all_nodes(root)
+                if parse_err:
+                    st.error(f"Could not load nodes: {parse_err}")
+                else:
+                    assert result_root is not None
+                    all_nodes = _all_nodes(result_root)
                     st.caption(f"{len(all_nodes)} nodes in this experiment tree")
                     for num, post, _ in all_nodes:
                         icon  = PTYPE_ICON.get(post.ptype, "•")
@@ -1376,8 +1487,6 @@ def _render_experiment_details(exp_id: str) -> None:
                                 unsafe_allow_html=True,
                             )
                             _render_description(post.description)
-                except (KeyError, ValueError) as _err:
-                    st.error(f"Could not load nodes: {_err}")
 
             with tab_edit:
                 _render_experiment_edit(exp_id, results)
@@ -1444,8 +1553,9 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
         is_viewing = exp["id"] == st.session_state.get("viewed_exp_id")
         eid = exp["id"]
         with st.container(border=True):
+            safe_hist_name = _html.escape(str(exp.get("mission_name", "")))
             st.markdown(
-                f'<span style="font-weight:700;">{exp["mission_name"]}</span>'
+                f'<span style="font-weight:700;">{safe_hist_name}</span>'
                 f'<span style="font-size:11px;font-weight:700;color:{badge_color};'
                 f'background:{badge_color}18;padding:1px 7px;border-radius:10px;'
                 f'margin-left:8px;">{icon} {state}{suffix}</span>',
@@ -1614,45 +1724,43 @@ def _render_runner() -> None:
                     ):
                         for k, v in p["sliders"].items():
                             st.session_state[f"runner_{k}"] = v
+                        st.session_state["runner_solution_parent_types"] = p.get("solution_parent_types")
                         st.session_state["runner_active_preset"] = p["id"]
                         st.rerun()
         st.markdown("")
 
         # ── Branching factors (outside form for live estimate updates) ───────────
         with st.expander("➕ New Experiment", expanded=True):
+            mission_name = st.text_input(
+                "Mission name", value="Next-Gen Grid-Scale Energy Storage"
+            )
+            mission_desc = st.text_area(
+                "Description",
+                value=(
+                    "Develop novel methods to store grid-scale renewable energy "
+                    "that do not rely on rare-earth lithium-ion batteries, targeting "
+                    "cost, scalability, and environmental sustainability."
+                ),
+                height=90,
+            )
             st.markdown("**Branching factors**")
-            b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, 2, key="runner_b_goal")
-            b_barrier  = st.slider("🚧  Barriers / Goal",          0, 4, 0, key="runner_b_barrier")
-            b_cause    = st.slider("🔍  Causes / Barrier",          0, 4, 0, key="runner_b_cause")
-            b_abs      = st.slider("💡  Abstractions / Cause",      0, 4, 0, key="runner_b_abs")
-            b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, 0, key="runner_b_analogy")
-            b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, 0, key="runner_b_insp")
-            b_solution = st.slider("✅  Solutions",                 0, 4, 3, key="runner_b_solution")
-            b_question = st.slider("❓  Questions / Solution",      0, 4, 0, key="runner_b_question")
-            b_answer   = st.slider("💬  Answers / Question",        0, 4, 0, key="runner_b_answer")
-            core_factors = [b_goal, b_barrier, b_cause, b_abs, b_analogy, b_insp, b_solution]
-            est = 1
-            for f in core_factors:
-                if f > 0:
-                    est *= f
+            b_stakeholder = st.slider("👥  Stakeholders / Mission", 0, 4, key="runner_b_stakeholder")
+            b_goal     = st.slider("🏆  Goals / Stakeholder",     0, 4, key="runner_b_goal")
+            b_barrier  = st.slider("🚧  Barriers / Goal",          0, 4, key="runner_b_barrier")
+            b_cause    = st.slider("🔍  Causes / Barrier",          0, 4, key="runner_b_cause")
+            b_abs      = st.slider("💡  Abstractions / Cause",      0, 4, key="runner_b_abs")
+            b_analogy  = st.slider("🔄  Analogies / Abstraction",  0, 6, key="runner_b_analogy")
+            b_insp     = st.slider("⚡  Inspirations / Analogy",   0, 4, key="runner_b_insp")
+            b_solution = st.slider("✅  Solutions",                 0, SOLUTIONS_SLIDER_MAX, key="runner_b_solution")
+            b_question = st.slider("❓  Questions / Solution",      0, 4, key="runner_b_question")
+            b_answer   = st.slider("💬  Answers / Question",        0, 4, key="runner_b_answer")
+            est = _estimate_theoretical_max_solutions(st.session_state)
             st.caption(f"Theoretical max solutions: **{est}**")
 
             st.divider()
 
             # ── Mission details + launch ───────────────────────────────────────
             with st.form("runner_form"):
-                mission_name = st.text_input(
-                    "Mission name", value="Next-Gen Grid-Scale Energy Storage"
-                )
-                mission_desc = st.text_area(
-                    "Description",
-                    value=(
-                        "Develop novel methods to store grid-scale renewable energy "
-                        "that do not rely on rare-earth lithium-ion batteries, targeting "
-                        "cost, scalability, and environmental sustainability."
-                    ),
-                    height=90,
-                )
                 st.markdown("**Performance**")
                 max_concurrent = st.slider(
                     "⚡  Parallel requests",
@@ -1669,24 +1777,36 @@ def _render_runner() -> None:
                         st.error("Mission name and description are required.")
                     else:
                         _bg = st.session_state
-                        pipeline = [
-                            step for step in [
-                                (PostType.STAKEHOLDER, 1),
-                                (PostType.GOAL,        _bg.get("runner_b_goal",     2)),
-                                (PostType.BARRIER,     _bg.get("runner_b_barrier",  0)),
-                                (PostType.CAUSE,       _bg.get("runner_b_cause",    0)),
-                                (PostType.ABSTRACTION, _bg.get("runner_b_abs",      0)),
-                                (PostType.ANALOGY,     _bg.get("runner_b_analogy",  0)),
-                                (PostType.INSPIRATION, _bg.get("runner_b_insp",     0)),
-                                (PostType.SOLUTION,    _bg.get("runner_b_solution", 3)),
-                                (PostType.QUESTION,    _bg.get("runner_b_question", 0)),
-                                (PostType.ANSWER,      _bg.get("runner_b_answer",   0)),
+                        _stakeholder = int(_bg.get("runner_b_stakeholder", 1))
+                        _goal = int(_bg.get("runner_b_goal", 2))
+                        if _goal > 0 and _stakeholder == 0:
+                            st.error("Set Stakeholders / Mission to at least 1 when Goals / Stakeholder is above 0.")
+                            return
+                        _pipe_steps: list[tuple[PostType, int]] = []
+                        if _stakeholder > 0:
+                            _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
+                        _pipe_steps.extend(
+                            [
+                                (PostType.GOAL, _goal),
+                                (PostType.BARRIER, int(_bg.get("runner_b_barrier", 0))),
+                                (PostType.CAUSE, int(_bg.get("runner_b_cause", 0))),
+                                (PostType.ABSTRACTION, int(_bg.get("runner_b_abs", 0))),
+                                (PostType.ANALOGY, int(_bg.get("runner_b_analogy", 0))),
+                                (PostType.INSPIRATION, int(_bg.get("runner_b_insp", 0))),
+                                (PostType.SOLUTION, int(_bg.get("runner_b_solution", 3))),
+                                (PostType.QUESTION, int(_bg.get("runner_b_question", 0))),
+                                (PostType.ANSWER, int(_bg.get("runner_b_answer", 0))),
                             ]
-                            if step[1] > 0
-                        ]
+                        )
+                        pipeline = [step for step in _pipe_steps if step[1] > 0]
+                        solution_parent_types = _bg.get("runner_solution_parent_types")
+                        extra = {}
+                        if solution_parent_types:
+                            extra["solution_parent_types"] = list(solution_parent_types)
                         exp_id = _launch_experiment(
                             mission_name.strip(), mission_desc.strip(), pipeline,
                             max_concurrent=max_concurrent,
+                            extra_config=extra or None,
                         )
                         st.session_state.viewed_exp_id = exp_id
                         st.rerun()
@@ -1796,29 +1916,33 @@ def _render_metrics() -> None:
         unsafe_allow_html=True,
     )
 
-    # ── Solutions by run bar chart ────────────────────────────────────────────
+    # ── Solutions by run bar chart (unique index: mission snippet + experiment id suffix) ─
     if complete_runs:
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(
             '<div class="aid-section-title">Solutions per Completed Run</div>',
             unsafe_allow_html=True,
         )
-        chart_data = {
-            e["mission_name"][:28] + ("…" if len(e["mission_name"]) > 28 else ""): e.get("total_solutions", 0)
-            for e in complete_runs
-        }
-        st.bar_chart(chart_data, use_container_width=True, height=220)
+        chart_rows = []
+        for e in complete_runs:
+            mn = e["mission_name"]
+            short = mn[:28] + ("…" if len(mn) > 28 else "")
+            chart_rows.append(
+                {
+                    "run": f"{short} ({e['id'][-12:]})",
+                    "Solutions": e.get("total_solutions", 0),
+                    "Nodes": e.get("nodes_generated", 0),
+                }
+            )
+        chart_df = pd.DataFrame(chart_rows).set_index("run")
+        st.bar_chart(chart_df[["Solutions"]], use_container_width=True, height=220)
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(
             '<div class="aid-section-title">Nodes Generated per Completed Run</div>',
             unsafe_allow_html=True,
         )
-        node_data = {
-            e["mission_name"][:28] + ("…" if len(e["mission_name"]) > 28 else ""): e.get("nodes_generated", 0)
-            for e in complete_runs
-        }
-        st.bar_chart(node_data, use_container_width=True, height=220)
+        st.bar_chart(chart_df[["Nodes"]], use_container_width=True, height=220)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
