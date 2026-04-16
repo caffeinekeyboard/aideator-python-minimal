@@ -11,7 +11,7 @@ TRANSITIONS: dict[PostType, list[PostType]] = {
     PostType.ANALOGY:     [PostType.INSPIRATION],
     PostType.INSPIRATION: [PostType.SOLUTION],
     PostType.SOLUTION:    [PostType.QUESTION],
-    PostType.QUESTION:    [PostType.ANSWER],
+    PostType.QUESTION:    [PostType.SOLUTION],
 }
 
 ACTION_NAMES: dict[tuple[PostType, PostType], str] = {
@@ -31,7 +31,7 @@ ACTION_NAMES: dict[tuple[PostType, PostType], str] = {
     (PostType.ANALOGY, PostType.INSPIRATION): "add-inspiration",
     (PostType.INSPIRATION, PostType.SOLUTION): "use-inspiration",
     (PostType.SOLUTION, PostType.QUESTION): "add-question",
-    (PostType.QUESTION, PostType.ANSWER): "add-answer",
+    (PostType.QUESTION, PostType.SOLUTION): "add-answer",
 }
 
 

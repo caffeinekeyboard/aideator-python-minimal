@@ -215,49 +215,149 @@ CONDITION_PRESETS: list[dict] = [
         "id": 1,
         "label": "C1",
         "name": "Mission → Solutions",
-        "desc": "Mission → Solution (no stakeholders/goals, solutions on any challenge)",
+        "desc": (
+            "Mission → Solution (no stakeholders/goals; solutions on challenge nodes "
+            "and inspirations when those stages exist)"
+        ),
         "steps": ["Solution"],
         "sliders": dict(b_stakeholder=0, b_goal=0, b_barrier=0, b_cause=0,
                         b_abs=0, b_analogy=0, b_insp=0,
                         b_solution_per_challenge=96, b_question=0, b_answer=0),
-        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
+        "solution_parent_types": [
+            PostType.GOAL.value,
+            PostType.BARRIER.value,
+            PostType.CAUSE.value,
+            PostType.INSPIRATION.value,
+        ],
     },
     {
         "id": 2,
         "label": "C2",
         "name": "+ Problem Analysis",
-        "desc": "… → Goal/Barrier/Cause → Solution (solutions on any challenge)",
+        "desc": (
+            "… → Goal/Barrier/Cause → Solution (solutions on challenge nodes "
+            "and inspirations when those stages exist)"
+        ),
         "steps": ["Goal", "Barrier", "Cause", "Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=0, b_analogy=0, b_insp=0,
                         b_solution_per_challenge=3, b_question=0, b_answer=0),
         # When set, the worker will generate solutions under all listed types
         # (in addition to the standard layer chaining).
-        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
+        "solution_parent_types": [
+            PostType.GOAL.value,
+            PostType.BARRIER.value,
+            PostType.CAUSE.value,
+            PostType.INSPIRATION.value,
+        ],
     },
     {
         "id": 3,
         "label": "C3",
         "name": "+ Analogical Ideation",
-        "desc": "… → Cause → Abstraction → Analogy → Inspiration → Solution (solutions on any challenge)",
+        "desc": (
+            "… → Cause → Abstraction → Analogy → Inspiration → Solution "
+            "(solutions on challenge nodes and inspirations when those stages exist)"
+        ),
         "steps": ["Cause", "Abstraction", "Analogy", "Inspiration", "Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
                         b_solution_per_challenge=3, b_question=0, b_answer=0),
-        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
+        "solution_parent_types": [
+            PostType.GOAL.value,
+            PostType.BARRIER.value,
+            PostType.CAUSE.value,
+            PostType.INSPIRATION.value,
+        ],
     },
     {
         "id": 4,
         "label": "C4",
         "name": "+ Pregnant Question",
-        "desc": "… → Solution → Question → Follow-up Solution (solutions on any challenge)",
+        "desc": (
+            "… → Solution → Question → Follow-up Solution "
+            "(solutions on challenge nodes and inspirations when those stages exist)"
+        ),
         "steps": ["Solution", "Question", "Follow-up Solution"],
         "sliders": dict(b_stakeholder=1, b_goal=2, b_barrier=2, b_cause=2,
                         b_abs=2, b_analogy=4, b_insp=2,
                         b_solution_per_challenge=3, b_question=2, b_answer=1),
-        "solution_parent_types": [PostType.GOAL.value, PostType.BARRIER.value, PostType.CAUSE.value],
+        "solution_parent_types": [
+            PostType.GOAL.value,
+            PostType.BARRIER.value,
+            PostType.CAUSE.value,
+            PostType.INSPIRATION.value,
+        ],
     },
 ]
+
+
+def _runner_pipeline_from_state(bg: dict) -> list[tuple[PostType, int]]:
+    """Build the same pipeline list as experiment launch from runner session keys."""
+    _stakeholder = int(bg.get("runner_b_stakeholder", 1))
+    _goal = int(bg.get("runner_b_goal", 2))
+    _pipe_steps: list[tuple[PostType, int]] = []
+    if _stakeholder > 0:
+        _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
+    _pipe_steps.extend(
+        [
+            (PostType.GOAL, _goal),
+            (PostType.BARRIER, int(bg.get("runner_b_barrier", 0))),
+            (PostType.CAUSE, int(bg.get("runner_b_cause", 0))),
+            (PostType.ABSTRACTION, int(bg.get("runner_b_abs", 0))),
+            (PostType.ANALOGY, int(bg.get("runner_b_analogy", 0))),
+            (PostType.INSPIRATION, int(bg.get("runner_b_insp", 0))),
+            (PostType.SOLUTION, int(bg.get("runner_b_solution_per_challenge", 3))),
+            (PostType.QUESTION, int(bg.get("runner_b_question", 0))),
+            (PostType.SOLUTION, int(bg.get("runner_b_answer", 0))),
+        ]
+    )
+    return [step for step in _pipe_steps if step[1] > 0]
+
+
+def _challenge_solution_parent_count(bg: dict, pipeline: list[tuple[PostType, int]]) -> int:
+    """Approximate number of parents used for the first challenge-style solution layer.
+
+    Counts only parent types listed in ``runner_solution_parent_types`` that are also
+    present in the configured pipeline with branching > 0.
+    """
+    raw = bg.get("runner_solution_parent_types") or []
+    if not raw:
+        return 0
+
+    want_goal = PostType.GOAL.value in raw and any(pt == PostType.GOAL for pt, b in pipeline if b > 0)
+    want_barrier = PostType.BARRIER.value in raw and any(pt == PostType.BARRIER for pt, b in pipeline if b > 0)
+    want_cause = PostType.CAUSE.value in raw and any(pt == PostType.CAUSE for pt, b in pipeline if b > 0)
+    want_inspiration = PostType.INSPIRATION.value in raw and any(
+        pt == PostType.INSPIRATION for pt, b in pipeline if b > 0
+    )
+
+    _stakeholder = int(bg.get("runner_b_stakeholder", 1))
+    _goal = int(bg.get("runner_b_goal", 2))
+    goals = _stakeholder * _goal if want_goal else 0
+    barriers = goals * int(bg.get("runner_b_barrier", 0)) if want_barrier else 0
+    causes = barriers * int(bg.get("runner_b_cause", 0)) if want_cause else 0
+
+    inspirations = 0
+    if want_inspiration:
+        prod = 1
+        for pt, b in pipeline:
+            if pt == PostType.INSPIRATION:
+                inspirations = prod
+                break
+            prod *= b
+
+    total = 0
+    if want_goal:
+        total += goals
+    if want_barrier:
+        total += barriers
+    if want_cause:
+        total += causes
+    if want_inspiration:
+        total += inspirations
+    return int(total)
+
 
 # ── Description renderer ──────────────────────────────────────────────────────
 def _render_description(description: str) -> None:
@@ -330,27 +430,10 @@ def _estimate_theoretical_max_solutions(bg: dict) -> int:
     """Estimate solution upper bound implied by current branching factors.
 
     Uses the same logic as launch validation, including C2-style "solutions on
-    any challenge" mode where solutions can be attached under goals/barriers/causes.
+    any challenge" mode where solutions can be attached under goals/barriers/causes
+    (and inspirations when configured and present in the pipeline).
     """
-    _stakeholder = int(bg.get("runner_b_stakeholder", 1))
-    _goal = int(bg.get("runner_b_goal", 2))
-    _pipe_steps: list[tuple[PostType, int]] = []
-    if _stakeholder > 0:
-        _pipe_steps.append((PostType.STAKEHOLDER, _stakeholder))
-    _pipe_steps.extend(
-        [
-            (PostType.GOAL, _goal),
-            (PostType.BARRIER, int(bg.get("runner_b_barrier", 0))),
-            (PostType.CAUSE, int(bg.get("runner_b_cause", 0))),
-            (PostType.ABSTRACTION, int(bg.get("runner_b_abs", 0))),
-            (PostType.ANALOGY, int(bg.get("runner_b_analogy", 0))),
-            (PostType.INSPIRATION, int(bg.get("runner_b_insp", 0))),
-            (PostType.SOLUTION, int(bg.get("runner_b_solution_per_challenge", 3))),
-            (PostType.QUESTION, int(bg.get("runner_b_question", 0))),
-            (PostType.SOLUTION, int(bg.get("runner_b_answer", 0))),
-        ]
-    )
-    pipeline = [step for step in _pipe_steps if step[1] > 0]
+    pipeline = _runner_pipeline_from_state(bg)
 
     est = 1
     for _, b in pipeline:
@@ -358,19 +441,53 @@ def _estimate_theoretical_max_solutions(bg: dict) -> int:
 
     solution_parent_types = bg.get("runner_solution_parent_types")
     if solution_parent_types and PostType.SOLUTION in [pt for pt, _ in pipeline]:
-        goals = _stakeholder * int(bg.get("runner_b_goal", 0))
-        barriers = goals * int(bg.get("runner_b_barrier", 0))
-        causes = barriers * int(bg.get("runner_b_cause", 0))
-        total_challenges = 0
-        if PostType.GOAL.value in solution_parent_types:
-            total_challenges += goals
-        if PostType.BARRIER.value in solution_parent_types:
-            total_challenges += barriers
-        if PostType.CAUSE.value in solution_parent_types:
-            total_challenges += causes
-        est = max(est, total_challenges * int(bg.get("runner_b_solution_per_challenge", 0)))
+        first_sol_idx = next((i for i, (pt, _) in enumerate(pipeline) if pt == PostType.SOLUTION), -1)
+        b_first_solution = int(pipeline[first_sol_idx][1]) if first_sol_idx >= 0 else 0
+        total_parents = _challenge_solution_parent_count(bg, pipeline)
+        if total_parents > 0 and b_first_solution > 0:
+            est = max(est, total_parents * b_first_solution)
 
     return est
+
+
+def _estimate_adaptive_max_concurrent(bg: dict) -> int:
+    """Pick EXPERIMENT_MAX_CONCURRENT from branching factors (no manual slider).
+
+    The worker parallelises across parent nodes in a layer. We approximate the
+    widest parent fan-out per layer from the configured pipeline, then choose a
+    conservative thread count capped at 16.
+    """
+    pipeline = _runner_pipeline_from_state(bg)
+    if not pipeline:
+        return 1
+
+    solution_parent_types = bg.get("runner_solution_parent_types")
+    total_parents = _challenge_solution_parent_count(bg, pipeline) if solution_parent_types else 0
+
+    first_solution_idx = next(
+        (i for i, (pt, _) in enumerate(pipeline) if pt == PostType.SOLUTION),
+        -1,
+    )
+
+    peak = 1
+    prefix = 1  # number of nodes produced before the current layer starts
+    for i, (ptype, b) in enumerate(pipeline):
+        width_before = prefix if i > 0 else 1
+        if (
+            ptype == PostType.SOLUTION
+            and solution_parent_types
+            and i == first_solution_idx
+            and total_parents > 0
+        ):
+            layer_width = int(total_parents)
+        else:
+            layer_width = int(width_before)
+        peak = max(peak, max(1, layer_width))
+        prefix *= b
+
+    # Sub-linear scaling above small widths to reduce rate-limit risk.
+    scaled = min(peak, 4 + peak // 20)
+    return int(max(1, min(16, scaled)))
 
 
 # ── Saved-tree helpers ────────────────────────────────────────────────────────
@@ -1630,13 +1747,25 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
                 cap = f"👁 **Shown in panel →** · {cap}"
             st.caption(cap)
 
-            r = st.columns(4)
+            r = st.columns(4, gap="small")
             with r[0]:
-                if st.button("Open", key=f"{key_prefix}open_{eid}", use_container_width=True):
+                if st.button(
+                    "Open",
+                    key=f"{key_prefix}open_{eid}",
+                    use_container_width=True,
+                    type="primary" if is_viewing else "secondary",
+                    help="Show this run in the detail panel",
+                ):
                     st.session_state.viewed_exp_id = eid
                     st.rerun()
             with r[1]:
-                if st.button("Rerun", key=f"{key_prefix}rerun_{eid}", use_container_width=True):
+                if st.button(
+                    "Rerun",
+                    key=f"{key_prefix}rerun_{eid}",
+                    use_container_width=True,
+                    type="secondary",
+                    help="Clone this run's config into a new experiment directory",
+                ):
                     try:
                         new_id = _rerun_experiment(eid)
                         st.session_state.viewed_exp_id = new_id
@@ -1645,30 +1774,31 @@ def _render_experiment_history_cards(key_prefix: str) -> None:
                     except Exception as e:
                         st.error(f"Could not rerun: {e}")
             with r[2]:
-                if _experiment_can_resume(state):
-                    help_txt = (
-                        "Start the worker again for this folder (stuck running, failed, or never started). "
-                        "Re-runs the full pipeline in place."
-                    )
-                    if st.button(
-                        "▶ Resume",
-                        key=f"{key_prefix}resume_{eid}",
-                        use_container_width=True,
-                        help=help_txt,
-                    ):
-                        try:
-                            _resume_experiment_worker(eid)
-                            st.toast("Worker started for this run.", icon="▶️")
-                            st.rerun()
-                        except Exception as ex:
-                            st.error(str(ex))
-                else:
-                    st.caption("")
+                help_txt = (
+                    "Start the worker again for this folder (stuck running, failed, or never started). "
+                    "Re-runs the full pipeline in place."
+                )
+                can_resume = _experiment_can_resume(state)
+                if st.button(
+                    "Resume",
+                    key=f"{key_prefix}resume_{eid}",
+                    use_container_width=True,
+                    type="primary" if can_resume else "secondary",
+                    disabled=not can_resume,
+                    help=help_txt if can_resume else "Resume is only available for starting or failed runs.",
+                ):
+                    try:
+                        _resume_experiment_worker(eid)
+                        st.toast("Worker started for this run.", icon="▶️")
+                        st.rerun()
+                    except Exception as ex:
+                        st.error(str(ex))
             with r[3]:
                 if st.button(
-                    "🗑️",
+                    "Delete",
                     key=f"{key_prefix}del_{eid}",
                     use_container_width=True,
+                    type="secondary",
                     help="Delete this run from disk",
                 ):
                     st.session_state.pending_delete_exp = eid
@@ -1818,23 +1948,16 @@ def _render_runner() -> None:
         b_question = st.slider("❓  Questions / Solution",      0, 4, key="runner_b_question")
         b_answer   = st.slider("💬  Follow-up Solutions / Question", 0, 4, key="runner_b_answer")
         est = _estimate_theoretical_max_solutions(st.session_state)
-        st.caption(f"Theoretical max solutions: **{est}**")
+        auto_workers = _estimate_adaptive_max_concurrent(st.session_state)
+        st.caption(
+            f"Theoretical max solutions: **{est}** · "
+            f"Parallel workers (auto): **{auto_workers}**"
+        )
 
         st.divider()
 
         # ── Mission details + launch ───────────────────────────────────────
         with st.form("runner_form"):
-            st.markdown("**Performance**")
-            max_concurrent = st.slider(
-                "⚡  Parallel requests",
-                min_value=1, max_value=16, value=4,
-                help=(
-                    "Max number of parent nodes processed simultaneously. "
-                    "Higher = faster, but may hit API rate limits. "
-                    "Use 4 for free-tier keys, 8–12 for paid."
-                ),
-            )
-
             if st.form_submit_button("🚀 Launch Experiment", type="primary", use_container_width=True):
                 if not mission_name.strip() or not mission_desc.strip():
                     st.error("Mission name and description are required.")
@@ -1867,6 +1990,7 @@ def _render_runner() -> None:
                     if solution_parent_types:
                         extra["solution_parent_types"] = list(solution_parent_types)
                     try:
+                        max_concurrent = _estimate_adaptive_max_concurrent(_bg)
                         exp_id = _launch_experiment(
                             mission_name.strip(), mission_desc.strip(), pipeline,
                             max_concurrent=max_concurrent,
